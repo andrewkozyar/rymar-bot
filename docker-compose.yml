@@ -1,0 +1,42 @@
+services:
+  main:
+    container_name: main
+    build:
+      context: ./
+      dockerfile: docker/production/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - :/app
+      - /app/node_modules
+    ports:
+      - 3000:3000
+    command: npm run start
+    depends_on:
+      - postgres
+      - redis
+    restart: always
+
+  postgres:
+    container_name: postgres
+    image: postgres:13
+    env_file:
+      - .env
+    environment:
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    restart: on-failure
+    ports:
+      - 6379:6379
+
+volumes:
+  pgdata:
