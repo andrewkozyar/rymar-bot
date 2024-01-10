@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
     volumes:
-      - :/app
+      - /app
       - /app/node_modules
     ports:
       - 3000:3000
@@ -31,6 +31,7 @@ services:
     restart: always
 
   redis:
+    container_name: redis
     image: 'bitnami/redis:latest'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
