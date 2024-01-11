@@ -36,6 +36,9 @@ import { ChannelModule } from './chanel/channel.module';
       autoLoadEntities: true,
       logNotifications: true,
       logging: 'all',
+      ssl: {
+        rejectUnauthorized: false,
+      },
     }),
   ],
   controllers: [],
