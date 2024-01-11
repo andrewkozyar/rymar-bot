@@ -55,7 +55,11 @@ export const actionCallbackQuery = (
       await sendMenuKeyboard(
         query.message.chat.id,
         bot,
-        'Hi. Let`s start',
+        createdUser.language === UserLanguageEnum.EN
+          ? '👋 Hi. Let`s start'
+          : createdUser.language === UserLanguageEnum.UA
+            ? '👋 Привіт. Давайте почнемо'
+            : '👋 Привет. Давайте начнем',
         createdUser.language,
       );
 
@@ -73,7 +77,11 @@ export const actionCallbackQuery = (
       await sendMenuKeyboard(
         query.message.chat.id,
         bot,
-        'Language is changed',
+        updatedUser.language === UserLanguageEnum.EN
+          ? '✅ Language is changed'
+          : updatedUser.language === UserLanguageEnum.UA
+            ? '✅ Мову змінено'
+            : '✅ Язык изменен',
         updatedUser.language,
       );
       return await sendAccountKeyboard(query.message.chat.id, bot, updatedUser);
@@ -109,10 +117,10 @@ export const actionCallbackQuery = (
         query.message.chat.id,
         bot,
         user.language === UserLanguageEnum.EN
-          ? 'Enter your email address!'
+          ? '🖊️ Enter your email address!'
           : user.language === UserLanguageEnum.UA
-            ? 'Введіть адресу вашої електронної пошти!'
-            : 'Введите ваш адрес электронной почты!',
+            ? '🖊️ Введіть адресу вашої електронної пошти!'
+            : '🖊️ Введите ваш адрес электронной почты!',
         'BackToAccount',
         user,
       );
@@ -181,9 +189,16 @@ export const actionCallbackQuery = (
     if (key === 'Promocode') {
       await redisService.add(`Promocode-${user.id}`, data);
 
-      return await bot.sendMessage(
+      return await sendTextWithCancelKeyboard(
         query.message.chat.id,
-        'Enter your promo code!',
+        bot,
+        user.language === UserLanguageEnum.EN
+          ? '🖊️ Enter your promo code!'
+          : user.language === UserLanguageEnum.UA
+            ? '🖊️ Введіть promo code!'
+            : '🖊️ Введите promo code!',
+        `ChooseSubscriptionPlan;${data}`,
+        user,
       );
     }
 
@@ -208,7 +223,14 @@ export const actionCallbackQuery = (
         user_id: user.id,
       });
 
-      await bot.sendMessage(query.message.chat.id, 'Pay is success!');
+      await bot.sendMessage(
+        query.message.chat.id,
+        user.language === UserLanguageEnum.EN
+          ? '✅ Payment successful!'
+          : user.language === UserLanguageEnum.UA
+            ? '✅ Оплата успішна!'
+            : '✅ Оплата прошла успешно!',
+      );
 
       return await channelService.sendChannelsLinks(bot, query.message.chat.id);
     }

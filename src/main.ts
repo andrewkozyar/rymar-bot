@@ -8,7 +8,7 @@ async function bootstrap() {
   const port = configService.get<number>('PORT');
 
   await app.listen(port, () => {
-    console.log(`Server start on port ${port}`);
+    console.log(`Server start on port ${port} 🚀`);
   });
 }
 bootstrap();

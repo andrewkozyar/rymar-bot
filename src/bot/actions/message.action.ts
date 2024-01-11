@@ -110,7 +110,11 @@ export const actionMessage = (
       await sendMenuKeyboard(
         msg.chat.id,
         bot,
-        'Email is changed',
+        user.language === UserLanguageEnum.EN
+          ? '✅ Email is changed'
+          : user.language === UserLanguageEnum.UA
+            ? '✅ Електронна пошта змінена'
+            : '✅ Электронная почта изменена',
         user.language,
       );
       await redisService.delete(`ChangeEmail-${user.id}`);
