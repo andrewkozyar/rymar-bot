@@ -40,10 +40,10 @@ export const sendSubscriptionPlanKeyboard = async (
   await bot.sendMessage(
     id,
     language === UserLanguageEnum.EN
-      ? 'Choose subscription plan:'
+      ? '📋 Choose subscription plan:'
       : language === UserLanguageEnum.UA
-        ? 'Виберіть тарифний план:'
-        : 'Выберите план подписки:',
+        ? '📋 Виберіть тарифний план:'
+        : '📋 Выберите план подписки:',
     {
       reply_markup: {
         remove_keyboard: true,

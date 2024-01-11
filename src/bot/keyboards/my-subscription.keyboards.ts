@@ -44,7 +44,7 @@ export const sendMySubscriptionKeyboard = async (
 const getPlanInfo = (language: UserLanguageEnum, lastPayment: Payment) => {
   switch (language) {
     case UserLanguageEnum.EN:
-      return `Your subscription plan is ${
+      return `📃 Your subscription plan is ${
         lastPayment.subscription_plan[`name${language}`]
       }
 
@@ -52,13 +52,17 @@ const getPlanInfo = (language: UserLanguageEnum, lastPayment: Payment) => {
 - Expired date: ${lastPayment.expired_date}`;
 
     case UserLanguageEnum.UA:
-      return `Ваша підписка: ${lastPayment.subscription_plan[`name${language}`]}
+      return `📃 Ваша підписка: ${
+        lastPayment.subscription_plan[`name${language}`]
+      }
 
 - Дата початку: ${lastPayment.created_date}
 - Дата закінчення: ${lastPayment.expired_date}`;
 
     case UserLanguageEnum.RU:
-      return `Ваша подписка: ${lastPayment.subscription_plan[`name${language}`]}
+      return `📃 Ваша подписка: ${
+        lastPayment.subscription_plan[`name${language}`]
+      }
 
 - Дата начала: ${lastPayment.created_date}
 - Дата окончания: ${lastPayment.expired_date}`;

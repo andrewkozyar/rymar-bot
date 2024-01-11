@@ -49,7 +49,7 @@ export const sendAccountKeyboard = async (
 const getAccountTitle = (user: User) => {
   switch (user.language) {
     case UserLanguageEnum.EN:
-      return `My account
+      return `👤 My account
 - ID: ${user.id}      
 - Telegram ID: ${user.chat_id}  
 - Telegram nickname: ${user.name}    
@@ -59,7 +59,7 @@ const getAccountTitle = (user: User) => {
     // - Timezone: ${user.timezone}
 
     case UserLanguageEnum.RU:
-      return `Мой аккаунт
+      return `👤 Мой аккаунт
 - ID: ${user.id}      
 - Telegram ID: ${user.chat_id}   
 - Telegram nickname: ${user.name}   
@@ -69,7 +69,7 @@ const getAccountTitle = (user: User) => {
     // - Часовой пояс: ${user.timezone}
 
     case UserLanguageEnum.UA:
-      return `Мій аккаунт
+      return `👤 Мій аккаунт
 - ID: ${user.id}      
 - Telegram ID: ${user.chat_id}  
 - Telegram nickname: ${user.name}    

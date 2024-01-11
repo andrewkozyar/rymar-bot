@@ -19,7 +19,7 @@ export const sendTransactionsKeyboard = async (
   let text;
 
   if (payments.length) {
-    text = `${getUserInfoText(language, isAdminPanel, user)} ${
+    text = `🗄️ ${getUserInfoText(language, isAdminPanel, user)} ${
       language === UserLanguageEnum.EN
         ? `had ${total} payments!
 
