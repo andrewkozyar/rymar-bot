@@ -56,7 +56,7 @@ export const actionCallbackQuery = (
         query.message.chat.id,
         bot,
         'Hi. Let`s start',
-        user.language,
+        createdUser.language,
       );
 
       return await sendAccountKeyboard(query.message.chat.id, bot, createdUser);
