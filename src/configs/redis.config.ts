@@ -6,7 +6,10 @@ export const redisConfig = async (
 ): Promise<RedisModuleOptions> => {
   return {
     config: {
-      url: configService.get<string>('REDIS_HOST'),
+      url: configService.get<string>('REDIS_URL'),
+      host: configService.get<string>('REDIS_HOST'),
+      port: configService.get<number>('REDIS_PORT'),
+      password: configService.get<string>('REDIS_PASSWORD'),
     },
   };
 };
