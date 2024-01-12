@@ -36,6 +36,17 @@ export const sendMySubscriptionKeyboard = async (
             callback_data: 'ListOfTransactions',
           },
         ],
+        [
+          {
+            text:
+              user.language === UserLanguageEnum.EN
+                ? '🗒️ Subscription plans'
+                : user.language === UserLanguageEnum.UA
+                  ? '🗒️ Плани підписок'
+                  : '🗒️ Планы подписок',
+            callback_data: 'SendSubscriptionPlanKeyboard',
+          },
+        ],
       ],
     },
   });

@@ -273,7 +273,7 @@ export const actionCallbackQuery = (
       return await sendTextWithCancelKeyboard(
         query.message.chat.id,
         bot,
-        `Enter user nickname!`,
+        `🖊️ Enter user nickname!`,
         `AdminPanel`,
         user,
       );
@@ -307,7 +307,9 @@ export const actionCallbackQuery = (
         return await sendTextWithCancelKeyboard(
           query.message.chat.id,
           bot,
-          `Enter user new ${data}! Should be number.`,
+          `Enter the new ${
+            data === 'months_count' ? 'number of months' : data
+          } for the subscription plan! Should be number.`,
           `AdminChooseSubscriptionPlan;${planData.id}`,
           user,
         );
@@ -317,7 +319,7 @@ export const actionCallbackQuery = (
         return await sendTextWithCancelKeyboard(
           query.message.chat.id,
           bot,
-          `Enter user new ${data}! If there includes price write it not as number but as {{price}}. It needs for writing customers correct amount after using promo code.`,
+          `Enter the new ${data} for the subscription plan! If there includes price write it not as number but as {{price}}. It needs for writing customers correct amount after using promo code.`,
           `AdminChooseSubscriptionPlan;${planData.id}`,
           user,
         );
@@ -326,7 +328,7 @@ export const actionCallbackQuery = (
       return await sendTextWithCancelKeyboard(
         query.message.chat.id,
         bot,
-        `Enter user new ${data}!`,
+        `Enter the new ${data} for the subscription plan!`,
         `AdminChooseSubscriptionPlan;${planData.id}`,
         user,
       );
@@ -411,7 +413,7 @@ export const actionCallbackQuery = (
         return await sendTextWithCancelKeyboard(
           query.message.chat.id,
           bot,
-          `Enter user new ${data}! Should be number.`,
+          `Enter the new number of sales percent for the promo code! Should be number.`,
           `AdminPromocodeDetails;${promocodeData.id}`,
           user,
         );
@@ -420,7 +422,7 @@ export const actionCallbackQuery = (
       return await sendTextWithCancelKeyboard(
         query.message.chat.id,
         bot,
-        `Enter user new ${data}!`,
+        `Enter the new ${data} for the promo code!`,
         `AdminPromocodeDetails;${promocodeData.id}`,
         user,
       );

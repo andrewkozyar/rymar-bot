@@ -1,7 +1,7 @@
 import TelegramBot from 'node-telegram-bot-api';
 
 export const sendAdminPanelKeyboard = async (id: number, bot: TelegramBot) => {
-  await bot.sendMessage(id, 'Your admin panel:', {
+  await bot.sendMessage(id, '👔 Your admin panel:', {
     reply_markup: {
       remove_keyboard: true,
       inline_keyboard: [

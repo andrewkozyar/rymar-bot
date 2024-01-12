@@ -17,6 +17,7 @@ import { sendSubscriptionPlanAdminDetailsKeyboard } from '../keyboards/subscript
 import { sendPromocodeAdminDetailsKeyboard } from '../keyboards/promocode-admin-details.keyboards';
 import { UpdateDto as UpdatePromocodeDto } from 'src/promocode/dto';
 import { UserLanguageEnum } from 'src/helper';
+import { sendAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
 
 export const actionMessage = (
   bot: TelegramBot,
@@ -164,10 +165,9 @@ export const actionMessage = (
       const finedUser = await userService.findOne({ name: msg.text });
 
       if (!finedUser) {
-        return await bot.sendMessage(
-          msg.chat.id,
-          `User ${msg.text} is not fined!`,
-        );
+        await bot.sendMessage(msg.chat.id, `😢 User ${msg.text} is not fined!`);
+
+        return await sendAdminPanelKeyboard(msg.chat.id, bot);
       }
 
       return await sendTransactionsKeyboard(
@@ -234,10 +234,10 @@ export const actionMessage = (
       msg.chat.id,
       bot,
       user.language === UserLanguageEnum.EN
-        ? 'Wrong value'
+        ? '🤨 Wrong value'
         : user.language === UserLanguageEnum.UA
-          ? 'Неправильне значення'
-          : 'Неверное значение',
+          ? '🤨 Неправильне значення'
+          : '🤨 Неверное значение',
       user.language,
     );
   });
