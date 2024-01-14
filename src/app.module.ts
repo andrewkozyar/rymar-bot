@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PromocodeModule } from './promocode/promocode.module';
 import { PaymentModule } from './payment/payment.module';
 import { ChannelModule } from './chanel/channel.module';
+import { PaymentMethod } from './paymentMethod/paymentMethod.entity';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ChannelModule } from './chanel/channel.module';
     SubscriptionPlanModule,
     PaymentModule,
     ChannelModule,
+    PaymentMethod,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRES_HOST,

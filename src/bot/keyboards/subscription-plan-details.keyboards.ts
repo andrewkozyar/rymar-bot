@@ -13,25 +13,29 @@ export const sendSubscriptionPlanDetailsKeyboard = async (
   user: User,
   promocode?: Promocode,
 ) => {
-  if (promocode) {
-    plan.price = plan.price - (plan.price * promocode.sale_percent) / 100;
-  }
-
-  const text =
-    getFullText(plan[`description${user.language}`], {
-      price: plan.price.toString(),
-    }) || 'No description';
-
   const payData = {
     amount: plan.price,
     subscription_plan_id: plan.id,
     promocode_id: promocode?.id,
+    newPrice: null,
   };
+
+  if (promocode) {
+    payData.newPrice = plan.price - (plan.price * promocode.sale_percent) / 100;
+  }
+
+  const text =
+    getFullText(plan[`description${user.language}`], {
+      price: payData.newPrice
+        ? `<s>${plan.price}</s> <b style="color:red">${payData.newPrice}</b>`
+        : plan.price.toString(),
+    }) || 'No description';
 
   const callback_data = `BuySubscriptionPlan;`;
   redisService.add(`BuySubscriptionPlan-${user.id}`, JSON.stringify(payData));
 
   await bot.sendMessage(id, text, {
+    parse_mode: 'HTML',
     reply_markup: {
       remove_keyboard: true,
       inline_keyboard: [
@@ -44,7 +48,7 @@ export const sendSubscriptionPlanDetailsKeyboard = async (
                   ? 'Заплатити'
                   : 'Заплатить'
             }`,
-            callback_data: callback_data,
+            callback_data: callback_data + plan.id,
           },
         ],
         [

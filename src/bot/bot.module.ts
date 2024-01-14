@@ -7,6 +7,7 @@ import { SubscriptionPlanModule } from '../subscriptionPlan/subscriptionPlan.mod
 import { PromocodeModule } from '../promocode/promocode.module';
 import { PaymentModule } from 'src/payment/payment.module';
 import { ChannelModule } from 'src/chanel/channel.module';
+import { PaymentMethodModule } from 'src/paymentMethod/paymentMethod.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ChannelModule } from 'src/chanel/channel.module';
     PromocodeModule,
     PaymentModule,
     ChannelModule,
+    PaymentMethodModule,
   ],
   providers: [BotService],
   controllers: [],

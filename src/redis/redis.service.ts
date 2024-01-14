@@ -23,4 +23,16 @@ export class RedisService {
   async delete(key: RedisKey) {
     await this.redis.del(key);
   }
+
+  async clearData(userId: string) {
+    await Promise.all([
+      this.delete(`BuySubscriptionPlan-${userId}`),
+      this.delete(`ChangeEmail-${userId}`),
+      this.delete(`Promocode-${userId}`),
+      this.delete(`AdminUserTransactions-${userId}`),
+      this.delete(`EditSubscriptionPlanAdmin-${userId}`),
+      this.delete(`EditPromocodeAdmin-${userId}`),
+      this.delete(`EditPaymentMethodAdmin-${userId}`),
+    ]);
+  }
 }

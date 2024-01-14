@@ -1,4 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
+import { UserLanguageEnum } from 'src/helper';
 import { RedisService } from 'src/redis/redis.service';
 import { SubscriptionPlan } from 'src/subscriptionPlan/subscriptionPlan.entity';
 import { User } from 'src/user/user.entity';
@@ -10,11 +11,17 @@ export const sendSubscriptionPlanAdminDetailsKeyboard = async (
   redisService: RedisService,
   user: User,
 ) => {
-  const text = `Subscription plan data:
+  const text = `${
+    user.language === UserLanguageEnum.EN
+      ? 'Subscription plan data'
+      : user.language === UserLanguageEnum.UA
+        ? 'Дані плану підписки'
+        : 'Данные плана подписки'
+  }:
 
 - price: ${plan.price}
 
-- is published: ${plan.is_published}
+- is published: ${plan.is_published} ${plan.is_published ? '✅' : '❌'}
 
 - months count: ${plan.months_count}
   
@@ -30,7 +37,13 @@ export const sendSubscriptionPlanAdminDetailsKeyboard = async (
 
 - descriptionRU: ${plan.descriptionRU}
 
-Choose field to update:`;
+${
+  user.language === UserLanguageEnum.EN
+    ? 'Choose field to update'
+    : user.language === UserLanguageEnum.UA
+      ? 'Виберіть поле для оновлення'
+      : 'Выберите поле для обновления'
+}:`;
 
   const planData = {
     id: plan.id,
@@ -90,13 +103,25 @@ Choose field to update:`;
         ],
         [
           {
-            text: `🗑️ Delete`,
+            text: `🗑️ ${
+              user.language === UserLanguageEnum.EN
+                ? 'Delete'
+                : user.language === UserLanguageEnum.UA
+                  ? 'Видалити'
+                  : 'Удалить'
+            }`,
             callback_data: 'AdminDeleteSubscriptionPlan',
           },
         ],
         [
           {
-            text: `⬅️ Back`,
+            text: `⬅️ ${
+              user.language === UserLanguageEnum.EN
+                ? 'Back'
+                : user.language === UserLanguageEnum.UA
+                  ? 'Назад'
+                  : 'Назад'
+            }`,
             callback_data: 'SendSubscriptionPlanAdminKeyboard',
           },
         ],

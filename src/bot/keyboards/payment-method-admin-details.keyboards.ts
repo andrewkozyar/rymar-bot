@@ -1,31 +1,37 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { UserLanguageEnum } from 'src/helper';
-import { Promocode } from 'src/promocode/promocode.entity';
+import { PaymentMethod } from 'src/paymentMethod/paymentMethod.entity';
 import { RedisService } from 'src/redis/redis.service';
 import { User } from 'src/user/user.entity';
 
-export const sendPromocodeAdminDetailsKeyboard = async (
+export const sendPaymentMethodAdminDetailsKeyboard = async (
   id: number,
   bot: TelegramBot,
-  promocode: Promocode,
+  paymentMethod: PaymentMethod,
   redisService: RedisService,
   user: User,
 ) => {
   const text = `${
     user.language === UserLanguageEnum.EN
-      ? 'Promocode data'
+      ? 'Payment method data'
       : user.language === UserLanguageEnum.UA
-        ? 'Дані промокоду'
-        : 'Данные промокода'
+        ? 'Дані про спосіб оплати'
+        : 'Данные о способе оплаты'
   }:
 
-- name: ${promocode.name}
+- name: ${paymentMethod.name}
 
-- is published: ${promocode.is_published} ${
-    promocode.is_published ? '✅' : '❌'
+- is published: ${paymentMethod.is_published} ${
+    paymentMethod.is_published ? '✅' : '❌'
   }
 
-- sale percent: ${promocode.sale_percent}
+- address: ${paymentMethod.address}
+
+- descriptionEN: ${paymentMethod.descriptionEN}
+
+- descriptionUA: ${paymentMethod.descriptionUA}
+
+- descriptionRU: ${paymentMethod.descriptionRU}
 
 ${
   user.language === UserLanguageEnum.EN
@@ -35,14 +41,14 @@ ${
       : 'Выберите поле для обновления'
 }:`;
 
-  const promocodeData = {
-    id: promocode.id,
+  const paymentMethodData = {
+    id: paymentMethod.id,
   };
 
-  const callback_data = `EditPromocodeAdmin;`;
+  const callback_data = `EditPaymentMethodAdmin;`;
   redisService.add(
-    `EditPromocodeAdmin-${user.id}`,
-    JSON.stringify(promocodeData),
+    `EditPaymentMethodAdmin-${user.id}`,
+    JSON.stringify(paymentMethodData),
   );
 
   await bot.sendMessage(id, text, {
@@ -54,17 +60,27 @@ ${
             text: `name`,
             callback_data: callback_data + 'name',
           },
-        ],
-        [
           {
             text: `is published`,
             callback_data: callback_data + 'is_published',
           },
+          {
+            text: `address`,
+            callback_data: callback_data + 'address',
+          },
         ],
         [
           {
-            text: `sale percent`,
-            callback_data: callback_data + 'sale_percent',
+            text: `descriptionEN`,
+            callback_data: callback_data + 'descriptionEN',
+          },
+          {
+            text: `descriptionUA`,
+            callback_data: callback_data + 'descriptionUA',
+          },
+          {
+            text: `descriptionRU`,
+            callback_data: callback_data + 'descriptionRU',
           },
         ],
         [
@@ -76,7 +92,7 @@ ${
                   ? 'Видалити'
                   : 'Удалить'
             }`,
-            callback_data: 'AdminDeletePromocode',
+            callback_data: 'AdminDeletePaymentMethod',
           },
         ],
         [
@@ -88,7 +104,7 @@ ${
                   ? 'Назад'
                   : 'Назад'
             }`,
-            callback_data: 'AdminPromocodes',
+            callback_data: 'AdminPaymentMethods',
           },
         ],
       ],

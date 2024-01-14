@@ -33,7 +33,12 @@ export const sendAccountKeyboard = async (
   if (admins.includes(user.name)) {
     inline_keyboard.push([
       {
-        text: '‼️ Admin panel',
+        text:
+          user.language === UserLanguageEnum.EN
+            ? '‼️ Admin panel'
+            : user.language === UserLanguageEnum.UA
+              ? '‼️ Панель адміністратора'
+              : '‼️ Админ-панель',
         callback_data: 'AdminPanel',
       },
     ]);

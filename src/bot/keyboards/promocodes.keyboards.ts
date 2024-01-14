@@ -1,10 +1,13 @@
 import TelegramBot from 'node-telegram-bot-api';
+import { UserLanguageEnum } from 'src/helper';
 import { PromocodeService } from 'src/promocode/promocode.service';
+import { User } from 'src/user/user.entity';
 
 export const sendPromocodesKeyboard = async (
   id: number,
   bot: TelegramBot,
   promocodeService: PromocodeService,
+  user: User,
 ) => {
   const callback_data = 'AdminPromocodeDetails;';
 
@@ -19,19 +22,41 @@ export const sendPromocodesKeyboard = async (
 
   inline_keyboard.push([
     {
-      text: `➕ New promocode`,
+      text: `➕ ${
+        user.language === UserLanguageEnum.EN
+          ? 'New promocode'
+          : user.language === UserLanguageEnum.UA
+            ? 'Новий промокод'
+            : 'Новый промокод'
+      }`,
       callback_data: 'NewPromocode',
     },
     {
-      text: `⬅️ Back`,
+      text: `⬅️ ${
+        user.language === UserLanguageEnum.EN
+          ? 'Back'
+          : user.language === UserLanguageEnum.UA
+            ? 'Назад'
+            : 'Назад'
+      }`,
       callback_data: 'AdminPanel',
     },
   ]);
 
-  await bot.sendMessage(id, 'Choose promocode:', {
-    reply_markup: {
-      remove_keyboard: true,
-      inline_keyboard,
+  await bot.sendMessage(
+    id,
+    `🗑️ ${
+      user.language === UserLanguageEnum.EN
+        ? 'Choose promocode:'
+        : user.language === UserLanguageEnum.UA
+          ? 'Виберіть промокод:'
+          : 'Выберите промокод:'
+    }`,
+    {
+      reply_markup: {
+        remove_keyboard: true,
+        inline_keyboard,
+      },
     },
-  });
+  );
 };

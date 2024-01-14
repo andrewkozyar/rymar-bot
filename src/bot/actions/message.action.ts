@@ -18,6 +18,9 @@ import { sendPromocodeAdminDetailsKeyboard } from '../keyboards/promocode-admin-
 import { UpdateDto as UpdatePromocodeDto } from 'src/promocode/dto';
 import { UserLanguageEnum } from 'src/helper';
 import { sendAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
+import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
+import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
+import { UpdateDto as UpdatePaymentMethodDto } from 'src/paymentMethod/dto';
 
 export const actionMessage = (
   bot: TelegramBot,
@@ -27,6 +30,7 @@ export const actionMessage = (
   promocodeService: PromocodeService,
   paymentService: PaymentService,
   channelService: ChannelService,
+  paymentMethodService: PaymentMethodService,
 ) => {
   return bot.on('message', async (msg) => {
     if (msg.chat.id < 0) {
@@ -41,7 +45,7 @@ export const actionMessage = (
 
     if (msg.text === '/start' || !user) {
       if (user) {
-        await clearUserRedisData(redisService, user.id);
+        await redisService.clearData(user.id);
       }
       return await sendLanguageKeyboard(msg.chat.id, bot, !!user);
     }
@@ -54,14 +58,14 @@ export const actionMessage = (
         '🗒️ Планы подписок',
       ].includes(msg.text)
     ) {
-      await clearUserRedisData(redisService, user.id);
+      await redisService.clearData(user.id);
 
       return await sendSubscriptionPlanKeyboard(
         msg.chat.id,
         bot,
         planService,
         false,
-        user.language,
+        user,
       );
     }
 
@@ -70,7 +74,7 @@ export const actionMessage = (
         msg.text,
       )
     ) {
-      await clearUserRedisData(redisService, user.id);
+      await redisService.clearData(user.id);
 
       return await sendMySubscriptionKeyboard(
         msg.chat.id,
@@ -83,13 +87,13 @@ export const actionMessage = (
     if (
       ['👤 My Account', '👤 Мій акаунт', '👤 Мой аккаунт'].includes(msg.text)
     ) {
-      await clearUserRedisData(redisService, user.id);
+      await redisService.clearData(user.id);
 
       return await sendAccountKeyboard(msg.chat.id, bot, user);
     }
 
     if (['🤝 Support', '🤝 Допомога', '🤝 Помощь'].includes(msg.text)) {
-      await clearUserRedisData(redisService, user.id);
+      await redisService.clearData(user.id);
 
       return await bot.sendMessage(
         msg.chat.id,
@@ -167,7 +171,7 @@ export const actionMessage = (
       if (!finedUser) {
         await bot.sendMessage(msg.chat.id, `😢 User ${msg.text} is not fined!`);
 
-        return await sendAdminPanelKeyboard(msg.chat.id, bot);
+        return await sendAdminPanelKeyboard(msg.chat.id, bot, user);
       }
 
       return await sendTransactionsKeyboard(
@@ -230,6 +234,32 @@ export const actionMessage = (
       );
     }
 
+    // update promocode
+    const redisPaymentMethodAdminData = await redisService.get(
+      `EditPaymentMethodAdmin-${user.id}`,
+    );
+
+    if (redisPaymentMethodAdminData) {
+      await redisService.delete(`EditPaymentMethodAdmin-${user.id}`);
+
+      const paymentMethodData: UpdatePaymentMethodDto = JSON.parse(
+        redisPaymentMethodAdminData,
+      );
+      paymentMethodData[paymentMethodData.field] = msg.text;
+
+      const paymentMethod = await paymentMethodService.update({
+        ...paymentMethodData,
+      });
+
+      return await sendPaymentMethodAdminDetailsKeyboard(
+        msg.chat.id,
+        bot,
+        paymentMethod,
+        redisService,
+        user,
+      );
+    }
+
     return await sendMenuKeyboard(
       msg.chat.id,
       bot,
@@ -241,16 +271,4 @@ export const actionMessage = (
       user.language,
     );
   });
-};
-
-export const clearUserRedisData = async (
-  redisService: RedisService,
-  userId: string,
-) => {
-  await redisService.delete(`BuySubscriptionPlan-${userId}`);
-  await redisService.delete(`ChangeEmail-${userId}`);
-  await redisService.delete(`Promocode-${userId}`);
-  await redisService.delete(`AdminUserTransactions-${userId}`);
-  await redisService.delete(`EditSubscriptionPlanAdmin-${userId}`);
-  await redisService.delete(`EditPromocodeAdmin-${userId}`);
 };

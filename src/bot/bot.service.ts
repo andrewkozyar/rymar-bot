@@ -13,6 +13,7 @@ import { User } from 'src/user/user.entity';
 import { actionChannelPost } from './actions/channel_post.action';
 import { actionMessage } from './actions/message.action';
 import { actionCallbackQuery } from './actions/callback_query.action';
+import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
 
 @Injectable()
 export class BotService {
@@ -26,6 +27,7 @@ export class BotService {
     private promocodeService: PromocodeService,
     private paymentService: PaymentService,
     private channelService: ChannelService,
+    private paymentMethodService: PaymentMethodService,
   ) {
     this.bot = telegramBot(configService);
 
@@ -43,6 +45,7 @@ export class BotService {
       this.promocodeService,
       this.paymentService,
       this.channelService,
+      this.paymentMethodService,
     );
 
     actionCallbackQuery(
@@ -53,6 +56,7 @@ export class BotService {
       this.promocodeService,
       this.paymentService,
       this.channelService,
+      this.paymentMethodService,
     );
   }
 
