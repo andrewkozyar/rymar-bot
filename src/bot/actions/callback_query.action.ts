@@ -386,7 +386,11 @@ export const actionCallbackQuery = (
       return await sendTextWithCancelKeyboard(
         query.message.chat.id,
         bot,
-        `🖊️ Enter user nickname!`,
+        user.language === UserLanguageEnum.EN
+          ? `🖊️ Enter user nickname!`
+          : user.language === UserLanguageEnum.UA
+            ? `🖊️ Введіть nickname користувача!`
+            : `🖊️ Введите nickname пользователя!`,
         `AdminPanel`,
         user,
       );

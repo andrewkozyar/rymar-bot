@@ -150,7 +150,14 @@ export const actionMessage = (
         );
       }
 
-      await bot.sendMessage(msg.chat.id, 'Wrong promocode!');
+      await bot.sendMessage(
+        msg.chat.id,
+        user.language === UserLanguageEnum.EN
+          ? `❌ Wrong promo code!`
+          : user.language === UserLanguageEnum.UA
+            ? `❌ Неправильний promo code!`
+            : `❌ Неправильный promo code!`,
+      );
       return await sendSubscriptionPlanDetailsKeyboard(
         msg.chat.id,
         bot,
