@@ -72,6 +72,10 @@ export const actionCallbackQuery = (
       return await sendAccountKeyboard(query.message.chat.id, bot, createdUser);
     }
 
+    if (!user) {
+      return;
+    }
+
     if (key === 'ChangeLanguageMenu') {
       await redisService.clearData(user.id);
 
