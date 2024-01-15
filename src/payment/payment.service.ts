@@ -45,8 +45,8 @@ export class PaymentService {
       });
 
       return await this.paymentRepository.save({
-        ...dto,
         ...plan,
+        ...dto,
       });
     } catch (e) {
       errorHandler(
