@@ -76,11 +76,13 @@ export class UserService {
     limit = 20,
     searchKey,
     expired_date,
+    names,
   }: {
     offset?: number;
     limit?: number;
     searchKey?: string;
     expired_date?: Date;
+    names?: string[];
   }): Promise<GetUsersType> {
     try {
       const userQuery = await this.userRepository.createQueryBuilder('user');
@@ -93,6 +95,12 @@ export class UserService {
             searchKey: `%${searchKey}%`,
           },
         );
+      }
+
+      if (names?.length) {
+        userQuery.andWhere('user.name IN (:...names)', {
+          names,
+        });
       }
 
       if (expired_date) {

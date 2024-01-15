@@ -2,7 +2,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import { User } from '../../user/user.entity';
 import { UserLanguageEnum } from 'src/helper';
 
-const admins = ['andrew_kk', 'rymar'];
+export const admins = ['andrew_kk', 'rymar'];
 
 export const sendAccountKeyboard = async (
   id: number,

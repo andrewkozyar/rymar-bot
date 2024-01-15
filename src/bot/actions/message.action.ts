@@ -4,7 +4,7 @@ import { PaymentService } from 'src/payment/payment.service';
 import { PromocodeService } from 'src/promocode/promocode.service';
 import { SubscriptionPlanService } from 'src/subscriptionPlan/subscriptionPlan.service';
 import { UserService } from 'src/user/user.service';
-import { sendAccountKeyboard } from '../keyboards/account.keyboards';
+import { admins, sendAccountKeyboard } from '../keyboards/account.keyboards';
 import { sendLanguageKeyboard } from '../keyboards/language.keyboards';
 import { sendMenuKeyboard } from '../keyboards/menu.keyboards';
 import { sendMySubscriptionKeyboard } from '../keyboards/my-subscription.keyboards';
@@ -16,11 +16,13 @@ import { UpdateDto as UpdatePlanDto } from 'src/subscriptionPlan/dto';
 import { sendSubscriptionPlanAdminDetailsKeyboard } from '../keyboards/subscription-plan-admin-details.keyboards';
 import { sendPromocodeAdminDetailsKeyboard } from '../keyboards/promocode-admin-details.keyboards';
 import { UpdateDto as UpdatePromocodeDto } from 'src/promocode/dto';
-import { UserLanguageEnum } from 'src/helper';
+import { PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
 import { sendAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
 import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
 import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
 import { UpdateDto as UpdatePaymentMethodDto } from 'src/paymentMethod/dto';
+import { sendTextWithCancelKeyboard } from '../keyboards/cancel.keyboards';
+import { sendGiveUserAccessKeyboard } from '../keyboards/give-user-access.keyboards';
 
 export const actionMessage = (
   bot: TelegramBot,
@@ -260,6 +262,91 @@ export const actionMessage = (
       );
     }
 
+    // screenshot with payment
+    const redisUserPaymentData = await redisService.get(
+      `BuySubscriptionPlan-${user.id}`,
+    );
+
+    if (redisUserPaymentData) {
+      const payData: {
+        amount: number;
+        newPrice: number;
+        subscription_plan_id: string;
+        promocode_id?: string;
+        payment_method_id: string;
+      } = JSON.parse(redisUserPaymentData);
+
+      if (!msg.photo?.length) {
+        return await sendTextWithCancelKeyboard(
+          msg.chat.id,
+          bot,
+          user.language === UserLanguageEnum.EN
+            ? 'Wrong value. Please send a screenshot of the payment! 📱'
+            : user.language === UserLanguageEnum.UA
+              ? 'Неправильне значення. Будь ласка, надішліть скрін з оплатою! 📱'
+              : 'Неверное значение. Пожалуйста, отправьте скрин с оплатой! 📱',
+          'PayBy;' + payData.payment_method_id,
+          user,
+        );
+      }
+
+      await redisService.delete(`BuySubscriptionPlan-${user.id}`);
+
+      const paymentMethod = await paymentMethodService.findOne({
+        id: payData.payment_method_id,
+      });
+
+      const payment = await paymentService.create({
+        ...payData,
+        status: PaymentStatusEnum.Pending,
+        amount: payData.newPrice || payData.amount,
+        user_id: user.id,
+        screenshot_message_id: msg.message_id.toString(),
+        address: paymentMethod.address,
+      });
+
+      const managers = await userService.getUsers({
+        names: admins,
+      });
+
+      const plan = await planService.findOne({
+        id: payData.subscription_plan_id,
+      });
+
+      let promocode = null;
+
+      if (payData.promocode_id) {
+        promocode = await promocodeService.findOne({
+          id: payData.promocode_id,
+        });
+      }
+
+      await Promise.all(
+        managers.users.map(async (manager) => {
+          return sendGiveUserAccessKeyboard(
+            manager.chat_id,
+            bot,
+            manager,
+            user,
+            payment,
+            plan,
+            paymentMethod,
+            promocode,
+          );
+        }),
+      );
+
+      return await bot.sendMessage(
+        msg.chat.id,
+        user.language === UserLanguageEnum.EN
+          ? '✅ Thank you for the payment. The manager will soon verify all the payment and if it was successful, the links to join all the chats and channels will come here.'
+          : user.language === UserLanguageEnum.UA
+            ? '✅ Дякуємо за оплату. Менеджер скоро перевірить вшу оплату, і якщо вона пройшла успішно, сюди прийдуть посилання для приєднання до всіх чатів та каналів.'
+            : '✅ Спасибо за оплату. Менеджер скоро проверит вашу оплату, и если она прошла успешно, сюда придут ссылки для подключения ко всем чатам и каналам.',
+      );
+    }
+
+    await redisService.clearData(user.id);
     return await sendMenuKeyboard(
       msg.chat.id,
       bot,

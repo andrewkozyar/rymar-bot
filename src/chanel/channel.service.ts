@@ -4,9 +4,10 @@ import { Repository } from 'typeorm';
 import TelegramBot from 'node-telegram-bot-api';
 
 import { CreateDto, GetDto } from './dto';
-import { MessageType, errorHandler } from '../helper';
+import { MessageType, UserLanguageEnum, errorHandler } from '../helper';
 
 import { Channel } from './channel.entity';
+import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class ChannelService {
@@ -104,18 +105,11 @@ export class ChannelService {
     }
   }
 
-  async sendChannelsLinks(bot: TelegramBot, userChatId: number) {
+  async sendChannelsLinks(bot: TelegramBot, user: User) {
     try {
       const channels = await this.find();
 
       if (channels.length) {
-        await bot.sendMessage(
-          userChatId,
-          `Join to all channels.
-
-WARNING! Link works only 24 hours.`,
-        );
-
         await Promise.all(
           channels.map(async (channel) => {
             try {
@@ -128,8 +122,16 @@ WARNING! Link works only 24 hours.`,
               );
 
               await bot.sendMessage(
-                userChatId,
-                `Cannel ${channel.name}.
+                user.chat_id,
+                `${
+                  channel.type === 'channel'
+                    ? user.language === UserLanguageEnum.EN
+                      ? 'Channel'
+                      : 'Канал'
+                    : user.language === UserLanguageEnum.EN
+                      ? 'Group'
+                      : 'Чат'
+                } ${channel.name}.
   
   ${link.invite_link}`,
               );

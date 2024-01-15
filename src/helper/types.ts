@@ -36,3 +36,9 @@ export enum UserLanguageEnum {
   RO = 'RO',
   IT = 'IT',
 }
+
+export enum PaymentStatusEnum {
+  Pending = 'PENDING',
+  Success = 'SUCCESS',
+  Cancel = 'CANCEL',
+}

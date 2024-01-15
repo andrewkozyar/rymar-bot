@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { UserLanguageEnum } from 'src/helper';
+import { PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
 import { Payment } from 'src/payment/payment.entity';
 import { PaymentService } from 'src/payment/payment.service';
 import { User } from 'src/user/user.entity';
@@ -10,7 +10,10 @@ export const sendMySubscriptionKeyboard = async (
   user: User,
   paymentService: PaymentService,
 ) => {
-  const lastPayment = await paymentService.findOne({ user_id: user.id });
+  const lastPayment = await paymentService.findOne({
+    user_id: user.id,
+    status: PaymentStatusEnum.Success,
+  });
 
   const text = lastPayment
     ? getPlanInfo(user.language, lastPayment)

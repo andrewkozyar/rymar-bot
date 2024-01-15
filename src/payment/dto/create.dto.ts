@@ -1,6 +1,10 @@
 import { IsString, IsNumber } from 'class-validator';
+import { PaymentStatusEnum } from 'src/helper';
 
 export class CreateDto {
+  @IsString({ message: 'Must be a string' })
+  readonly id?: string;
+
   @IsString({ message: 'Must be a string' })
   readonly address?: string;
 
@@ -11,14 +15,20 @@ export class CreateDto {
   readonly currency?: string;
 
   @IsString({ message: 'Must be a string' })
-  readonly status?: string;
-
-  @IsString({ message: 'Must be a string' })
   readonly subscription_plan_id?: string;
 
   @IsString({ message: 'Must be a string' })
   readonly promocode_id?: string;
 
   @IsString({ message: 'Must be a string' })
+  readonly payment_method_id?: string;
+
+  @IsString({ message: 'Must be a string' })
+  readonly status?: PaymentStatusEnum;
+
+  @IsString({ message: 'Must be a string' })
   readonly user_id?: string;
+
+  @IsString({ message: 'Must be a string' })
+  readonly screenshot_message_id?: string;
 }

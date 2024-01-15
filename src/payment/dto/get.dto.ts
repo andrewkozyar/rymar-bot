@@ -1,4 +1,5 @@
 import { IsString, IsUUID } from 'class-validator';
+import { PaymentStatusEnum } from 'src/helper';
 
 export class GetDto {
   @IsString({ message: 'Must be a string' })
@@ -7,4 +8,7 @@ export class GetDto {
 
   @IsString()
   user_id?: string;
+
+  @IsString({ message: 'Must be a string' })
+  readonly status?: PaymentStatusEnum;
 }

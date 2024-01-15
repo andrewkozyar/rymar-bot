@@ -1,3 +1,5 @@
+import { PaymentStatusEnum } from 'src/helper';
+import { PaymentMethod } from 'src/paymentMethod/paymentMethod.entity';
 import { Promocode } from 'src/promocode/promocode.entity';
 import { SubscriptionPlan } from 'src/subscriptionPlan/subscriptionPlan.entity';
 import { User } from 'src/user/user.entity';
@@ -10,6 +12,8 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+
+export const statuses = Object.values(PaymentStatusEnum);
 
 @Entity()
 export class Payment {
@@ -25,8 +29,15 @@ export class Payment {
   @Column({ nullable: true })
   currency: string;
 
+  @Column({
+    type: 'enum',
+    enum: statuses,
+    default: PaymentStatusEnum.Pending,
+  })
+  status: PaymentStatusEnum;
+
   @Column({ nullable: true })
-  status: string;
+  screenshot_message_id: string;
 
   @Column({ nullable: true })
   subscription_plan_id: string;
@@ -48,6 +59,13 @@ export class Payment {
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ referencedColumnName: 'id', name: 'user_id' })
   user: User;
+
+  @Column({ nullable: true })
+  payment_method_id: string;
+
+  @ManyToOne(() => PaymentMethod, { nullable: true })
+  @JoinColumn({ referencedColumnName: 'id', name: 'payment_method_id' })
+  payment_method: PaymentMethod;
 
   @Column()
   expired_date: Date;

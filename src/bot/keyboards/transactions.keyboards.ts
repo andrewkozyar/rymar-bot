@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { UserLanguageEnum } from 'src/helper';
+import { PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
 import { Payment } from 'src/payment/payment.entity';
 import { PaymentService } from 'src/payment/payment.service';
 import { User } from 'src/user/user.entity';
@@ -23,14 +23,14 @@ export const sendTransactionsKeyboard = async (
       language === UserLanguageEnum.EN
         ? `had ${total} payments!
 
-List of payments:`
+<b>List of payments:</b>`
         : language === UserLanguageEnum.UA
           ? `є платежів: ${total}!
   
-Список платежів:`
+<b>Список платежів:</b>`
           : `есть платежей: ${total}!
 
-Список платежей:`
+<b>Список платежей:</b>`
     }`;
 
     payments.forEach((p) => {
@@ -52,6 +52,7 @@ List of payments:`
   }
 
   await bot.sendMessage(id, text, {
+    parse_mode: 'HTML',
     reply_markup: {
       remove_keyboard: true,
       inline_keyboard: [
@@ -77,26 +78,29 @@ const getPaymentInfoText = (language: UserLanguageEnum, p: Payment) => {
     case UserLanguageEnum.EN:
       return `
 
-- Amount: ${p.amount}$ 
-  Subscription plan: ${p.subscription_plan[`name${language}`]}
-  Date: ${p.created_date}
-  Expired date: ${p.expired_date}`;
+- <b>Amount:</b> ${p.amount}$ 
+  <b>Subscription plan:</b> ${p.subscription_plan[`name${language}`]}
+  <b>Status:</b> ${getStatusText(language, p.status)}
+  <b>Date:</b> ${p.created_date}
+  <b>Expired date:</b> ${p.expired_date}`;
 
     case UserLanguageEnum.UA:
       return `
 
-- Сума: ${p.amount}$
-  План підписки: ${p.subscription_plan[`name${language}`]}
-  Дата: ${p.created_date}
-  Дата закінчення: ${p.expired_date}`;
+- <b>Сума:</b> ${p.amount}$
+  <b>План підписки:</b> ${p.subscription_plan[`name${language}`]}
+  <b>Статус:</b> ${getStatusText(language, p.status)}
+  <b>Дата:</b> ${p.created_date}
+  <b>Дата закінчення:</b> ${p.expired_date}`;
 
     case UserLanguageEnum.RU:
       return `
 
-- Сумма: ${p.amount}$
-  План подписки: ${p.subscription_plan[`name${language}`]}
-  Дата: ${p.created_date}
-  Дата истечения срока: ${p.expired_date}`;
+- <b>Сумма:</b> ${p.amount}$
+  <b>План подписки:</b> ${p.subscription_plan[`name${language}`]}
+  <b>Статус:</b> ${getStatusText(language, p.status)}
+  <b>Дата:</b> ${p.created_date}
+  <b>Дата истечения срока:</b> ${p.expired_date}`;
   }
 };
 
@@ -127,5 +131,33 @@ const getNoPaymentsInfoText = (language: UserLanguageEnum) => {
 
     case UserLanguageEnum.RU:
       return `еще нету платежей.`;
+  }
+};
+
+const getStatusText = (
+  language: UserLanguageEnum,
+  status: PaymentStatusEnum,
+) => {
+  switch (status) {
+    case PaymentStatusEnum.Cancel:
+      return language === UserLanguageEnum.EN
+        ? 'Your payment has not been confirmed by the manager'
+        : language === UserLanguageEnum.UA
+          ? 'Ваш платіж не підтверджено менеджером'
+          : 'Ваш платеж не подтвержден менеджером';
+
+    case PaymentStatusEnum.Pending:
+      return language === UserLanguageEnum.EN
+        ? 'Your payment is still pending'
+        : language === UserLanguageEnum.UA
+          ? 'Ваш платіж ще очікує розгляду'
+          : 'Ваш платеж еще ожидает рассмотрения';
+
+    case PaymentStatusEnum.Success:
+      return language === UserLanguageEnum.EN
+        ? 'Your payment is successful'
+        : language === UserLanguageEnum.UA
+          ? 'Ваш платіж успішний'
+          : 'Ваш платеж успешен';
   }
 };

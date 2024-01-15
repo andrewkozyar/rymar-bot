@@ -1,6 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { ChannelService } from 'src/chanel/channel.service';
-import { UserLanguageEnum } from 'src/helper';
+import { PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
 import { PaymentService } from 'src/payment/payment.service';
 import { SubscriptionPlanService } from 'src/subscriptionPlan/subscriptionPlan.service';
 import { UserService } from 'src/user/user.service';
@@ -27,6 +27,7 @@ import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
 import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
 import { UpdateDto as UpdatePaymentMethodDto } from 'src/paymentMethod/dto';
 import { sendPaymentMethodDetailsKeyboard } from '../keyboards/payment-method-details.keyboards';
+import { sendGiveUserAccessKeyboard } from '../keyboards/give-user-access.keyboards';
 
 export const actionCallbackQuery = (
   bot: TelegramBot,
@@ -296,22 +297,6 @@ export const actionCallbackQuery = (
         user,
         promocode,
       );
-
-      // await paymentService.create({
-      //   ...payData,
-      //   user_id: user.id,
-      // });
-
-      // await bot.sendMessage(
-      //   query.message.chat.id,
-      //   user.language === UserLanguageEnum.EN
-      //     ? '✅ Payment successful!'
-      //     : user.language === UserLanguageEnum.UA
-      //       ? '✅ Оплата успішна!'
-      //       : '✅ Оплата прошла успешно!',
-      // );
-
-      // return await channelService.sendChannelsLinks(bot, query.message.chat.id);
     }
 
     if (key === 'UserPaid') {
@@ -335,13 +320,16 @@ export const actionCallbackQuery = (
         }),
       );
 
-      return await bot.sendMessage(
+      return await sendTextWithCancelKeyboard(
         query.message.chat.id,
+        bot,
         user.language === UserLanguageEnum.EN
           ? 'Please send a screenshot of the payment! 📱'
           : user.language === UserLanguageEnum.UA
             ? 'Будь ласка, надішліть скрін з оплатою! 📱'
             : 'Пожалуйста, отправьте скрин с оплатой! 📱',
+        'PayBy;' + data,
+        user,
       );
     }
 
@@ -747,6 +735,123 @@ export const actionCallbackQuery = (
         paymentMethodService,
         user,
         true,
+      );
+    }
+
+    if (key === 'PendingUsers') {
+      await redisService.clearData(user.id);
+
+      const { payments } = await paymentService.getPayments({
+        status: PaymentStatusEnum.Pending,
+      });
+
+      return payments.map(async (payment) => {
+        const plan = await planService.findOne({
+          id: payment.subscription_plan_id,
+        });
+
+        const paymentMethod = await paymentMethodService.findOne({
+          id: payment.payment_method_id,
+        });
+
+        let promocode = null;
+
+        if (payment.promocode_id) {
+          promocode = await promocodeService.findOne({
+            id: payment.promocode_id,
+          });
+        }
+
+        const customer = await userService.findOne({
+          id: payment.user_id,
+        });
+
+        return sendGiveUserAccessKeyboard(
+          query.message.chat.id,
+          bot,
+          user,
+          customer,
+          payment,
+          plan,
+          paymentMethod,
+          promocode,
+        );
+      });
+    }
+
+    if (key === 'GiveUserAccessConfirm') {
+      await redisService.clearData(user.id);
+
+      const payment = await paymentService.update({
+        id: data,
+        status: PaymentStatusEnum.Success,
+      });
+
+      const customer = await userService.findOne({
+        id: payment.user_id,
+      });
+
+      await bot.sendMessage(
+        query.message.chat.id,
+        user.language === UserLanguageEnum.EN
+          ? `✅ User @${customer.name} payment confirmed successfully!`
+          : user.language === UserLanguageEnum.UA
+            ? `✅ Оплата користувача @${customer.name} підтверджена успішно!`
+            : `✅ Оплата пользователя @${customer.name} подтверждена успешно!`,
+      );
+
+      await bot.sendMessage(
+        customer.chat_id,
+        customer.language === UserLanguageEnum.EN
+          ? `✅ The manager has confirmed your payment! Thank you for trusting us. Links will come in subsequent messages.
+
+Attention, you must join all channels and chats within 24 hours after receiving the links!`
+          : user.language === UserLanguageEnum.UA
+            ? `✅ Менеджер підтвердив вашу оплату! Дякуємо що довірилися нам. Посилання прийдуть наступними повідомленнями.
+
+Увага необхідно приєднатися до всіх каналів та чатів протягом 24 годин після отримання посилань!`
+            : `✅ Менеджер подтвердил вашу оплату! Спасибо что доверились нам. Ссылки придут следующими сообщениями.
+
+Внимание необходимо присоединиться ко всем каналам и чатам в течение 24 часов после получения ссылок!`,
+      );
+
+      return await channelService.sendChannelsLinks(bot, customer);
+    }
+
+    if (key === 'GiveUserAccessDecline') {
+      await redisService.clearData(user.id);
+
+      const payment = await paymentService.update({
+        id: data,
+        status: PaymentStatusEnum.Cancel,
+      });
+
+      const customer = await userService.findOne({
+        id: payment.user_id,
+      });
+
+      await bot.sendMessage(
+        query.message.chat.id,
+        user.language === UserLanguageEnum.EN
+          ? `❌ Payment by user @${customer.name} declined!`
+          : user.language === UserLanguageEnum.UA
+            ? `❌ Оплата користувача @${customer.name} відхилена!`
+            : `❌ Оплата пользователя @${customer.name} отклонена!`,
+      );
+
+      return await bot.sendMessage(
+        customer.chat_id,
+        customer.language === UserLanguageEnum.EN
+          ? `❌ The manager did not confirm your payment! Make sure that you paid the correct amount, entered the promotional code (if available), sent the correct screenshot, sent the screenshot to the payment method where you sent the funds. If you did something wrong, you can send the payment details again by going to "🗒️ Subscription plans", selecting the desired plan and clicking "💵 I paid".
+            
+If you could not solve the problem, or you think that an error has occurred, contact support via the "🤝 Support" button`
+          : customer.language === UserLanguageEnum.UA
+            ? `❌ Менеджер не підтвердив вашу оплату! Переконайтеся що ви оплатили правильну суму, ввели промокод (за наявності), надіслали правильний скрішот, надіслали скрішот в той метод оплати, куди надсилали кошти. Якщо ви щось наділали не вірно, то можна надіслати дані про оплату знову перейшовши в "🗒️ Плани підписок", обравши потрібний план, та натиснувши "💵 Я оплатив".
+            
+Якщо ви не змогли вирішити проблему, або вважаєте що сталася помилка, зверніться за підтримкою по кнопці "🤝 Допомога"`
+            : `❌ Менеджер не подтвердил вашу оплату! Убедитесь, что вы оплатили правильную сумму, ввели промокод (при наличии), отправили правильный скришот, отправили скришот в тот метод оплаты, куда присылали средства. Если вы что-то наделали не верно, то можно отправить данные об оплате снова перейдя в "🗒️ Планы подписок", выбрав нужный план и нажав "💵 Я оплатил".
+            
+Если вы не смогли решить проблему, или считаете произошедшую ошибку, обратитесь за поддержкой по кнопке "🤝 Помощь"`,
       );
     }
   });

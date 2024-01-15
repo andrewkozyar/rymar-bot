@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CreateDto, GetDto } from './dto';
-import { GetPaymentsType, errorHandler } from '../helper';
+import { GetPaymentsType, PaymentStatusEnum, errorHandler } from '../helper';
 
 import { Payment } from './payment.entity';
 import { SubscriptionPlanService } from 'src/subscriptionPlan/subscriptionPlan.service';
@@ -38,8 +38,27 @@ export class PaymentService {
     }
   }
 
-  async findOne({ id, user_id }: GetDto): Promise<Payment> {
-    const payment = await this.paymentRepository
+  async update(dto: CreateDto): Promise<Payment> {
+    try {
+      const plan = await this.findOne({
+        id: dto.id,
+      });
+
+      return await this.paymentRepository.save({
+        ...dto,
+        ...plan,
+      });
+    } catch (e) {
+      errorHandler(
+        `Failed to update payment`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        e,
+      );
+    }
+  }
+
+  async findOne({ id, user_id, status }: GetDto): Promise<Payment> {
+    const paymentQuery = await this.paymentRepository
       .createQueryBuilder('payment')
       .where('payment.id = :id OR user_id = :user_id', {
         id,
@@ -47,18 +66,23 @@ export class PaymentService {
       })
       .leftJoinAndSelect('payment.subscription_plan', 'subscription_plan')
       .leftJoinAndSelect('payment.promocode', 'promocode')
-      .orderBy('payment.created_date', 'DESC')
-      .getOne();
+      .orderBy('payment.created_date', 'DESC');
 
-    return payment;
+    if (status) {
+      paymentQuery.andWhere('payment.status = :status', { status });
+    }
+
+    return paymentQuery.getOne();
   }
 
   async getPayments({
     user_id,
     expired_date,
+    status,
   }: {
     user_id?: string;
     expired_date?: Date;
+    status?: PaymentStatusEnum;
   }): Promise<GetPaymentsType> {
     try {
       const paymentQuery =
@@ -76,6 +100,10 @@ export class PaymentService {
           .andWhere(`payment.expired_date = :expired_date`, {
             expired_date,
           });
+      }
+
+      if (status) {
+        paymentQuery.andWhere('payment.status = :status', { status });
       }
 
       const [payments, total] = await paymentQuery
