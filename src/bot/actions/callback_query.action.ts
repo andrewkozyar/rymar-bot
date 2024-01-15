@@ -810,7 +810,7 @@ export const actionCallbackQuery = (
           ? `✅ The manager has confirmed your payment! Thank you for trusting us. Links will come in subsequent messages.
 
 Attention, you must join all channels and chats within 24 hours after receiving the links!`
-          : user.language === UserLanguageEnum.UA
+          : customer.language === UserLanguageEnum.UA
             ? `✅ Менеджер підтвердив вашу оплату! Дякуємо що довірилися нам. Посилання прийдуть наступними повідомленнями.
 
 Увага необхідно приєднатися до всіх каналів та чатів протягом 24 годин після отримання посилань!`
