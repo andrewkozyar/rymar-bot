@@ -21,7 +21,7 @@ export const sendPaymentMethodDetailsKeyboard = async (
 
   const price = newPrice
     ? `<s>${plan.price}</s> <b style="color:red">${newPrice}</b>`
-    : plan.price.toString();
+    : plan.price?.toString();
 
   const text =
     user.language === UserLanguageEnum.EN
