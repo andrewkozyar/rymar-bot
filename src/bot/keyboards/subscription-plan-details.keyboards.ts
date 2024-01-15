@@ -28,7 +28,7 @@ export const sendSubscriptionPlanDetailsKeyboard = async (
     getFullText(plan[`description${user.language}`], {
       price: payData.newPrice
         ? `<s>${plan.price}</s> <b style="color:red">${payData.newPrice}</b>`
-        : plan.price.toString(),
+        : plan.price?.toString(),
     }) || 'No description';
 
   const callback_data = `BuySubscriptionPlan;`;
