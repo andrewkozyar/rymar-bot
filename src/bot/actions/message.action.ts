@@ -16,7 +16,11 @@ import { UpdateDto as UpdatePlanDto } from 'src/subscriptionPlan/dto';
 import { sendSubscriptionPlanAdminDetailsKeyboard } from '../keyboards/subscription-plan-admin-details.keyboards';
 import { sendPromocodeAdminDetailsKeyboard } from '../keyboards/promocode-admin-details.keyboards';
 import { UpdateDto as UpdatePromocodeDto } from 'src/promocode/dto';
-import { PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
+import {
+  PaymentStatusEnum,
+  RatesInterface,
+  UserLanguageEnum,
+} from 'src/helper';
 import { sendAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
 import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
 import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
@@ -281,6 +285,7 @@ export const actionMessage = (
         subscription_plan_id: string;
         promocode_id?: string;
         payment_method_id: string;
+        price_usd: number;
       } = JSON.parse(redisUserPaymentData);
 
       if (!msg.photo?.length) {
@@ -303,13 +308,29 @@ export const actionMessage = (
         id: payData.payment_method_id,
       });
 
+      const rateToUsdData = await redisService.get('exchangeRateToUsd');
+
+      const rateToUsd: RatesInterface = rateToUsdData
+        ? JSON.parse(rateToUsdData)
+        : {
+            UAH: 1,
+            RUB: 1,
+            KZT: 1,
+            USD: 1,
+            USDT: 1,
+          };
+
       const payment = await paymentService.create({
         ...payData,
         status: PaymentStatusEnum.Pending,
-        amount: payData.newPrice || payData.amount,
+        amount:
+          rateToUsd[paymentMethod.currency] *
+          (payData.newPrice || payData.amount),
+        price_usd: payData.newPrice || payData.amount,
         user_id: user.id,
         screenshot_message_id: msg.message_id.toString(),
         address: paymentMethod.address,
+        currency: paymentMethod.currency,
       });
 
       const managers = await userService.getUsers({

@@ -1,4 +1,5 @@
 import { IsString, IsOptional, IsBoolean } from 'class-validator';
+import { CurrencyEnum } from 'src/helper';
 
 export class UpdateDto {
   @IsString({ message: 'Must be a string' })
@@ -31,4 +32,8 @@ export class UpdateDto {
   @IsString({ message: 'Must be a string' })
   @IsOptional()
   field?: string;
+
+  @IsString({ message: 'Must be a string' })
+  @IsOptional()
+  currency?: CurrencyEnum;
 }

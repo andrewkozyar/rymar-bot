@@ -1,3 +1,4 @@
+import { CurrencyEnum, currencies } from 'src/helper';
 import {
   Entity,
   Column,
@@ -17,6 +18,13 @@ export class PaymentMethod {
 
   @Column({ nullable: true })
   address: string;
+
+  @Column({
+    type: 'enum',
+    enum: currencies,
+    nullable: true,
+  })
+  currency: CurrencyEnum;
 
   @Column({ nullable: true })
   descriptionEN: string;

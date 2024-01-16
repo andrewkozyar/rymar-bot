@@ -1,6 +1,11 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { ChannelService } from 'src/chanel/channel.service';
-import { PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
+import {
+  CurrencyEnum,
+  PaymentStatusEnum,
+  RatesInterface,
+  UserLanguageEnum,
+} from 'src/helper';
 import { PaymentService } from 'src/payment/payment.service';
 import { SubscriptionPlanService } from 'src/subscriptionPlan/subscriptionPlan.service';
 import { UserService } from 'src/user/user.service';
@@ -28,6 +33,7 @@ import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-meth
 import { UpdateDto as UpdatePaymentMethodDto } from 'src/paymentMethod/dto';
 import { sendPaymentMethodDetailsKeyboard } from '../keyboards/payment-method-details.keyboards';
 import { sendGiveUserAccessKeyboard } from '../keyboards/give-user-access.keyboards';
+import { sendCurrencyKeyboard } from '../keyboards/currency.keyboards';
 
 export const actionCallbackQuery = (
   bot: TelegramBot,
@@ -285,13 +291,21 @@ export const actionCallbackQuery = (
         promocode_id?: string;
       } = JSON.parse(redisData);
 
-      const promocode = await promocodeService.findOne({
-        id: payData.promocode_id,
-      });
-
       const plan = await planService.findOne({
         id: payData.subscription_plan_id,
       });
+
+      const rateToUsdData = await redisService.get('exchangeRateToUsd');
+
+      const rateToUsd: RatesInterface = rateToUsdData
+        ? JSON.parse(rateToUsdData)
+        : {
+            UAH: 1,
+            RUB: 1,
+            KZT: 1,
+            USD: 1,
+            USDT: 1,
+          };
 
       return await sendPaymentMethodDetailsKeyboard(
         query.message.chat.id,
@@ -299,7 +313,8 @@ export const actionCallbackQuery = (
         paymentMethod,
         plan,
         user,
-        promocode,
+        rateToUsd[paymentMethod.currency] * plan.price,
+        rateToUsd[paymentMethod.currency] * payData.newPrice,
       );
     }
 
@@ -314,6 +329,7 @@ export const actionCallbackQuery = (
         amount: number;
         subscription_plan_id: string;
         promocode_id?: string;
+        newPrice?: number;
       } = JSON.parse(redisData);
 
       await redisService.add(
@@ -692,6 +708,29 @@ export const actionCallbackQuery = (
         );
       }
 
+      if (data === 'currency') {
+        const rateToUsdData = await redisService.get('exchangeRateToUsd');
+
+        const rateToUsd: RatesInterface = rateToUsdData
+          ? JSON.parse(rateToUsdData)
+          : {
+              UAH: 1,
+              RUB: 1,
+              KZT: 1,
+              USD: 1,
+              USDT: 1,
+            };
+
+        return await sendCurrencyKeyboard(
+          query.message.chat.id,
+          bot,
+          'PaymentMethodCurrency;',
+          `AdminPaymentMethodDetails;${paymentMethodData.id}`,
+          user,
+          rateToUsd,
+        );
+      }
+
       return await sendTextWithCancelKeyboard(
         query.message.chat.id,
         bot,
@@ -716,6 +755,28 @@ export const actionCallbackQuery = (
       const paymentMethod = await paymentMethodService.update({
         ...paymentMethodData,
         is_published: data === 'true',
+      });
+
+      return await sendPaymentMethodAdminDetailsKeyboard(
+        query.message.chat.id,
+        bot,
+        paymentMethod,
+        redisService,
+        user,
+      );
+    }
+
+    if (key === 'PaymentMethodCurrency') {
+      const redisData = await redisService.get(
+        `EditPaymentMethodAdmin-${user.id}`,
+      );
+      await redisService.clearData(user.id);
+
+      const paymentMethodData: UpdatePaymentMethodDto = JSON.parse(redisData);
+
+      const paymentMethod = await paymentMethodService.update({
+        ...paymentMethodData,
+        currency: data as CurrencyEnum,
       });
 
       return await sendPaymentMethodAdminDetailsKeyboard(
@@ -793,6 +854,7 @@ export const actionCallbackQuery = (
       const payment = await paymentService.update({
         id: data,
         status: PaymentStatusEnum.Success,
+        updated_by_id: user.id,
       });
 
       const customer = await userService.findOne({
@@ -832,6 +894,7 @@ Attention, you must join all channels and chats within 24 hours after receiving 
       const payment = await paymentService.update({
         id: data,
         status: PaymentStatusEnum.Cancel,
+        updated_by_id: user.id,
       });
 
       const customer = await userService.findOne({

@@ -42,3 +42,29 @@ export enum PaymentStatusEnum {
   Success = 'SUCCESS',
   Cancel = 'CANCEL',
 }
+
+export interface ExchangeRatesApiResponseInterface {
+  success: boolean;
+  timestamp: number;
+  base: CurrencyEnum;
+  date: Date;
+  rates: RatesInterface;
+}
+
+export interface RatesInterface {
+  USD: number;
+  UAH: number;
+  RUB: number;
+  KZT: number;
+  USDT?: number;
+}
+
+export enum CurrencyEnum {
+  UAH = 'UAH',
+  RUB = 'RUB',
+  USDT = 'USDT',
+  USD = 'USD',
+  KZT = 'KZT',
+}
+
+export const currencies = Object.values(CurrencyEnum);

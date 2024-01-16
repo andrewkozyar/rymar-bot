@@ -68,6 +68,10 @@ ${
             text: `address`,
             callback_data: callback_data + 'address',
           },
+          {
+            text: `currency`,
+            callback_data: callback_data + 'currency',
+          },
         ],
         [
           {

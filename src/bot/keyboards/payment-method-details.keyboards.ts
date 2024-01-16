@@ -1,7 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { UserLanguageEnum } from 'src/helper';
 import { PaymentMethod } from 'src/paymentMethod/paymentMethod.entity';
-import { Promocode } from 'src/promocode/promocode.entity';
 import { SubscriptionPlan } from 'src/subscriptionPlan/subscriptionPlan.entity';
 import { User } from 'src/user/user.entity';
 
@@ -11,24 +10,19 @@ export const sendPaymentMethodDetailsKeyboard = async (
   paymentMethod: PaymentMethod,
   plan: SubscriptionPlan,
   user: User,
-  promocode?: Promocode,
+  price: number,
+  newPrice?: number,
 ) => {
-  let newPrice;
-
-  if (promocode) {
-    newPrice = plan.price - (plan.price * promocode.sale_percent) / 100;
-  }
-
-  const price = newPrice
-    ? `<s>${plan.price}</s> <b style="color:red">${newPrice}</b>`
-    : plan.price?.toString();
+  const priceToShow = newPrice
+    ? `<s>${price}</s> <b>${newPrice} ${paymentMethod.currency}</b>`
+    : `<b>${price?.toString()} ${paymentMethod.currency}</b>`;
 
   const text =
     user.language === UserLanguageEnum.EN
-      ? `Pay ${price}$ to the account that will arrive in the next message. Attention, carefully check the payment method, amount and network so as not to lose funds!`
+      ? `Pay ${priceToShow}$ to the account that will arrive in the next message. Attention, carefully check the payment method, amount and network so as not to lose funds!`
       : user.language === UserLanguageEnum.UA
-        ? `Оплатіть ${price}$ на рахунок який прийде наступним повідомленням. Увага перевірте уважно метод оплати, суму  та мережу, щоб не втратити кошти!`
-        : `Оплатите ${price}$ на счет, который придет следующим сообщением. Внимание проверьте метод оплаты, сумму и сеть, чтобы не потерять средства!`;
+        ? `Оплатіть ${priceToShow}$ на рахунок який прийде наступним повідомленням. Увага перевірте уважно метод оплати, суму  та мережу, щоб не втратити кошти!`
+        : `Оплатите ${priceToShow}$ на счет, который придет следующим сообщением. Внимание проверьте метод оплаты, сумму и сеть, чтобы не потерять средства!`;
 
   await bot.sendMessage(id, text, {
     parse_mode: 'HTML',

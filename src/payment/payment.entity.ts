@@ -1,4 +1,4 @@
-import { PaymentStatusEnum } from 'src/helper';
+import { CurrencyEnum, PaymentStatusEnum, currencies } from 'src/helper';
 import { PaymentMethod } from 'src/paymentMethod/paymentMethod.entity';
 import { Promocode } from 'src/promocode/promocode.entity';
 import { SubscriptionPlan } from 'src/subscriptionPlan/subscriptionPlan.entity';
@@ -13,7 +13,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 
-export const statuses = Object.values(PaymentStatusEnum);
+const statuses = Object.values(PaymentStatusEnum);
 
 @Entity()
 export class Payment {
@@ -23,11 +23,18 @@ export class Payment {
   @Column({ nullable: true, type: 'float' })
   amount: number;
 
+  @Column({ nullable: true, type: 'float' })
+  price_usd: number;
+
   @Column({ nullable: true })
   address: string;
 
-  @Column({ nullable: true })
-  currency: string;
+  @Column({
+    type: 'enum',
+    enum: currencies,
+    nullable: true,
+  })
+  currency: CurrencyEnum;
 
   @Column({
     type: 'enum',
@@ -75,4 +82,11 @@ export class Payment {
 
   @UpdateDateColumn()
   updated_date: Date;
+
+  @Column({ nullable: true })
+  updated_by_id: string;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ referencedColumnName: 'id', name: 'updated_by_id' })
+  updated_by: User;
 }
