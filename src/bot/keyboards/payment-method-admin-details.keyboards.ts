@@ -27,6 +27,8 @@ export const sendPaymentMethodAdminDetailsKeyboard = async (
 
 - address: ${paymentMethod.address}
 
+- currency: ${paymentMethod.currency}
+
 - descriptionEN: ${paymentMethod.descriptionEN}
 
 - descriptionUA: ${paymentMethod.descriptionUA}

@@ -19,10 +19,10 @@ export const sendPaymentMethodDetailsKeyboard = async (
 
   const text =
     user.language === UserLanguageEnum.EN
-      ? `Pay ${priceToShow}$ to the account that will arrive in the next message. Attention, carefully check the payment method, amount and network so as not to lose funds!`
+      ? `Pay ${priceToShow} to the account that will arrive in the next message. Attention, carefully check the payment method, amount and network so as not to lose funds!`
       : user.language === UserLanguageEnum.UA
-        ? `Оплатіть ${priceToShow}$ на рахунок який прийде наступним повідомленням. Увага перевірте уважно метод оплати, суму  та мережу, щоб не втратити кошти!`
-        : `Оплатите ${priceToShow}$ на счет, который придет следующим сообщением. Внимание проверьте метод оплаты, сумму и сеть, чтобы не потерять средства!`;
+        ? `Оплатіть ${priceToShow} на рахунок який прийде наступним повідомленням. Увага перевірте уважно метод оплати, суму  та мережу, щоб не втратити кошти!`
+        : `Оплатите ${priceToShow} на счет, который придет следующим сообщением. Внимание проверьте метод оплаты, сумму и сеть, чтобы не потерять средства!`;
 
   await bot.sendMessage(id, text, {
     parse_mode: 'HTML',

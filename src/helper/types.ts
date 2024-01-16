@@ -62,9 +62,9 @@ export interface RatesInterface {
 export enum CurrencyEnum {
   UAH = 'UAH',
   RUB = 'RUB',
+  KZT = 'KZT',
   USDT = 'USDT',
   USD = 'USD',
-  KZT = 'KZT',
 }
 
 export const currencies = Object.values(CurrencyEnum);
