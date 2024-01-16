@@ -10,6 +10,7 @@ import {
   CurrencyEnum,
   ExchangeRatesApiResponseInterface,
   errorHandler,
+  getFiatAmount,
 } from 'src/helper';
 
 @Injectable()
@@ -67,7 +68,7 @@ export class CronService {
     return true;
   }
 
-  // @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_MINUTE)
   async updateConversionRates() {
     const exchangeRatesApiUrl = this.configService.get<string>(
       'EXCHANGE_RATES_API_URL',
@@ -93,9 +94,9 @@ export class CronService {
       return await this.redisService.add(
         'exchangeRateToUsd',
         JSON.stringify({
-          UAH: rates.UAH / rates.USD,
-          RUB: rates.RUB / rates.USD,
-          KZT: rates.KZT / rates.USD,
+          UAH: getFiatAmount(rates.UAH / rates.USD),
+          RUB: getFiatAmount(rates.RUB / rates.USD),
+          KZT: getFiatAmount(rates.KZT / rates.USD),
           USD: 1,
           USDT: 1,
         }),

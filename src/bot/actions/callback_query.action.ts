@@ -5,6 +5,7 @@ import {
   PaymentStatusEnum,
   RatesInterface,
   UserLanguageEnum,
+  getFiatAmount,
 } from 'src/helper';
 import { PaymentService } from 'src/payment/payment.service';
 import { SubscriptionPlanService } from 'src/subscriptionPlan/subscriptionPlan.service';
@@ -313,8 +314,8 @@ export const actionCallbackQuery = (
         paymentMethod,
         plan,
         user,
-        rateToUsd[paymentMethod.currency] * plan.price,
-        rateToUsd[paymentMethod.currency] * payData.newPrice,
+        getFiatAmount(rateToUsd[paymentMethod.currency] * plan.price),
+        getFiatAmount(rateToUsd[paymentMethod.currency] * payData.newPrice),
       );
     }
 

@@ -20,3 +20,5 @@ export const getFullText = (
 
   return newText;
 };
+
+export const getFiatAmount = (x: number) => Math.trunc(x * 100) / 100;

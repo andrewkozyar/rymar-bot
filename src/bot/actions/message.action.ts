@@ -20,6 +20,7 @@ import {
   PaymentStatusEnum,
   RatesInterface,
   UserLanguageEnum,
+  getFiatAmount,
 } from 'src/helper';
 import { sendAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
 import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
@@ -323,9 +324,10 @@ export const actionMessage = (
       const payment = await paymentService.create({
         ...payData,
         status: PaymentStatusEnum.Pending,
-        amount:
+        amount: getFiatAmount(
           rateToUsd[paymentMethod.currency] *
-          (payData.newPrice || payData.amount),
+            (payData.newPrice || payData.amount),
+        ),
         price_usd: payData.newPrice || payData.amount,
         user_id: user.id,
         screenshot_message_id: msg.message_id.toString(),
