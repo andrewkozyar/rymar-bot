@@ -23,7 +23,7 @@ export const sendCurrencyKeyboard = async (
       : user.language === UserLanguageEnum.UA
         ? `Виберіть валюту. Сьогоднішній курс до USD:
 `
-        : `Выберите валюту. Сегодняшний курс до USD:
+        : `Выберите валюту. Сегодняшний курс к USD:
 `;
 
   currencies.forEach((currency) => {

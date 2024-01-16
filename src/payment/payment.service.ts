@@ -109,6 +109,7 @@ export class PaymentService {
       const [payments, total] = await paymentQuery
         .leftJoinAndSelect('payment.subscription_plan', 'subscription_plan')
         .leftJoinAndSelect('payment.promocode', 'promocode')
+        .leftJoinAndSelect('payment.payment_method', 'payment_method')
         .orderBy('payment.created_date', 'DESC')
         .getManyAndCount();
 

@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { UserLanguageEnum } from 'src/helper';
+import { CurrencyEnum, UserLanguageEnum } from 'src/helper';
 import { PaymentMethod } from 'src/paymentMethod/paymentMethod.entity';
 import { SubscriptionPlan } from 'src/subscriptionPlan/subscriptionPlan.entity';
 import { User } from 'src/user/user.entity';
@@ -14,7 +14,11 @@ export const sendPaymentMethodDetailsKeyboard = async (
   newPrice?: number,
 ) => {
   const priceToShow = newPrice
-    ? `<s>${price}</s> <b>${newPrice} ${paymentMethod.currency}</b>`
+    ? `<s>${price}</s> <b>${newPrice} ${
+        paymentMethod.currency === CurrencyEnum.USDT
+          ? paymentMethod.currency + ' TRC20'
+          : paymentMethod.currency
+      }</b>`
     : `<b>${price?.toString()} ${paymentMethod.currency}</b>`;
 
   const text =

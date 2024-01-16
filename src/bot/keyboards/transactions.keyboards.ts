@@ -78,7 +78,9 @@ const getPaymentInfoText = (language: UserLanguageEnum, p: Payment) => {
     case UserLanguageEnum.EN:
       return `
 
-- <b>Amount:</b> ${p.amount}$ 
+- <b>Amount USD:</b> ${p.price_usd}$ 
+  <b>Paid amount:</b> ${p.amount} ${p.currency}
+  <b>Payment method:</b> ${p.payment_method.name}
   <b>Subscription plan:</b> ${p.subscription_plan[`name${language}`]}
   <b>Status:</b> ${getStatusText(language, p.status)}
   <b>Date:</b> ${p.created_date}
@@ -87,7 +89,9 @@ const getPaymentInfoText = (language: UserLanguageEnum, p: Payment) => {
     case UserLanguageEnum.UA:
       return `
 
-- <b>Сума:</b> ${p.amount}$
+- <b>Сума в USD:</b> ${p.price_usd}$
+  <b>Оплачена сума:</b> ${p.amount} ${p.currency}
+  <b>Метод оплати:</b> ${p.payment_method.name}
   <b>План підписки:</b> ${p.subscription_plan[`name${language}`]}
   <b>Статус:</b> ${getStatusText(language, p.status)}
   <b>Дата:</b> ${p.created_date}
@@ -96,7 +100,9 @@ const getPaymentInfoText = (language: UserLanguageEnum, p: Payment) => {
     case UserLanguageEnum.RU:
       return `
 
-- <b>Сумма:</b> ${p.amount}$
+- <b>Сумма в USD:</b> ${p.price_usd}$
+  <b>Оплаченная сумма:</b> ${p.amount} ${p.currency}
+  <b>Метод оплаты:</b> ${p.payment_method.name}
   <b>План подписки:</b> ${p.subscription_plan[`name${language}`]}
   <b>Статус:</b> ${getStatusText(language, p.status)}
   <b>Дата:</b> ${p.created_date}
