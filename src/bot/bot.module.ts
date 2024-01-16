@@ -8,6 +8,7 @@ import { PromocodeModule } from '../promocode/promocode.module';
 import { PaymentModule } from 'src/payment/payment.module';
 import { ChannelModule } from 'src/chanel/channel.module';
 import { PaymentMethodModule } from 'src/paymentMethod/paymentMethod.module';
+import { ConversionRateModule } from 'src/conversionRate/conversionRate.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PaymentMethodModule } from 'src/paymentMethod/paymentMethod.module';
     PaymentModule,
     ChannelModule,
     PaymentMethodModule,
+    ConversionRateModule,
   ],
   providers: [BotService],
   controllers: [],

@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { BotService } from 'src/bot/bot.service';
 import { addDays } from 'src/helper/date';
-import { RedisService } from 'src/redis/redis.service';
 import { UserService } from 'src/user/user.service';
 import { HttpService } from '@nestjs/axios';
 import {
@@ -12,15 +11,16 @@ import {
   errorHandler,
   getFiatAmount,
 } from 'src/helper';
+import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
 
 @Injectable()
 export class CronService {
   constructor(
     private userService: UserService,
     private botService: BotService,
-    private redisService: RedisService,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
+    private rateService: ConversionRateService,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_1PM)
@@ -68,7 +68,7 @@ export class CronService {
     return true;
   }
 
-  // @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_MINUTE)
   async updateConversionRates() {
     const exchangeRatesApiUrl = this.configService.get<string>(
       'EXCHANGE_RATES_API_URL',
@@ -91,16 +91,13 @@ export class CronService {
       const { rates } =
         exchangeRateToEurData.data as ExchangeRatesApiResponseInterface;
 
-      return await this.redisService.add(
-        'exchangeRateToUsd',
-        JSON.stringify({
-          UAH: getFiatAmount(rates.UAH / rates.USD),
-          RUB: getFiatAmount(rates.RUB / rates.USD),
-          KZT: getFiatAmount(rates.KZT / rates.USD),
-          USD: 1,
-          USDT: 1,
-        }),
-      );
+      return await this.rateService.create({
+        UAH: getFiatAmount(rates.UAH / rates.USD),
+        RUB: getFiatAmount(rates.RUB / rates.USD),
+        KZT: getFiatAmount(rates.KZT / rates.USD),
+        USD: 1,
+        USDT: 1,
+      });
     } catch (e) {
       errorHandler(`Failed to get fiat exchange rates`, 500, e);
 

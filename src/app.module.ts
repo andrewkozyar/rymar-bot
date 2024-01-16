@@ -11,6 +11,7 @@ import { PaymentModule } from './payment/payment.module';
 import { ChannelModule } from './chanel/channel.module';
 import { PaymentMethod } from './paymentMethod/paymentMethod.entity';
 import { CronModule } from './cron/cron.module';
+import { ConversionRateModule } from './conversionRate/conversionRate.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CronModule } from './cron/cron.module';
     }),
     RedisModule,
     CronModule,
+    ConversionRateModule,
     BotModule,
     UserModule,
     PromocodeModule,

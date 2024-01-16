@@ -3,7 +3,6 @@ import { ChannelService } from 'src/chanel/channel.service';
 import {
   CurrencyEnum,
   PaymentStatusEnum,
-  RatesInterface,
   UserLanguageEnum,
   getFiatAmount,
 } from 'src/helper';
@@ -35,6 +34,7 @@ import { UpdateDto as UpdatePaymentMethodDto } from 'src/paymentMethod/dto';
 import { sendPaymentMethodDetailsKeyboard } from '../keyboards/payment-method-details.keyboards';
 import { sendGiveUserAccessKeyboard } from '../keyboards/give-user-access.keyboards';
 import { sendCurrencyKeyboard } from '../keyboards/currency.keyboards';
+import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
 
 export const actionCallbackQuery = (
   bot: TelegramBot,
@@ -45,6 +45,7 @@ export const actionCallbackQuery = (
   paymentService: PaymentService,
   channelService: ChannelService,
   paymentMethodService: PaymentMethodService,
+  rateService: ConversionRateService,
 ) => {
   return bot.on('callback_query', async (query) => {
     const [key, data] = query.data.split(';');
@@ -296,17 +297,7 @@ export const actionCallbackQuery = (
         id: payData.subscription_plan_id,
       });
 
-      const rateToUsdData = await redisService.get('exchangeRateToUsd');
-
-      const rateToUsd: RatesInterface = rateToUsdData
-        ? JSON.parse(rateToUsdData)
-        : {
-            UAH: 1,
-            RUB: 1,
-            KZT: 1,
-            USD: 1,
-            USDT: 1,
-          };
+      const rateToUsd = await rateService.get();
 
       return await sendPaymentMethodDetailsKeyboard(
         query.message.chat.id,
@@ -710,17 +701,7 @@ export const actionCallbackQuery = (
       }
 
       if (data === 'currency') {
-        const rateToUsdData = await redisService.get('exchangeRateToUsd');
-
-        const rateToUsd: RatesInterface = rateToUsdData
-          ? JSON.parse(rateToUsdData)
-          : {
-              UAH: 1,
-              RUB: 1,
-              KZT: 1,
-              USD: 1,
-              USDT: 1,
-            };
+        const rateToUsd = await rateService.get();
 
         return await sendCurrencyKeyboard(
           query.message.chat.id,
