@@ -67,7 +67,7 @@ export class CronService {
     return true;
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async updateConversionRates() {
     console.log('start updateConversionRates *****************************');
     const exchangeRatesApiUrl = this.configService.get<string>(

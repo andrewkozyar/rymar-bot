@@ -10,6 +10,7 @@ import { PromocodeModule } from './promocode/promocode.module';
 import { PaymentModule } from './payment/payment.module';
 import { ChannelModule } from './chanel/channel.module';
 import { PaymentMethod } from './paymentMethod/paymentMethod.entity';
+import { CronModule } from './cron/cron.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PaymentMethod } from './paymentMethod/paymentMethod.entity';
       isGlobal: true,
     }),
     RedisModule,
+    CronModule,
     BotModule,
     UserModule,
     PromocodeModule,

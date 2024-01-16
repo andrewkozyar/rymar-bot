@@ -21,6 +21,6 @@ import { PaymentMethodModule } from 'src/paymentMethod/paymentMethod.module';
   ],
   providers: [BotService],
   controllers: [],
-  exports: [],
+  exports: [BotService],
 })
 export class BotModule {}
