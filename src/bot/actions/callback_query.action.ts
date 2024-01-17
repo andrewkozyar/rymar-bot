@@ -187,6 +187,7 @@ export const actionCallbackQuery = (
         subscription_plan_id: plan.id,
         promocode_id: null,
         newPrice: null,
+        isContinue: false,
       };
 
       return await sendSubscriptionPlanDetailsKeyboard(

@@ -154,7 +154,7 @@ export const actionMessage = (
       const payData: PayDataInterface = JSON.parse(redisData);
 
       if (promocode) {
-        payData['promocode_id'] = promocode.id;
+        payData.promocode_id = promocode.id;
 
         return await sendSubscriptionPlanDetailsKeyboard(
           msg.chat.id,

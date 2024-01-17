@@ -82,6 +82,7 @@ export class BotService {
           subscription_plan_id: lastPayment.subscription_plan_id,
           newPrice: lastPayment.price_usd,
           isContinue: true,
+          promocode_id: null,
         };
 
         await this.redisService.add(
