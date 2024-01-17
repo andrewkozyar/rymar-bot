@@ -68,3 +68,11 @@ export enum CurrencyEnum {
 }
 
 export const currencies = Object.values(CurrencyEnum);
+
+export interface PayDataInterface {
+  amount: number;
+  subscription_plan_id: string;
+  promocode_id?: string;
+  newPrice: number;
+  isContinue?: boolean;
+}

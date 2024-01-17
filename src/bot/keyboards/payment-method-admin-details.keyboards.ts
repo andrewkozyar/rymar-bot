@@ -19,21 +19,21 @@ export const sendPaymentMethodAdminDetailsKeyboard = async (
         : 'Данные о способе оплаты'
   }:
 
-- name: ${paymentMethod.name}
+- <b>name</b>: ${paymentMethod.name}
 
-- is published: ${paymentMethod.is_published} ${
+- <b>is published</b>: ${paymentMethod.is_published} ${
     paymentMethod.is_published ? '✅' : '❌'
   }
 
-- address: ${paymentMethod.address}
+- <b>address</b>: ${paymentMethod.address}
 
-- currency: ${paymentMethod.currency}
+- <b>currency</b>: ${paymentMethod.currency}
 
-- descriptionEN: ${paymentMethod.descriptionEN}
+- <b>descriptionEN</b>: ${paymentMethod.descriptionEN}
 
-- descriptionUA: ${paymentMethod.descriptionUA}
+- <b>descriptionUA</b>: ${paymentMethod.descriptionUA}
 
-- descriptionRU: ${paymentMethod.descriptionRU}
+- <b>descriptionRU</b>: ${paymentMethod.descriptionRU}
 
 ${
   user.language === UserLanguageEnum.EN
@@ -54,6 +54,7 @@ ${
   );
 
   await bot.sendMessage(id, text, {
+    parse_mode: 'HTML',
     reply_markup: {
       remove_keyboard: true,
       inline_keyboard: [

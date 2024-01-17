@@ -4,7 +4,12 @@ import TelegramBot from 'node-telegram-bot-api';
 import { telegramBot } from '../configs/telegram-bot.config';
 import { RedisService } from '../redis/redis.service';
 import { UserService } from '../user/user.service';
-import { errorHandler } from 'src/helper';
+import {
+  PayDataInterface,
+  PaymentStatusEnum,
+  UserLanguageEnum,
+  errorHandler,
+} from 'src/helper';
 import { SubscriptionPlanService } from 'src/subscriptionPlan/subscriptionPlan.service';
 import { PromocodeService } from 'src/promocode/promocode.service';
 import { PaymentService } from 'src/payment/payment.service';
@@ -66,10 +71,52 @@ export class BotService {
 
   async notifyUsers(users: User[], expiredDays: number) {
     return await Promise.all(
-      users.map((user) => {
+      users.map(async (user) => {
+        const lastPayment = await this.paymentService.findOne({
+          user_id: user.id,
+          status: PaymentStatusEnum.Success,
+        });
+
+        const payData: PayDataInterface = {
+          amount: lastPayment.subscription_plan.price,
+          subscription_plan_id: lastPayment.subscription_plan_id,
+          newPrice: lastPayment.price_usd,
+          isContinue: true,
+        };
+
+        await this.redisService.add(
+          `ContinueSubscription-${user.id}`,
+          JSON.stringify(payData),
+        );
+
         return this.bot.sendMessage(
           user.chat_id,
-          `Your subscription expires in ${expiredDays} days!`,
+          user.language === UserLanguageEnum.EN
+            ? `‼️ Your subscription expires in ${expiredDays} days!
+You still have the option to renew your subscription at the old price.`
+            : user.language === UserLanguageEnum.UA
+              ? `‼️ Термін дії вашої підписки закінчується через ${expiredDays} днів!
+У вас ще є можливість продовжити підписку за старою ціною.`
+              : `‼️ Срок действия вашей подписки истекает через ${expiredDays} дней!
+У вас еще есть возможность продлить подписку по старой цене.`,
+          {
+            reply_markup: {
+              remove_keyboard: true,
+              inline_keyboard: [
+                [
+                  {
+                    text:
+                      user.language === UserLanguageEnum.EN
+                        ? 'Continue the subscription at the old price'
+                        : user.language === UserLanguageEnum.UA
+                          ? 'Продовжити підписку за старою ціною'
+                          : 'Продолжить подписку по старой цене',
+                    callback_data: 'ContinueSubscription',
+                  },
+                ],
+              ],
+            },
+          },
         );
       }),
     );
@@ -86,7 +133,17 @@ export class BotService {
 
           return this.bot.sendMessage(
             user.chat_id,
-            `Your subscription expired! You was kicked from channels.`,
+            user.language === UserLanguageEnum.EN
+              ? `‼️ Your subscription has expired! You have been removed from all channels.
+
+If you could not solve the problem, or you think that an error has occurred, contact support via the "🤝 Support" button`
+              : user.language === UserLanguageEnum.UA
+                ? `‼️ Термін дії вашої підписки закінчився! Вас було видалено з усіх каналів.
+
+Якщо ви не змогли вирішити проблему, або вважаєте що сталася помилка, зверніться за підтримкою по кнопці "🤝 Допомога`
+                : `‼️ Срок действия вашей подписки истек! Вы были удалены со всех каналов.
+
+Если вы не смогли решить проблему, или считаете произошедшую ошибку, обратитесь за поддержкой по кнопке "🤝 Помощь`,
           );
         } catch (e) {
           errorHandler(

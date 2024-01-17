@@ -3,7 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CreateUserDto, UpdateUserDto, GetUserDto } from './dto';
-import { GetUsersType, errorHandler, validateEmail } from '../helper';
+import {
+  GetUsersType,
+  PaymentStatusEnum,
+  errorHandler,
+  validateEmail,
+} from '../helper';
 
 import { User } from './user.entity';
 import { PaymentService } from 'src/payment/payment.service';
@@ -106,6 +111,7 @@ export class UserService {
       if (expired_date) {
         const { payments } = await this.paymentService.getPayments({
           expired_date,
+          status: PaymentStatusEnum.Success,
         });
 
         userQuery.andWhere('user.id IN (:...ids)', {

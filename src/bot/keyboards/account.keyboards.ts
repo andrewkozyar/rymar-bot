@@ -45,6 +45,7 @@ export const sendAccountKeyboard = async (
   }
 
   await bot.sendMessage(id, title, {
+    parse_mode: 'HTML',
     reply_markup: {
       inline_keyboard,
     },
@@ -55,31 +56,31 @@ const getAccountTitle = (user: User) => {
   switch (user.language) {
     case UserLanguageEnum.EN:
       return `👤 My account
-- ID: ${user.id}      
-- Telegram ID: ${user.chat_id}  
-- Telegram nickname: ${user.name}    
-- Language: ${user.language}      
-- Email: ${user.email}      
+- <b>ID</b>: ${user.id}      
+- <b>Telegram ID</b>: ${user.chat_id}  
+- <b>Telegram nickname</b>: ${user.name}    
+- <b>Language</b>: ${user.language}      
+- <b>Email</b>: ${user.email}      
 `;
     // - Timezone: ${user.timezone}
 
     case UserLanguageEnum.RU:
       return `👤 Мой аккаунт
-- ID: ${user.id}      
-- Telegram ID: ${user.chat_id}   
-- Telegram nickname: ${user.name}   
-- Язык: ${user.language}      
-- Почта: ${user.email}      
+- <b>ID</b>: ${user.id}      
+- <b>Telegram ID</b>: ${user.chat_id}   
+- <b>Telegram nickname</b>: ${user.name}   
+- <b>Язык</b>: ${user.language}      
+- <b>Почта</b>: ${user.email}      
 `;
     // - Часовой пояс: ${user.timezone}
 
     case UserLanguageEnum.UA:
       return `👤 Мій аккаунт
-- ID: ${user.id}      
-- Telegram ID: ${user.chat_id}  
-- Telegram nickname: ${user.name}    
-- Мова: ${user.language}      
-- Пошта: ${user.email}      
+- <b>ID</b>: ${user.id}      
+- <b>Telegram ID</b>: ${user.chat_id}  
+- <b>Telegram nickname</b>: ${user.name}    
+- <b>Мова</b>: ${user.language}      
+- <b>Пошта</b>: ${user.email}      
 `;
     // - Часовий пояс: ${user.timezone}
   }

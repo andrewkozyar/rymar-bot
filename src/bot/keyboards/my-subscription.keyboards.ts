@@ -1,7 +1,13 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
+import {
+  PayDataInterface,
+  PaymentStatusEnum,
+  UserLanguageEnum,
+} from 'src/helper';
+import { getDaysDifference } from 'src/helper/date';
 import { Payment } from 'src/payment/payment.entity';
 import { PaymentService } from 'src/payment/payment.service';
+import { RedisService } from 'src/redis/redis.service';
 import { User } from 'src/user/user.entity';
 
 export const sendMySubscriptionKeyboard = async (
@@ -9,6 +15,7 @@ export const sendMySubscriptionKeyboard = async (
   bot: TelegramBot,
   user: User,
   paymentService: PaymentService,
+  redisService: RedisService,
 ) => {
   const lastPayment = await paymentService.findOne({
     user_id: user.id,
@@ -23,34 +30,65 @@ export const sendMySubscriptionKeyboard = async (
         ? 'У вас немає активної підписки'
         : 'У вас нет активной подписки';
 
+  const inline_keyboard = [];
+
+  if (lastPayment) {
+    const payData: PayDataInterface = {
+      amount: lastPayment.subscription_plan.price,
+      subscription_plan_id: lastPayment.subscription_plan_id,
+      newPrice: lastPayment.price_usd,
+      isContinue: true,
+    };
+
+    await redisService.add(
+      `ContinueSubscription-${user.id}`,
+      JSON.stringify(payData),
+    );
+
+    inline_keyboard.push([
+      {
+        text:
+          user.language === UserLanguageEnum.EN
+            ? 'Continue the subscription at the old price'
+            : user.language === UserLanguageEnum.UA
+              ? 'Продовжити підписку за старою ціною'
+              : 'Продолжить подписку по старой цене',
+        callback_data: 'ContinueSubscription',
+      },
+    ]);
+  }
+
+  inline_keyboard.push(
+    [
+      {
+        text: `💵 ${
+          user.language === UserLanguageEnum.EN
+            ? 'List of transactions'
+            : user.language === UserLanguageEnum.UA
+              ? 'Список транзакцій'
+              : 'Список транзакций'
+        }`,
+        callback_data: 'ListOfTransactions',
+      },
+    ],
+    [
+      {
+        text:
+          user.language === UserLanguageEnum.EN
+            ? '🗒️ Subscription plans'
+            : user.language === UserLanguageEnum.UA
+              ? '🗒️ Плани підписок'
+              : '🗒️ Планы подписок',
+        callback_data: 'SendSubscriptionPlanKeyboard',
+      },
+    ],
+  );
+
   await bot.sendMessage(id, text, {
+    parse_mode: 'HTML',
     reply_markup: {
       remove_keyboard: true,
-      inline_keyboard: [
-        [
-          {
-            text: `💵 ${
-              user.language === UserLanguageEnum.EN
-                ? 'List of transactions'
-                : user.language === UserLanguageEnum.UA
-                  ? 'Список транзакцій'
-                  : 'Список транзакций'
-            }`,
-            callback_data: 'ListOfTransactions',
-          },
-        ],
-        [
-          {
-            text:
-              user.language === UserLanguageEnum.EN
-                ? '🗒️ Subscription plans'
-                : user.language === UserLanguageEnum.UA
-                  ? '🗒️ Плани підписок'
-                  : '🗒️ Планы подписок',
-            callback_data: 'SendSubscriptionPlanKeyboard',
-          },
-        ],
-      ],
+      inline_keyboard,
     },
   });
 };
@@ -62,23 +100,41 @@ const getPlanInfo = (language: UserLanguageEnum, lastPayment: Payment) => {
         lastPayment.subscription_plan[`name${language}`]
       }
 
-- Start date: ${lastPayment.created_date}
-- Expired date: ${lastPayment.expired_date}`;
+- <b>Start date</b>: ${lastPayment.created_date}
+- <b>Expired date</b>: ${lastPayment.expired_date}
+- <b>Days left</b>: ${getDaysDifference(
+        Date.now(),
+        lastPayment.expired_date.getMilliseconds(),
+      )}
+      
+‼️ You have the option to renew your subscription at the old price`;
 
     case UserLanguageEnum.UA:
       return `📃 Ваша підписка: ${
         lastPayment.subscription_plan[`name${language}`]
       }
 
-- Дата початку: ${lastPayment.created_date}
-- Дата закінчення: ${lastPayment.expired_date}`;
+- <b>Дата початку</b>: ${lastPayment.created_date}
+- <b>Дата закінчення</b>: ${lastPayment.expired_date}
+- <b>Залишилось днів</b>: ${getDaysDifference(
+        Date.now(),
+        lastPayment.expired_date.getMilliseconds(),
+      )}
+      
+‼️ У вас є можливість продовжити підписку за старою ціною`;
 
     case UserLanguageEnum.RU:
       return `📃 Ваша подписка: ${
         lastPayment.subscription_plan[`name${language}`]
       }
 
-- Дата начала: ${lastPayment.created_date}
-- Дата окончания: ${lastPayment.expired_date}`;
+- <b>Дата начала</b>: ${lastPayment.created_date}
+- <b>Дата окончания</b>: ${lastPayment.expired_date}
+- <b>Осталось дней</b>: ${getDaysDifference(
+        Date.now(),
+        lastPayment.expired_date.getMilliseconds(),
+      )}
+      
+‼️ У вас есть возможность продлить подписку по старой цене`;
   }
 };

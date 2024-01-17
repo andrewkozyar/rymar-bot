@@ -16,7 +16,12 @@ import { UpdateDto as UpdatePlanDto } from 'src/subscriptionPlan/dto';
 import { sendSubscriptionPlanAdminDetailsKeyboard } from '../keyboards/subscription-plan-admin-details.keyboards';
 import { sendPromocodeAdminDetailsKeyboard } from '../keyboards/promocode-admin-details.keyboards';
 import { UpdateDto as UpdatePromocodeDto } from 'src/promocode/dto';
-import { PaymentStatusEnum, UserLanguageEnum, getFiatAmount } from 'src/helper';
+import {
+  PayDataInterface,
+  PaymentStatusEnum,
+  UserLanguageEnum,
+  getFiatAmount,
+} from 'src/helper';
 import { sendAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
 import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
 import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
@@ -85,6 +90,7 @@ export const actionMessage = (
         bot,
         user,
         paymentService,
+        redisService,
       );
     }
 
@@ -141,13 +147,22 @@ export const actionMessage = (
       const plan = await planService.findOne({ id: promocodeData });
       await redisService.delete(`Promocode-${user.id}`);
 
+      const redisData = await redisService.get(
+        `BuySubscriptionPlan-${user.id}`,
+      );
+
+      const payData: PayDataInterface = JSON.parse(redisData);
+
       if (promocode) {
+        payData.promocode_id = promocode.id;
+
         return await sendSubscriptionPlanDetailsKeyboard(
           msg.chat.id,
           bot,
           plan,
           redisService,
           user,
+          payData,
           promocode,
         );
       }
@@ -166,6 +181,7 @@ export const actionMessage = (
         plan,
         redisService,
         user,
+        payData,
       );
     }
 

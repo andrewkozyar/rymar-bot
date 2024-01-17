@@ -19,13 +19,13 @@ export const sendPromocodeAdminDetailsKeyboard = async (
         : 'Данные промокода'
   }:
 
-- name: ${promocode.name}
+- <b>name</b>: ${promocode.name}
 
-- is published: ${promocode.is_published} ${
+- <b>is published</b>: ${promocode.is_published} ${
     promocode.is_published ? '✅' : '❌'
   }
 
-- sale percent: ${promocode.sale_percent}
+- <b>sale percent</b>: ${promocode.sale_percent}
 
 ${
   user.language === UserLanguageEnum.EN
@@ -46,6 +46,7 @@ ${
   );
 
   await bot.sendMessage(id, text, {
+    parse_mode: 'HTML',
     reply_markup: {
       remove_keyboard: true,
       inline_keyboard: [

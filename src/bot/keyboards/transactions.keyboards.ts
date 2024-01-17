@@ -40,7 +40,7 @@ export const sendTransactionsKeyboard = async (
         text =
           text +
           `
-  Promo code: ${p.promocode.name}`;
+<b>Promo code</b>: ${p.promocode.name}`;
       }
     });
   } else {

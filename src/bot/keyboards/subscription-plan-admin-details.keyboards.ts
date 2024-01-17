@@ -19,23 +19,23 @@ export const sendSubscriptionPlanAdminDetailsKeyboard = async (
         : 'Данные плана подписки'
   }:
 
-- price: ${plan.price}
+- <b>price</b>: ${plan.price}
 
-- is published: ${plan.is_published} ${plan.is_published ? '✅' : '❌'}
+- <b>is published</b>: ${plan.is_published} ${plan.is_published ? '✅' : '❌'}
 
-- months count: ${plan.months_count}
+- <b>months count</b>: ${plan.months_count}
   
-- nameEN: ${plan.nameEN}
+- <b>nameEN</b>: ${plan.nameEN}
 
-- nameUA: ${plan.nameUA}
+- <b>nameUA</b>: ${plan.nameUA}
 
-- nameRU: ${plan.nameRU}
+- <b>nameRU</b>: ${plan.nameRU}
 
-- descriptionEN: ${plan.descriptionEN}
+- <b>descriptionEN</b>: ${plan.descriptionEN}
 
-- descriptionUA: ${plan.descriptionUA}
+- <b>descriptionUA</b>: ${plan.descriptionUA}
 
-- descriptionRU: ${plan.descriptionRU}
+- <b>descriptionRU</b>: ${plan.descriptionRU}
 
 ${
   user.language === UserLanguageEnum.EN
@@ -56,6 +56,7 @@ ${
   );
 
   await bot.sendMessage(id, text, {
+    parse_mode: 'HTML',
     reply_markup: {
       remove_keyboard: true,
       inline_keyboard: [

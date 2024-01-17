@@ -2,6 +2,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import { ChannelService } from 'src/chanel/channel.service';
 import {
   CurrencyEnum,
+  PayDataInterface,
   PaymentStatusEnum,
   UserLanguageEnum,
   getFiatAmount,
@@ -159,12 +160,7 @@ export const actionCallbackQuery = (
         `BuySubscriptionPlan-${user.id}`,
       );
 
-      const payData: {
-        amount: number;
-        newPrice: number;
-        subscription_plan_id: string;
-        promocode_id?: string;
-      } = JSON.parse(redisData);
+      const payData: PayDataInterface = JSON.parse(redisData);
 
       const plan = await planService.findOne({ id: data });
 
@@ -179,9 +175,38 @@ export const actionCallbackQuery = (
           plan,
           redisService,
           user,
+          payData,
           promocode,
         );
       }
+
+      await redisService.clearData(user.id);
+
+      const planPayData = {
+        amount: plan.price,
+        subscription_plan_id: plan.id,
+        promocode_id: null,
+        newPrice: null,
+      };
+
+      return await sendSubscriptionPlanDetailsKeyboard(
+        query.message.chat.id,
+        bot,
+        plan,
+        redisService,
+        user,
+        planPayData,
+      );
+    }
+
+    if (key === 'ContinueSubscription') {
+      const redisData = await redisService.get(
+        `BuySubscriptionPlan-${user.id}`,
+      );
+
+      const payData: PayDataInterface = JSON.parse(redisData);
+
+      const plan = await planService.findOne({ id: data });
 
       await redisService.clearData(user.id);
 
@@ -191,6 +216,7 @@ export const actionCallbackQuery = (
         plan,
         redisService,
         user,
+        payData,
       );
     }
 
@@ -366,6 +392,7 @@ export const actionCallbackQuery = (
         bot,
         user,
         paymentService,
+        redisService,
       );
     }
 
@@ -896,14 +923,14 @@ Attention, you must join all channels and chats within 24 hours after receiving 
         customer.chat_id,
         customer.language === UserLanguageEnum.EN
           ? `❌ The manager did not confirm your payment! Make sure that you paid the correct amount, entered the promotional code (if available), sent the correct screenshot, sent the screenshot to the payment method where you sent the funds. If you did something wrong, you can send the payment details again by going to "🗒️ Subscription plans", selecting the desired plan and clicking "💵 I paid".
-            
+
 If you could not solve the problem, or you think that an error has occurred, contact support via the "🤝 Support" button`
           : customer.language === UserLanguageEnum.UA
             ? `❌ Менеджер не підтвердив вашу оплату! Переконайтеся що ви оплатили правильну суму, ввели промокод (за наявності), надіслали правильний скрішот, надіслали скрішот в той метод оплати, куди надсилали кошти. Якщо ви щось наділали не вірно, то можна надіслати дані про оплату знову перейшовши в "🗒️ Плани підписок", обравши потрібний план, та натиснувши "💵 Я оплатив".
-            
+
 Якщо ви не змогли вирішити проблему, або вважаєте що сталася помилка, зверніться за підтримкою по кнопці "🤝 Допомога"`
             : `❌ Менеджер не подтвердил вашу оплату! Убедитесь, что вы оплатили правильную сумму, ввели промокод (при наличии), отправили правильный скришот, отправили скришот в тот метод оплаты, куда присылали средства. Если вы что-то наделали не верно, то можно отправить данные об оплате снова перейдя в "🗒️ Планы подписок", выбрав нужный план и нажав "💵 Я оплатил".
-            
+
 Если вы не смогли решить проблему, или считаете произошедшую ошибку, обратитесь за поддержкой по кнопке "🤝 Помощь"`,
       );
     }
