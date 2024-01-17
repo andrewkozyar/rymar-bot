@@ -23,9 +23,12 @@ export const sendMySubscriptionKeyboard = async (
   });
 
   const continueDays = getDaysDifference(new Date(), lastPayment.expired_date);
+  const expiredDate = getDateWithoutHours(
+    lastPayment.expired_date,
+  ).toDateString();
 
   const text = lastPayment
-    ? getPlanInfo(user.language, lastPayment, continueDays)
+    ? getPlanInfo(user.language, lastPayment, continueDays, expiredDate)
     : user.language === UserLanguageEnum.EN
       ? 'You do not have an active subscription'
       : user.language === UserLanguageEnum.UA
@@ -101,6 +104,7 @@ const getPlanInfo = (
   language: UserLanguageEnum,
   lastPayment: Payment,
   continueDays: number,
+  expiredDate: string,
 ) => {
   switch (language) {
     case UserLanguageEnum.EN:
@@ -109,7 +113,7 @@ const getPlanInfo = (
       }
 
 - <b>Start date</b>: ${lastPayment.created_date}
-- <b>Expired date</b>: ${getDateWithoutHours(lastPayment.expired_date)}
+- <b>Expired date</b>: ${expiredDate}
 - <b>Days left</b>: ${continueDays}
       
 ‼️ You have the option to renew your subscription at the old price`;
@@ -120,7 +124,7 @@ const getPlanInfo = (
       }
 
 - <b>Дата початку</b>: ${lastPayment.created_date}
-- <b>Дата закінчення</b>: ${getDateWithoutHours(lastPayment.expired_date)}
+- <b>Дата закінчення</b>: ${expiredDate}
 - <b>Залишилось днів</b>: ${continueDays}
       
 ‼️ У вас є можливість продовжити підписку за старою ціною`;
@@ -131,7 +135,7 @@ const getPlanInfo = (
       }
 
 - <b>Дата начала</b>: ${lastPayment.created_date}
-- <b>Дата окончания</b>: ${getDateWithoutHours(lastPayment.expired_date)}
+- <b>Дата окончания</b>: ${expiredDate}
 - <b>Осталось дней</b>: ${continueDays}
       
 ‼️ У вас есть возможность продлить подписку по старой цене`;
