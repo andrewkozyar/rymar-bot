@@ -4,7 +4,7 @@ import {
   PaymentStatusEnum,
   UserLanguageEnum,
 } from 'src/helper';
-import { getDaysDifference } from 'src/helper/date';
+import { getDateWithoutHours, getDaysDifference } from 'src/helper/date';
 import { Payment } from 'src/payment/payment.entity';
 import { PaymentService } from 'src/payment/payment.service';
 import { RedisService } from 'src/redis/redis.service';
@@ -102,7 +102,7 @@ const getPlanInfo = (language: UserLanguageEnum, lastPayment: Payment) => {
       }
 
 - <b>Start date</b>: ${lastPayment.created_date}
-- <b>Expired date</b>: ${lastPayment.expired_date}
+- <b>Expired date</b>: ${getDateWithoutHours(lastPayment.expired_date)}
 - <b>Days left</b>: ${getDaysDifference(new Date(), lastPayment.expired_date)}
       
 ‼️ You have the option to renew your subscription at the old price`;
