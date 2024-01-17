@@ -1,4 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class ConversionRate {
@@ -19,4 +24,7 @@ export class ConversionRate {
 
   @Column({ nullable: true, type: 'float' })
   USD: number;
+
+  @UpdateDateColumn()
+  updated_date: Date;
 }
