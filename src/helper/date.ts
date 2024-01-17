@@ -15,7 +15,7 @@ export const addDays = (date: Date, days: number) => {
   return result;
 };
 
-export const getDaysDifference = (date1: number, date2: number) => {
+export const getDaysDifference = (date1, date2) => {
   const diffTime = Math.abs(date2 - date1);
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
 };

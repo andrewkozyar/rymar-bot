@@ -103,10 +103,7 @@ const getPlanInfo = (language: UserLanguageEnum, lastPayment: Payment) => {
 
 - <b>Start date</b>: ${lastPayment.created_date}
 - <b>Expired date</b>: ${lastPayment.expired_date}
-- <b>Days left</b>: ${getDaysDifference(
-        Date.now(),
-        lastPayment.expired_date.getMilliseconds(),
-      )}
+- <b>Days left</b>: ${getDaysDifference(new Date(), lastPayment.expired_date)}
       
 ‼️ You have the option to renew your subscription at the old price`;
 
@@ -118,8 +115,8 @@ const getPlanInfo = (language: UserLanguageEnum, lastPayment: Payment) => {
 - <b>Дата початку</b>: ${lastPayment.created_date}
 - <b>Дата закінчення</b>: ${lastPayment.expired_date}
 - <b>Залишилось днів</b>: ${getDaysDifference(
-        Date.now(),
-        lastPayment.expired_date.getMilliseconds(),
+        new Date(),
+        lastPayment.expired_date,
       )}
       
 ‼️ У вас є можливість продовжити підписку за старою ціною`;
@@ -132,8 +129,8 @@ const getPlanInfo = (language: UserLanguageEnum, lastPayment: Payment) => {
 - <b>Дата начала</b>: ${lastPayment.created_date}
 - <b>Дата окончания</b>: ${lastPayment.expired_date}
 - <b>Осталось дней</b>: ${getDaysDifference(
-        Date.now(),
-        lastPayment.expired_date.getMilliseconds(),
+        new Date(),
+        lastPayment.expired_date,
       )}
       
 ‼️ У вас есть возможность продлить подписку по старой цене`;
