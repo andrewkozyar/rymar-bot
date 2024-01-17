@@ -9,6 +9,7 @@ export const sendPaymentMethodsKeyboard = async (
   paymentMethodService: PaymentMethodService,
   user: User,
   isAdmin: boolean,
+  isContinue: boolean,
   planId?: string,
 ) => {
   const callback_data = isAdmin ? 'AdminPaymentMethodDetails;' : 'PayBy;';
@@ -55,7 +56,9 @@ export const sendPaymentMethodsKeyboard = async (
               ? 'Скасувати'
               : 'Отменить'
         }`,
-        callback_data: 'ChooseSubscriptionPlan;' + planId,
+        callback_data: isContinue
+          ? 'ContinueSubscription;'
+          : 'ChooseSubscriptionPlan;' + planId,
       },
     ]);
   }

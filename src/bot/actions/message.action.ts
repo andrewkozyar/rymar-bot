@@ -295,14 +295,7 @@ export const actionMessage = (
     );
 
     if (redisUserPaymentData) {
-      const payData: {
-        amount: number;
-        newPrice: number;
-        subscription_plan_id: string;
-        promocode_id?: string;
-        payment_method_id: string;
-        price_usd: number;
-      } = JSON.parse(redisUserPaymentData);
+      const payData: PayDataInterface = JSON.parse(redisUserPaymentData);
 
       if (!msg.photo?.length) {
         return await sendTextWithCancelKeyboard(
@@ -318,7 +311,7 @@ export const actionMessage = (
         );
       }
 
-      await redisService.delete(`BuySubscriptionPlan-${user.id}`);
+      await redisService.clearData(user.id);
 
       const paymentMethod = await paymentMethodService.findOne({
         id: payData.payment_method_id,

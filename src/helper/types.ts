@@ -75,4 +75,6 @@ export interface PayDataInterface {
   promocode_id?: string;
   newPrice: number;
   isContinue?: boolean;
+  price_usd?: number;
+  payment_method_id?: string;
 }

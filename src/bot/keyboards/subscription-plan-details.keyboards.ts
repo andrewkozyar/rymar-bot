@@ -62,7 +62,9 @@ export const sendSubscriptionPlanDetailsKeyboard = async (
             ? 'Назад'
             : 'Назад'
       }`,
-      callback_data: 'SendSubscriptionPlanKeyboard',
+      callback_data: payData.isContinue
+        ? 'MySubscription'
+        : 'SendSubscriptionPlanKeyboard',
     },
   ]);
 

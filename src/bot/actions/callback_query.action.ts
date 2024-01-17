@@ -211,8 +211,6 @@ export const actionCallbackQuery = (
         id: payData.subscription_plan_id,
       });
 
-      await redisService.clearData(user.id);
-
       return await sendSubscriptionPlanDetailsKeyboard(
         query.message.chat.id,
         bot,
@@ -298,12 +296,19 @@ export const actionCallbackQuery = (
     }
 
     if (key === 'BuySubscriptionPlan') {
+      const redisData = await redisService.get(
+        `BuySubscriptionPlan-${user.id}`,
+      );
+
+      const payData: PayDataInterface = JSON.parse(redisData);
+
       return await sendPaymentMethodsKeyboard(
         query.message.chat.id,
         bot,
         paymentMethodService,
         user,
         false,
+        payData.isContinue,
         data,
       );
     }
@@ -315,12 +320,7 @@ export const actionCallbackQuery = (
         `BuySubscriptionPlan-${user.id}`,
       );
 
-      const payData: {
-        amount: number;
-        newPrice: number;
-        subscription_plan_id: string;
-        promocode_id?: string;
-      } = JSON.parse(redisData);
+      const payData: PayDataInterface = JSON.parse(redisData);
 
       const plan = await planService.findOne({
         id: payData.subscription_plan_id,
@@ -346,12 +346,7 @@ export const actionCallbackQuery = (
         `BuySubscriptionPlan-${user.id}`,
       );
 
-      const payData: {
-        amount: number;
-        subscription_plan_id: string;
-        promocode_id?: string;
-        newPrice?: number;
-      } = JSON.parse(redisData);
+      const payData: PayDataInterface = JSON.parse(redisData);
 
       await redisService.add(
         `BuySubscriptionPlan-${user.id}`,
@@ -673,6 +668,7 @@ export const actionCallbackQuery = (
         paymentMethodService,
         user,
         true,
+        false,
       );
     }
 
@@ -816,6 +812,7 @@ export const actionCallbackQuery = (
         paymentMethodService,
         user,
         true,
+        false,
       );
     }
 
