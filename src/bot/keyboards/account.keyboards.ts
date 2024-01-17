@@ -52,6 +52,64 @@ export const sendAccountKeyboard = async (
   });
 };
 
+export const editAccountKeyboard = async (
+  chat_id: number,
+  message_id: number,
+  bot: TelegramBot,
+  user: User,
+) => {
+  const title = getAccountTitle(user);
+
+  const inline_keyboard = [
+    [
+      {
+        text: getAccountLanguage(user),
+        callback_data: 'ChangeLanguageMenu',
+      },
+      // {
+      //   text: getAccountTimezone(user),
+      //   callback_data: 'ChangeTimezoneMenu',
+      // },
+    ],
+    [
+      {
+        text: getAccountEmail(user),
+        callback_data: 'ChangeEmailMessage',
+      },
+    ],
+  ];
+
+  if (admins.includes(user.name)) {
+    inline_keyboard.push([
+      {
+        text:
+          user.language === UserLanguageEnum.EN
+            ? '‼️ Admin panel'
+            : user.language === UserLanguageEnum.UA
+              ? '‼️ Панель адміністратора'
+              : '‼️ Админ-панель',
+        callback_data: 'AdminPanel',
+      },
+    ]);
+  }
+
+  await bot.editMessageText(title, {
+    chat_id,
+    message_id,
+    parse_mode: 'HTML',
+  });
+
+  await bot.editMessageReplyMarkup(
+    {
+      inline_keyboard,
+    },
+    {
+      chat_id,
+      message_id,
+    },
+  );
+};
+
 const getAccountTitle = (user: User) => {
   switch (user.language) {
     case UserLanguageEnum.EN:

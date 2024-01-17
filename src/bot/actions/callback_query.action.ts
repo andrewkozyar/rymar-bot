@@ -10,7 +10,7 @@ import {
 import { PaymentService } from 'src/payment/payment.service';
 import { SubscriptionPlanService } from 'src/subscriptionPlan/subscriptionPlan.service';
 import { UserService } from 'src/user/user.service';
-import { sendAccountKeyboard } from '../keyboards/account.keyboards';
+import { editAccountKeyboard } from '../keyboards/account.keyboards';
 import { editLanguageKeyboard } from '../keyboards/language.keyboards';
 import { sendMenuKeyboard } from '../keyboards/menu.keyboards';
 import { sendMySubscriptionKeyboard } from '../keyboards/my-subscription.keyboards';
@@ -19,13 +19,13 @@ import { sendSubscriptionPlanKeyboard } from '../keyboards/subscription-plans.ke
 import { sendTimezoneKeyboard } from '../keyboards/timezone.keyboards';
 import { sendTransactionsKeyboard } from '../keyboards/transactions.keyboards';
 import { RedisService } from 'src/redis/redis.service';
-import { sendAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
+import { editAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
 import { PromocodeService } from 'src/promocode/promocode.service';
 import { sendPromocodesKeyboard } from '../keyboards/promocodes.keyboards';
 import { sendSubscriptionPlanAdminDetailsKeyboard } from '../keyboards/subscription-plan-admin-details.keyboards';
 import { UpdateDto as UpdatePlanDto } from 'src/subscriptionPlan/dto';
 import { sendIsPublishedKeyboard } from '../keyboards/is-published.keyboards';
-import { sendTextWithCancelKeyboard } from '../keyboards/cancel.keyboards';
+import { editTextWithCancelKeyboard } from '../keyboards/cancel.keyboards';
 import { sendPromocodeAdminDetailsKeyboard } from '../keyboards/promocode-admin-details.keyboards';
 import { UpdateDto as UpdatePromocodeDto } from 'src/promocode/dto';
 import { sendPaymentMethodsKeyboard } from '../keyboards/payment-methods.keyboards';
@@ -78,7 +78,12 @@ export const actionCallbackQuery = (
         createdUser.language,
       );
 
-      return await sendAccountKeyboard(query.message.chat.id, bot, createdUser);
+      return await editAccountKeyboard(
+        query.message.chat.id,
+        query.message.message_id,
+        bot,
+        createdUser,
+      );
     }
 
     if (!user) {
@@ -112,7 +117,12 @@ export const actionCallbackQuery = (
             : '✅ Язык изменен',
         updatedUser.language,
       );
-      return await sendAccountKeyboard(query.message.chat.id, bot, updatedUser);
+      return await editAccountKeyboard(
+        query.message.chat.id,
+        query.message.message_id,
+        bot,
+        updatedUser,
+      );
     }
 
     if (key === 'ChangeTimezoneMenu') {
@@ -133,13 +143,23 @@ export const actionCallbackQuery = (
         'Timezone is changed',
         user.language,
       );
-      return await sendAccountKeyboard(query.message.chat.id, bot, updatedUser);
+      return await editAccountKeyboard(
+        query.message.chat.id,
+        query.message.message_id,
+        bot,
+        updatedUser,
+      );
     }
 
     if (key === 'BackToAccount') {
       await redisService.clearData(user.id);
 
-      return await sendAccountKeyboard(query.message.chat.id, bot, user);
+      return await editAccountKeyboard(
+        query.message.chat.id,
+        query.message.message_id,
+        bot,
+        user,
+      );
     }
 
     if (key === 'ChangeEmailMessage') {
@@ -147,8 +167,9 @@ export const actionCallbackQuery = (
 
       await redisService.add(`ChangeEmail-${user.id}`, 'waiting');
 
-      return await sendTextWithCancelKeyboard(
+      return await editTextWithCancelKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         user.language === UserLanguageEnum.EN
           ? '🖊️ Enter your email address!'
@@ -287,8 +308,9 @@ export const actionCallbackQuery = (
 
       await redisService.add(`Promocode-${user.id}`, data);
 
-      return await sendTextWithCancelKeyboard(
+      return await editTextWithCancelKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         user.language === UserLanguageEnum.EN
           ? '🖊️ Enter your promo code!'
@@ -361,8 +383,9 @@ export const actionCallbackQuery = (
         }),
       );
 
-      return await sendTextWithCancelKeyboard(
+      return await editTextWithCancelKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         user.language === UserLanguageEnum.EN
           ? 'Please send a screenshot of the payment! 📱'
@@ -402,7 +425,12 @@ export const actionCallbackQuery = (
     if (key === 'AdminPanel') {
       await redisService.clearData(user.id);
 
-      return await sendAdminPanelKeyboard(query.message.chat.id, bot, user);
+      return await editAdminPanelKeyboard(
+        query.message.chat.id,
+        query.message.message_id,
+        bot,
+        user,
+      );
     }
 
     if (key === 'AdminPromocodes') {
@@ -421,8 +449,9 @@ export const actionCallbackQuery = (
 
       await redisService.add(`AdminUserTransactions-${user.id}`, 'waiting');
 
-      return await sendTextWithCancelKeyboard(
+      return await editTextWithCancelKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         user.language === UserLanguageEnum.EN
           ? `🖊️ Enter user nickname!`
@@ -462,8 +491,9 @@ export const actionCallbackQuery = (
       }
 
       if (['price', 'months_count'].includes(data)) {
-        return await sendTextWithCancelKeyboard(
+        return await editTextWithCancelKeyboard(
           query.message.chat.id,
+          query.message.message_id,
           bot,
           user.language === UserLanguageEnum.EN
             ? `Enter the new ${
@@ -482,8 +512,9 @@ export const actionCallbackQuery = (
       }
 
       if (['descriptionEN', 'descriptionUA', 'descriptionRU'].includes(data)) {
-        return await sendTextWithCancelKeyboard(
+        return await editTextWithCancelKeyboard(
           query.message.chat.id,
+          query.message.message_id,
           bot,
           user.language === UserLanguageEnum.EN
             ? `Enter the new ${data} for the subscription plan! If there includes price write it not as number but as {{price}}. It needs for writing customers correct amount after using promo code.`
@@ -495,8 +526,9 @@ export const actionCallbackQuery = (
         );
       }
 
-      return await sendTextWithCancelKeyboard(
+      return await editTextWithCancelKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         user.language === UserLanguageEnum.EN
           ? `Enter the new ${data} for the subscription plan!`
@@ -588,8 +620,9 @@ export const actionCallbackQuery = (
       }
 
       if (data === 'sale_percent') {
-        return await sendTextWithCancelKeyboard(
+        return await editTextWithCancelKeyboard(
           query.message.chat.id,
+          query.message.message_id,
           bot,
           user.language === UserLanguageEnum.EN
             ? `Enter a new percentage of the discount for the promo code! Must be a number.`
@@ -601,8 +634,9 @@ export const actionCallbackQuery = (
         );
       }
 
-      return await sendTextWithCancelKeyboard(
+      return await editTextWithCancelKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         user.language === UserLanguageEnum.EN
           ? `Enter the new ${data} for the promo code!`
@@ -744,8 +778,9 @@ export const actionCallbackQuery = (
         );
       }
 
-      return await sendTextWithCancelKeyboard(
+      return await editTextWithCancelKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         user.language === UserLanguageEnum.EN
           ? `Enter the new ${data} for the payment method!`
