@@ -84,7 +84,7 @@ const getMainText = (
       return `‼️ New customer
 <b>nickname</b>: ${customer.name}
 <b>subscription plan</b>: ${plan[`name${language}`]}
-<b>payment amount</b>: ${payment.amount}
+<b>payment amount</b>: ${payment.amount} ${payment.currency}
 <b>promocode</b>: ${promocode ? promocode.name : 'no promocode'}
 <b>payment method</b>: ${paymentMethod.name}
 <b>payment address</b>: ${payment.address}
@@ -94,7 +94,7 @@ const getMainText = (
       return `‼️ Новий клієнт
 <b>nickname</b>: ${customer.name}
 <b>план підписки</b>: ${plan[`name${language}`]}
-<b>сума оплати</b>: ${payment.amount}
+<b>сума оплати</b>: ${payment.amount} ${payment.currency}
 <b>промокод</b>: ${promocode ? promocode.name : 'без промокоду'}
 <b>спосіб оплати</b>: ${paymentMethod.name}
 <b>платіжна адреса</b>: ${payment.address}
@@ -104,7 +104,7 @@ const getMainText = (
       return `‼️ Новый клиент
 <b>nickname</b>: ${customer.name}
 <b>план подписки</b>: ${plan[`name${language}`]}
-<b>сумма оплаты</b>: ${payment.amount}
+<b>сумма оплаты</b>: ${payment.amount} ${payment.currency}
 <b>промокод</b>: ${promocode ? promocode.name : 'нет промокода'}
 <b>способ оплаты</b>: ${paymentMethod.name}
 <b>платежный адрес</b>: ${payment.address}

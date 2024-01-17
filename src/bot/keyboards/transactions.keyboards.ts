@@ -34,7 +34,7 @@ export const sendTransactionsKeyboard = async (
     }`;
 
     payments.forEach((p) => {
-      text = text + getPaymentInfoText(language, p);
+      text = text + getPaymentInfoText(language, p, isAdminPanel);
 
       if (p.promocode) {
         text =
@@ -73,40 +73,77 @@ export const sendTransactionsKeyboard = async (
   });
 };
 
-const getPaymentInfoText = (language: UserLanguageEnum, p: Payment) => {
+const getPaymentInfoText = (
+  language: UserLanguageEnum,
+  p: Payment,
+  isAdminPanel: boolean,
+) => {
   switch (language) {
     case UserLanguageEnum.EN:
       return `
 
-- <b>Amount USD:</b> ${p.price_usd}$ 
+${
+  p.status === PaymentStatusEnum.Success
+    ? '✅'
+    : p.status === PaymentStatusEnum.Cancel
+      ? '❌'
+      : '🤷‍♂️'
+} <b>Status:</b> ${getStatusText(language, p.status)}
+  <b>Amount USD:</b> ${p.price_usd}$ 
   <b>Paid amount:</b> ${p.amount} ${p.currency}
   <b>Payment method:</b> ${p.payment_method.name}
   <b>Subscription plan:</b> ${p.subscription_plan[`name${language}`]}
-  <b>Status:</b> ${getStatusText(language, p.status)}
   <b>Date:</b> ${p.created_date}
-  <b>Expired date:</b> ${p.expired_date}`;
+  <b>Expired date:</b> ${p.expired_date}${
+    isAdminPanel
+      ? `
+<b>The manager checking the payment:</b> ${p.updated_by.name}`
+      : ''
+  }`;
 
     case UserLanguageEnum.UA:
       return `
 
-- <b>Сума в USD:</b> ${p.price_usd}$
+${
+  p.status === PaymentStatusEnum.Success
+    ? '✅'
+    : p.status === PaymentStatusEnum.Cancel
+      ? '❌'
+      : '🤷‍♂️'
+} <b>Статус:</b> ${getStatusText(language, p.status)}
+  <b>Сума в USD:</b> ${p.price_usd}$
   <b>Оплачена сума:</b> ${p.amount} ${p.currency}
   <b>Метод оплати:</b> ${p.payment_method.name}
   <b>План підписки:</b> ${p.subscription_plan[`name${language}`]}
-  <b>Статус:</b> ${getStatusText(language, p.status)}
   <b>Дата:</b> ${p.created_date}
-  <b>Дата закінчення:</b> ${p.expired_date}`;
+  <b>Дата закінчення:</b> ${p.expired_date}${
+    isAdminPanel
+      ? `
+<b>Менеджер перевірявший оплату:</b> ${p.updated_by.name}`
+      : ''
+  }`;
 
     case UserLanguageEnum.RU:
       return `
 
-- <b>Сумма в USD:</b> ${p.price_usd}$
+${
+  p.status === PaymentStatusEnum.Success
+    ? '✅'
+    : p.status === PaymentStatusEnum.Cancel
+      ? '❌'
+      : '🤷‍♂️'
+} <b>Статус:</b> ${getStatusText(language, p.status)}
+  <b>Сумма в USD:</b> ${p.price_usd}$
   <b>Оплаченная сумма:</b> ${p.amount} ${p.currency}
   <b>Метод оплаты:</b> ${p.payment_method.name}
   <b>План подписки:</b> ${p.subscription_plan[`name${language}`]}
-  <b>Статус:</b> ${getStatusText(language, p.status)}
   <b>Дата:</b> ${p.created_date}
-  <b>Дата истечения срока:</b> ${p.expired_date}`;
+  <b>Дата истечения срока:</b> ${p.expired_date}${
+    isAdminPanel
+      ? `
+<b>Менеджер проверявший оплату:</b> ${p.updated_by.name}`
+      : ''
+  }`;
   }
 };
 

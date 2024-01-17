@@ -114,6 +114,7 @@ export class PaymentService {
         .leftJoinAndSelect('payment.subscription_plan', 'subscription_plan')
         .leftJoinAndSelect('payment.promocode', 'promocode')
         .leftJoinAndSelect('payment.payment_method', 'payment_method')
+        .leftJoinAndSelect('payment.updated_by', 'updated_by')
         .orderBy('payment.created_date', 'DESC')
         .getManyAndCount();
 

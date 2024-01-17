@@ -112,7 +112,7 @@ const getPlanInfo = (
         lastPayment.subscription_plan[`name${language}`]
       }
 
-- <b>Start date</b>: ${lastPayment.created_date}
+- <b>Start date</b>: ${lastPayment.created_date.toDateString()}
 - <b>Expired date</b>: ${expiredDate}
 - <b>Days left</b>: ${continueDays}
       
@@ -123,7 +123,7 @@ const getPlanInfo = (
         lastPayment.subscription_plan[`name${language}`]
       }
 
-- <b>Дата початку</b>: ${lastPayment.created_date}
+- <b>Дата початку</b>: ${lastPayment.created_date.toDateString()}
 - <b>Дата закінчення</b>: ${expiredDate}
 - <b>Залишилось днів</b>: ${continueDays}
       
@@ -134,7 +134,7 @@ const getPlanInfo = (
         lastPayment.subscription_plan[`name${language}`]
       }
 
-- <b>Дата начала</b>: ${lastPayment.created_date}
+- <b>Дата начала</b>: ${lastPayment.created_date.toDateString()}
 - <b>Дата окончания</b>: ${expiredDate}
 - <b>Осталось дней</b>: ${continueDays}
       
