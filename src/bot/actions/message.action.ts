@@ -147,11 +147,13 @@ export const actionMessage = (
       const plan = await planService.findOne({ id: promocodeData });
       await redisService.delete(`Promocode-${user.id}`);
 
-      const redisData = await redisService.get(
-        `BuySubscriptionPlan-${user.id}`,
-      );
-
-      const payData: PayDataInterface = JSON.parse(redisData);
+      const payData: PayDataInterface = {
+        amount: plan.price,
+        subscription_plan_id: plan.id,
+        promocode_id: null,
+        newPrice: null,
+        isContinue: false,
+      };
 
       if (promocode) {
         payData.promocode_id = promocode.id;

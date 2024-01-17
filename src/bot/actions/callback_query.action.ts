@@ -182,7 +182,7 @@ export const actionCallbackQuery = (
 
       await redisService.clearData(user.id);
 
-      const planPayData = {
+      const planPayData: PayDataInterface = {
         amount: plan.price,
         subscription_plan_id: plan.id,
         promocode_id: null,
