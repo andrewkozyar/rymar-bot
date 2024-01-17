@@ -22,22 +22,21 @@ export const sendMySubscriptionKeyboard = async (
     status: PaymentStatusEnum.Success,
   });
 
-  const continueDays = getDaysDifference(new Date(), lastPayment.expired_date);
-  const expiredDate = getDateWithoutHours(
-    lastPayment.expired_date,
-  ).toDateString();
-
-  const text = lastPayment
-    ? getPlanInfo(user.language, lastPayment, continueDays, expiredDate)
-    : user.language === UserLanguageEnum.EN
-      ? 'You do not have an active subscription'
-      : user.language === UserLanguageEnum.UA
-        ? 'У вас немає активної підписки'
-        : 'У вас нет активной подписки';
+  let text;
 
   const inline_keyboard = [];
 
   if (lastPayment) {
+    const continueDays = getDaysDifference(
+      new Date(),
+      lastPayment.expired_date,
+    );
+    const expiredDate = getDateWithoutHours(
+      lastPayment.expired_date,
+    ).toDateString();
+
+    text = getPlanInfo(user.language, lastPayment, continueDays, expiredDate);
+
     const payData: PayDataInterface = {
       amount: lastPayment.subscription_plan.price,
       subscription_plan_id: lastPayment.subscription_plan_id,
@@ -63,6 +62,13 @@ export const sendMySubscriptionKeyboard = async (
         callback_data: 'ContinueSubscription',
       },
     ]);
+  } else {
+    text =
+      user.language === UserLanguageEnum.EN
+        ? 'You do not have an active subscription'
+        : user.language === UserLanguageEnum.UA
+          ? 'У вас немає активної підписки'
+          : 'У вас нет активной подписки';
   }
 
   inline_keyboard.push(
