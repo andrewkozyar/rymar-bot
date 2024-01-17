@@ -97,7 +97,7 @@ ${
   <b>Expired date:</b> ${p.expired_date}${
     isAdminPanel
       ? `
-<b>The manager checking the payment:</b> ${p.updated_by.name}`
+<b>The manager checking the payment:</b> ${p.updated_by?.name}`
       : ''
   }`;
 
@@ -119,7 +119,7 @@ ${
   <b>Дата закінчення:</b> ${p.expired_date}${
     isAdminPanel
       ? `
-<b>Менеджер перевірявший оплату:</b> ${p.updated_by.name}`
+<b>Менеджер перевірявший оплату:</b> ${p.updated_by?.name}`
       : ''
   }`;
 
@@ -141,7 +141,7 @@ ${
   <b>Дата истечения срока:</b> ${p.expired_date}${
     isAdminPanel
       ? `
-<b>Менеджер проверявший оплату:</b> ${p.updated_by.name}`
+<b>Менеджер проверявший оплату:</b> ${p.updated_by?.name}`
       : ''
   }`;
   }
