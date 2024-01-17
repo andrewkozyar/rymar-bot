@@ -84,6 +84,7 @@ export class BotService {
           isContinue: true,
           promocode_id: null,
           isFromNotification: true,
+          continueDays: expiredDays,
         };
 
         await this.redisService.add(

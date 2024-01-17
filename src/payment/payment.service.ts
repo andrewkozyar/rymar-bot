@@ -7,7 +7,7 @@ import { GetPaymentsType, PaymentStatusEnum, errorHandler } from '../helper';
 
 import { Payment } from './payment.entity';
 import { SubscriptionPlanService } from 'src/subscriptionPlan/subscriptionPlan.service';
-import { addMonths } from 'src/helper/date';
+import { addDays, addMonths } from 'src/helper/date';
 
 @Injectable()
 export class PaymentService {
@@ -17,13 +17,16 @@ export class PaymentService {
     private planService: SubscriptionPlanService,
   ) {}
 
-  async create(dto: CreateDto): Promise<Payment> {
+  async create({ continueDays, ...dto }: CreateDto): Promise<Payment> {
     try {
       const plan = await this.planService.findOne({
         id: dto.subscription_plan_id,
       });
 
-      const expired_date = addMonths(new Date(), plan.months_count);
+      const expired_date = addDays(
+        addMonths(new Date(), plan.months_count),
+        continueDays,
+      );
 
       return await this.paymentRepository.save({
         ...dto,
@@ -38,7 +41,8 @@ export class PaymentService {
     }
   }
 
-  async update(dto: CreateDto): Promise<Payment> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async update({ continueDays, ...dto }: CreateDto): Promise<Payment> {
     try {
       const plan = await this.findOne({
         id: dto.id,

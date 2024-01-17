@@ -35,6 +35,9 @@ export class CreateDto {
   @IsString({ message: 'Must be a string' })
   readonly updated_by_id?: string;
 
-  @IsString({ message: 'Must be a string' })
+  @IsNumber()
   readonly price_usd?: number;
+
+  @IsNumber()
+  continueDays?: number;
 }
