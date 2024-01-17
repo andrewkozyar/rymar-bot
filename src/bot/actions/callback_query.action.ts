@@ -11,7 +11,7 @@ import { PaymentService } from 'src/payment/payment.service';
 import { SubscriptionPlanService } from 'src/subscriptionPlan/subscriptionPlan.service';
 import { UserService } from 'src/user/user.service';
 import { sendAccountKeyboard } from '../keyboards/account.keyboards';
-import { sendLanguageKeyboard } from '../keyboards/language.keyboards';
+import { editLanguageKeyboard } from '../keyboards/language.keyboards';
 import { sendMenuKeyboard } from '../keyboards/menu.keyboards';
 import { sendMySubscriptionKeyboard } from '../keyboards/my-subscription.keyboards';
 import { sendSubscriptionPlanDetailsKeyboard } from '../keyboards/subscription-plan-details.keyboards';
@@ -88,7 +88,12 @@ export const actionCallbackQuery = (
     if (key === 'ChangeLanguageMenu') {
       await redisService.clearData(user.id);
 
-      return await sendLanguageKeyboard(query.message.chat.id, bot, true);
+      return await editLanguageKeyboard(
+        query.message.chat.id,
+        bot,
+        true,
+        query.message.message_id,
+      );
     }
 
     if (key === 'ChangeLanguage') {
