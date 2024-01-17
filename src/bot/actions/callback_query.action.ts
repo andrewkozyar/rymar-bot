@@ -206,7 +206,9 @@ export const actionCallbackQuery = (
 
       const payData: PayDataInterface = JSON.parse(redisData);
 
-      const plan = await planService.findOne({ id: data });
+      const plan = await planService.findOne({
+        id: payData.subscription_plan_id,
+      });
 
       await redisService.clearData(user.id);
 
