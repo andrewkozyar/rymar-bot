@@ -201,7 +201,7 @@ export const actionCallbackQuery = (
 
     if (key === 'ContinueSubscription') {
       const redisData = await redisService.get(
-        `BuySubscriptionPlan-${user.id}`,
+        `ContinueSubscription-${user.id}`,
       );
 
       const payData: PayDataInterface = JSON.parse(redisData);

@@ -33,6 +33,7 @@ export class RedisService {
       this.delete(`EditSubscriptionPlanAdmin-${userId}`),
       this.delete(`EditPromocodeAdmin-${userId}`),
       this.delete(`EditPaymentMethodAdmin-${userId}`),
+      this.delete(`EditPaymentMethodAdmin-${userId}`),
     ]);
   }
 }
