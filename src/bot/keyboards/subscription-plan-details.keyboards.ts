@@ -53,20 +53,22 @@ export const sendSubscriptionPlanDetailsKeyboard = async (
     ]);
   }
 
-  inline_keyboard.push([
-    {
-      text: `⬅️ ${
-        user.language === UserLanguageEnum.EN
-          ? 'Back'
-          : user.language === UserLanguageEnum.UA
-            ? 'Назад'
-            : 'Назад'
-      }`,
-      callback_data: payData.isContinue
-        ? 'MySubscription'
-        : 'SendSubscriptionPlanKeyboard',
-    },
-  ]);
+  if (!payData.isFromNotification) {
+    inline_keyboard.push([
+      {
+        text: `⬅️ ${
+          user.language === UserLanguageEnum.EN
+            ? 'Back'
+            : user.language === UserLanguageEnum.UA
+              ? 'Назад'
+              : 'Назад'
+        }`,
+        callback_data: payData.isContinue
+          ? 'MySubscription'
+          : 'SendSubscriptionPlanKeyboard',
+      },
+    ]);
+  }
 
   await bot.sendMessage(id, text, {
     parse_mode: 'HTML',

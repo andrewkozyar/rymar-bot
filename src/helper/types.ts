@@ -77,4 +77,5 @@ export interface PayDataInterface {
   isContinue?: boolean;
   price_usd?: number;
   payment_method_id?: string;
+  isFromNotification?: boolean;
 }

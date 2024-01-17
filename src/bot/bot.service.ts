@@ -83,6 +83,7 @@ export class BotService {
           newPrice: lastPayment.price_usd,
           isContinue: true,
           promocode_id: null,
+          isFromNotification: true,
         };
 
         await this.redisService.add(
