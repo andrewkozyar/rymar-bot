@@ -7,7 +7,7 @@ import {
   GetUsersType,
   PaymentStatusEnum,
   errorHandler,
-  validateEmail,
+  trimEmail,
 } from '../helper';
 
 import { User } from './user.entity';
@@ -39,7 +39,7 @@ export class UserService {
   async update(id: string, dto: UpdateUserDto): Promise<User> {
     try {
       if (dto.email) {
-        dto.email = validateEmail(dto.email);
+        dto.email = trimEmail(dto.email);
       }
 
       const user = await this.userRepository.findOneBy({ id });
@@ -58,7 +58,7 @@ export class UserService {
   }
 
   async findOne({ id, email, chat_id, name }: GetUserDto): Promise<User> {
-    email = validateEmail(email);
+    email = trimEmail(email);
 
     const user = await this.userRepository
       .createQueryBuilder('user')
@@ -140,7 +140,7 @@ export class UserService {
       .addSelect('active_user.password')
       .where(
         'active_user.email = :email OR active_user.exc_token = :exc_token',
-        { email: validateEmail(email), exc_token },
+        { email: trimEmail(email), exc_token },
       )
       .getOne();
   }

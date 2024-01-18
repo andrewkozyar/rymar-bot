@@ -1,4 +1,4 @@
-export const validateEmail = (email: string) => {
+export const trimEmail = (email: string) => {
   if (email) {
     return email.toLowerCase().trim();
   }
@@ -22,3 +22,9 @@ export const getFullText = (
 };
 
 export const getFiatAmount = (x: number) => Math.trunc(x * 100) / 100;
+
+export const validateEmail = (email: string) => {
+  const re =
+    /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+  return re.test(String(email).toLowerCase());
+};

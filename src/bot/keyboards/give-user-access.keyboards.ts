@@ -82,7 +82,7 @@ const getMainText = (
   switch (language) {
     case UserLanguageEnum.EN:
       return `‼️ New customer
-<b>nickname</b>: ${customer.name}
+<b>nickname</b>: @${customer.name}
 <b>subscription plan</b>: ${plan[`name${language}`]}
 <b>payment amount</b>: ${payment.amount} ${payment.currency}
 <b>promocode</b>: ${promocode ? promocode.name : 'no promocode'}
@@ -92,7 +92,7 @@ const getMainText = (
 
     case UserLanguageEnum.UA:
       return `‼️ Новий клієнт
-<b>nickname</b>: ${customer.name}
+<b>nickname</b>: @${customer.name}
 <b>план підписки</b>: ${plan[`name${language}`]}
 <b>сума оплати</b>: ${payment.amount} ${payment.currency}
 <b>промокод</b>: ${promocode ? promocode.name : 'без промокоду'}
@@ -102,7 +102,7 @@ const getMainText = (
 
     case UserLanguageEnum.RU:
       return `‼️ Новый клиент
-<b>nickname</b>: ${customer.name}
+<b>nickname</b>: @${customer.name}
 <b>план подписки</b>: ${plan[`name${language}`]}
 <b>сумма оплаты</b>: ${payment.amount} ${payment.currency}
 <b>промокод</b>: ${promocode ? promocode.name : 'нет промокода'}

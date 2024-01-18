@@ -21,6 +21,8 @@ import {
   PaymentStatusEnum,
   UserLanguageEnum,
   getFiatAmount,
+  trimEmail,
+  validateEmail,
 } from 'src/helper';
 import { sendAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
 import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
@@ -119,6 +121,20 @@ export const actionMessage = (
     const emailData = await redisService.get(`ChangeEmail-${user.id}`);
 
     if (emailData === 'waiting') {
+      if (!validateEmail(trimEmail(msg.text))) {
+        return await sendTextWithCancelKeyboard(
+          msg.chat.id,
+          bot,
+          user.language === UserLanguageEnum.EN
+            ? 'Wrong value. Submit a valid email!'
+            : user.language === UserLanguageEnum.UA
+              ? 'Неправильне значення. Надішліть правильну електронну пошту!'
+              : 'Неверное значение. Отправьте правильную электронную почту!',
+          'BackToAccount;',
+          user,
+        );
+      }
+
       const updatedUser = await userService.update(user.id, {
         email: msg.text,
       });
@@ -195,7 +211,9 @@ export const actionMessage = (
     if (adminUserTransactionsData) {
       await redisService.delete(`AdminUserTransactions-${user.id}`);
 
-      const finedUser = await userService.findOne({ name: msg.text });
+      const finedUser = await userService.findOne({
+        name: msg.text.replace('@', '').trim(),
+      });
 
       if (!finedUser) {
         await bot.sendMessage(msg.chat.id, `😢 User ${msg.text} is not fined!`);
@@ -224,6 +242,23 @@ export const actionMessage = (
       const planData: UpdatePlanDto = JSON.parse(redisSubscriptionPlanData);
       planData[planData.field] = msg.text;
 
+      if (
+        (planData.field === 'price' || planData.field === 'months_count') &&
+        !Number.isInteger(Number(msg.text))
+      ) {
+        return await sendTextWithCancelKeyboard(
+          msg.chat.id,
+          bot,
+          user.language === UserLanguageEnum.EN
+            ? 'Wrong value. Please send integer!'
+            : user.language === UserLanguageEnum.UA
+              ? 'Неправильне значення. Має бути ціле число!'
+              : 'Неверное значение. Должно быть целое число!',
+          'AdminChooseSubscriptionPlan;' + planData.id,
+          user,
+        );
+      }
+
       const plan = await planService.update({
         ...planData,
       });
@@ -250,6 +285,23 @@ export const actionMessage = (
       );
       promocodeData[promocodeData.field] = msg.text;
 
+      if (
+        promocodeData.field === 'sale_percent' &&
+        !Number.isInteger(Number(msg.text))
+      ) {
+        return await sendTextWithCancelKeyboard(
+          msg.chat.id,
+          bot,
+          user.language === UserLanguageEnum.EN
+            ? 'Wrong value. Please send integer!'
+            : user.language === UserLanguageEnum.UA
+              ? 'Неправильне значення. Має бути ціле число!'
+              : 'Неверное значение. Должно быть целое число!',
+          'AdminPromocodeDetails;' + promocodeData.id,
+          user,
+        );
+      }
+
       const promocode = await promocodeService.update({
         ...promocodeData,
       });
@@ -263,7 +315,7 @@ export const actionMessage = (
       );
     }
 
-    // update promocode
+    // update paymentMethod
     const redisPaymentMethodAdminData = await redisService.get(
       `EditPaymentMethodAdmin-${user.id}`,
     );

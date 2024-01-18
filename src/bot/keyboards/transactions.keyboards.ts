@@ -177,7 +177,9 @@ ${
   <b>Expired date:</b> ${p.expired_date}${
     isAdminPanel
       ? `
-<b>The manager checking the payment:</b> ${p.updated_by?.name}`
+<b>The manager checking the payment:</b> ${
+          p.updated_by ? '@' + p.updated_by?.name : 'is still pending'
+        }`
       : ''
   }`;
 
@@ -199,7 +201,9 @@ ${
   <b>Дата закінчення:</b> ${p.expired_date}${
     isAdminPanel
       ? `
-<b>Менеджер перевірявший оплату:</b> ${p.updated_by?.name}`
+<b>Менеджер перевірявший оплату:</b> ${
+          p.updated_by ? '@' + p.updated_by?.name : 'ще очікує розгляду'
+        }`
       : ''
   }`;
 
@@ -221,7 +225,9 @@ ${
   <b>Дата истечения срока:</b> ${p.expired_date}${
     isAdminPanel
       ? `
-<b>Менеджер проверявший оплату:</b> ${p.updated_by?.name}`
+<b>Менеджер проверявший оплату:</b> ${
+          p.updated_by ? '@' + p.updated_by?.name : 'еще ожидает рассмотрения'
+        }`
       : ''
   }`;
   }

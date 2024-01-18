@@ -511,7 +511,7 @@ export const actionCallbackQuery = (
           user.language === UserLanguageEnum.EN
             ? `Enter the new ${
                 data === 'months_count' ? 'number of months' : data
-              } for the subscription plan! Should be number.`
+              } for the subscription plan! Should be integer.`
             : user.language === UserLanguageEnum.UA
               ? `Введіть новий ${
                   data === 'months_count' ? 'number of months' : data
