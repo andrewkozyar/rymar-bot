@@ -170,6 +170,8 @@ export const actionMessage = (
         isContinue: false,
       };
 
+      await redisService.delete(`Promocode-${user.id}`);
+
       if (promocode) {
         payData.promocode_id = promocode.id;
 
@@ -183,8 +185,6 @@ export const actionMessage = (
           promocode,
         );
       }
-
-      await redisService.delete(`Promocode-${user.id}`);
 
       await bot.sendMessage(
         msg.chat.id,

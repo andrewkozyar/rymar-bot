@@ -72,5 +72,21 @@ export const editPaymentMethodDetailsKeyboard = async (
     },
   );
 
-  await bot.sendMessage(chat_id, paymentMethod.address);
+  const addressText =
+    user.language === UserLanguageEnum.EN
+      ? `Payment address for ${paymentMethod.name}:
+
+`
+      : user.language === UserLanguageEnum.UA
+        ? `Платіжна адреса для ${paymentMethod.name}:
+
+`
+        : `Платежный адрес для ${paymentMethod.name}:
+
+`;
+
+  await bot.sendMessage(
+    chat_id,
+    addressText + '`' + paymentMethod.address + '`',
+  );
 };
