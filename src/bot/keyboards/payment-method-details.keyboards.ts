@@ -88,5 +88,8 @@ export const editPaymentMethodDetailsKeyboard = async (
   await bot.sendMessage(
     chat_id,
     addressText + '`' + paymentMethod.address + '`',
+    {
+      parse_mode: 'Markdown',
+    },
   );
 };
