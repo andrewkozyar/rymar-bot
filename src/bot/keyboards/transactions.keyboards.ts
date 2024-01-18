@@ -73,6 +73,86 @@ export const sendTransactionsKeyboard = async (
   });
 };
 
+export const editTransactionsKeyboard = async (
+  chat_id: number,
+  message_id: number,
+  bot: TelegramBot,
+  user: User,
+  paymentService: PaymentService,
+  isAdminPanel: boolean,
+  language: UserLanguageEnum,
+) => {
+  const { payments, total } = await paymentService.getPayments({
+    user_id: user.id,
+  });
+
+  let text;
+
+  if (payments.length) {
+    text = `🗄️ ${getUserInfoText(language, isAdminPanel, user)} ${
+      language === UserLanguageEnum.EN
+        ? `had ${total} payments!
+
+<b>List of payments:</b>`
+        : language === UserLanguageEnum.UA
+          ? `є платежів: ${total}!
+  
+<b>Список платежів:</b>`
+          : `есть платежей: ${total}!
+
+<b>Список платежей:</b>`
+    }`;
+
+    payments.forEach((p) => {
+      text = text + getPaymentInfoText(language, p, isAdminPanel);
+
+      if (p.promocode) {
+        text =
+          text +
+          `
+<b>Promo code</b>: ${p.promocode.name}`;
+      }
+    });
+  } else {
+    text = `${getUserInfoText(
+      language,
+      isAdminPanel,
+      user,
+    )} ${getNoPaymentsInfoText(language)}`;
+  }
+
+  const inline_keyboard = [
+    [
+      {
+        text: `⬅️ ${
+          language === UserLanguageEnum.EN
+            ? 'Back'
+            : language === UserLanguageEnum.UA
+              ? 'Назад'
+              : 'Назад'
+        }`,
+        callback_data: isAdminPanel ? 'AdminPanel' : 'MySubscription',
+      },
+    ],
+  ];
+
+  await bot.editMessageText(text, {
+    chat_id,
+    message_id,
+    parse_mode: 'HTML',
+  });
+
+  await bot.editMessageReplyMarkup(
+    {
+      inline_keyboard,
+    },
+    {
+      chat_id,
+      message_id,
+    },
+  );
+};
+
 const getPaymentInfoText = (
   language: UserLanguageEnum,
   p: Payment,

@@ -4,8 +4,9 @@ import { PaymentMethod } from 'src/paymentMethod/paymentMethod.entity';
 import { SubscriptionPlan } from 'src/subscriptionPlan/subscriptionPlan.entity';
 import { User } from 'src/user/user.entity';
 
-export const sendPaymentMethodDetailsKeyboard = async (
-  id: number,
+export const editPaymentMethodDetailsKeyboard = async (
+  chat_id: number,
+  message_id: number,
   bot: TelegramBot,
   paymentMethod: PaymentMethod,
   plan: SubscriptionPlan,
@@ -28,38 +29,48 @@ export const sendPaymentMethodDetailsKeyboard = async (
         ? `Оплатіть ${priceToShow} на рахунок який прийде наступним повідомленням. Увага перевірте уважно метод оплати, суму  та мережу, щоб не втратити кошти!`
         : `Оплатите ${priceToShow} на счет, который придет следующим сообщением. Внимание проверьте метод оплаты, сумму и сеть, чтобы не потерять средства!`;
 
-  await bot.sendMessage(id, text, {
+  const inline_keyboard = [
+    [
+      {
+        text: `💵 ${
+          user.language === UserLanguageEnum.EN
+            ? 'I paid'
+            : user.language === UserLanguageEnum.UA
+              ? 'Я оплатив'
+              : 'Я оплатил'
+        }`,
+        callback_data: 'UserPaid;' + paymentMethod.id,
+      },
+    ],
+    [
+      {
+        text: `⬅️ ${
+          user.language === UserLanguageEnum.EN
+            ? 'Back'
+            : user.language === UserLanguageEnum.UA
+              ? 'Назад'
+              : 'Назад'
+        }`,
+        callback_data: 'BuySubscriptionPlan;' + plan.id,
+      },
+    ],
+  ];
+
+  await bot.editMessageText(text, {
+    chat_id,
+    message_id,
     parse_mode: 'HTML',
-    reply_markup: {
-      remove_keyboard: true,
-      inline_keyboard: [
-        [
-          {
-            text: `💵 ${
-              user.language === UserLanguageEnum.EN
-                ? 'I paid'
-                : user.language === UserLanguageEnum.UA
-                  ? 'Я оплатив'
-                  : 'Я оплатил'
-            }`,
-            callback_data: 'UserPaid;' + paymentMethod.id,
-          },
-        ],
-        [
-          {
-            text: `⬅️ ${
-              user.language === UserLanguageEnum.EN
-                ? 'Back'
-                : user.language === UserLanguageEnum.UA
-                  ? 'Назад'
-                  : 'Назад'
-            }`,
-            callback_data: 'BuySubscriptionPlan;' + plan.id,
-          },
-        ],
-      ],
-    },
   });
 
-  await bot.sendMessage(id, paymentMethod.address);
+  await bot.editMessageReplyMarkup(
+    {
+      inline_keyboard,
+    },
+    {
+      chat_id,
+      message_id,
+    },
+  );
+
+  await bot.sendMessage(chat_id, paymentMethod.address);
 };

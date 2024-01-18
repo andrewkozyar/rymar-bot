@@ -13,11 +13,11 @@ import { UserService } from 'src/user/user.service';
 import { editAccountKeyboard } from '../keyboards/account.keyboards';
 import { editLanguageKeyboard } from '../keyboards/language.keyboards';
 import { sendMenuKeyboard } from '../keyboards/menu.keyboards';
-import { sendMySubscriptionKeyboard } from '../keyboards/my-subscription.keyboards';
-import { sendSubscriptionPlanDetailsKeyboard } from '../keyboards/subscription-plan-details.keyboards';
-import { sendSubscriptionPlanKeyboard } from '../keyboards/subscription-plans.keyboards';
+import { editMySubscriptionKeyboard } from '../keyboards/my-subscription.keyboards';
+import { editSubscriptionPlanDetailsKeyboard } from '../keyboards/subscription-plan-details.keyboards';
+import { editSubscriptionPlanKeyboard } from '../keyboards/subscription-plans.keyboards';
 import { sendTimezoneKeyboard } from '../keyboards/timezone.keyboards';
-import { sendTransactionsKeyboard } from '../keyboards/transactions.keyboards';
+import { editTransactionsKeyboard } from '../keyboards/transactions.keyboards';
 import { RedisService } from 'src/redis/redis.service';
 import { editAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
 import { PromocodeService } from 'src/promocode/promocode.service';
@@ -28,11 +28,11 @@ import { sendIsPublishedKeyboard } from '../keyboards/is-published.keyboards';
 import { editTextWithCancelKeyboard } from '../keyboards/cancel.keyboards';
 import { sendPromocodeAdminDetailsKeyboard } from '../keyboards/promocode-admin-details.keyboards';
 import { UpdateDto as UpdatePromocodeDto } from 'src/promocode/dto';
-import { sendPaymentMethodsKeyboard } from '../keyboards/payment-methods.keyboards';
+import { editPaymentMethodsKeyboard } from '../keyboards/payment-methods.keyboards';
 import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
 import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
 import { UpdateDto as UpdatePaymentMethodDto } from 'src/paymentMethod/dto';
-import { sendPaymentMethodDetailsKeyboard } from '../keyboards/payment-method-details.keyboards';
+import { editPaymentMethodDetailsKeyboard } from '../keyboards/payment-method-details.keyboards';
 import { sendGiveUserAccessKeyboard } from '../keyboards/give-user-access.keyboards';
 import { sendCurrencyKeyboard } from '../keyboards/currency.keyboards';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
@@ -195,8 +195,9 @@ export const actionCallbackQuery = (
           id: payData.promocode_id,
         });
 
-        return await sendSubscriptionPlanDetailsKeyboard(
+        return await editSubscriptionPlanDetailsKeyboard(
           query.message.chat.id,
+          query.message.message_id,
           bot,
           plan,
           redisService,
@@ -216,8 +217,9 @@ export const actionCallbackQuery = (
         isContinue: false,
       };
 
-      return await sendSubscriptionPlanDetailsKeyboard(
+      return await editSubscriptionPlanDetailsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         plan,
         redisService,
@@ -237,8 +239,9 @@ export const actionCallbackQuery = (
         id: payData.subscription_plan_id,
       });
 
-      return await sendSubscriptionPlanDetailsKeyboard(
+      return await editSubscriptionPlanDetailsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         plan,
         redisService,
@@ -282,8 +285,9 @@ export const actionCallbackQuery = (
     if (key === 'SendSubscriptionPlanKeyboard') {
       await redisService.clearData(user.id);
 
-      return await sendSubscriptionPlanKeyboard(
+      return await editSubscriptionPlanKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         planService,
         false,
@@ -294,8 +298,9 @@ export const actionCallbackQuery = (
     if (key === 'SendSubscriptionPlanAdminKeyboard') {
       await redisService.clearData(user.id);
 
-      return await sendSubscriptionPlanKeyboard(
+      return await editSubscriptionPlanKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         planService,
         true,
@@ -329,8 +334,9 @@ export const actionCallbackQuery = (
 
       const payData: PayDataInterface = JSON.parse(redisData);
 
-      return await sendPaymentMethodsKeyboard(
+      return await editPaymentMethodsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         paymentMethodService,
         user,
@@ -355,8 +361,9 @@ export const actionCallbackQuery = (
 
       const rateToUsd = await rateService.get();
 
-      return await sendPaymentMethodDetailsKeyboard(
+      return await editPaymentMethodDetailsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         paymentMethod,
         plan,
@@ -400,8 +407,9 @@ export const actionCallbackQuery = (
     if (key === 'ListOfTransactions') {
       await redisService.clearData(user.id);
 
-      return await sendTransactionsKeyboard(
+      return await editTransactionsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         user,
         paymentService,
@@ -413,8 +421,9 @@ export const actionCallbackQuery = (
     if (key === 'MySubscription') {
       await redisService.clearData(user.id);
 
-      return await sendMySubscriptionKeyboard(
+      return await editMySubscriptionKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         user,
         paymentService,
@@ -572,8 +581,9 @@ export const actionCallbackQuery = (
 
       await planService.remove(planData.id);
 
-      return await sendSubscriptionPlanKeyboard(
+      return await editSubscriptionPlanKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         planService,
         true,
@@ -701,8 +711,9 @@ export const actionCallbackQuery = (
     if (key === 'AdminPaymentMethods') {
       await redisService.clearData(user.id);
 
-      return await sendPaymentMethodsKeyboard(
+      return await editPaymentMethodsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         paymentMethodService,
         user,
@@ -846,8 +857,9 @@ export const actionCallbackQuery = (
 
       await paymentMethodService.remove(paymentMethodData.id);
 
-      return await sendPaymentMethodsKeyboard(
+      return await editPaymentMethodsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         paymentMethodService,
         user,

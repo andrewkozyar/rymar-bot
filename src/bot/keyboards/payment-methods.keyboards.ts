@@ -3,8 +3,9 @@ import { UserLanguageEnum } from 'src/helper';
 import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
 import { User } from 'src/user/user.entity';
 
-export const sendPaymentMethodsKeyboard = async (
-  id: number,
+export const editPaymentMethodsKeyboard = async (
+  chat_id: number,
+  message_id: number,
   bot: TelegramBot,
   paymentMethodService: PaymentMethodService,
   user: User,
@@ -63,8 +64,7 @@ export const sendPaymentMethodsKeyboard = async (
     ]);
   }
 
-  await bot.sendMessage(
-    id,
+  await bot.editMessageText(
     `💳 ${
       user.language === UserLanguageEnum.EN
         ? 'Choose payment method:'
@@ -73,10 +73,19 @@ export const sendPaymentMethodsKeyboard = async (
           : 'Выберите способ оплаты:'
     }`,
     {
-      reply_markup: {
-        remove_keyboard: true,
-        inline_keyboard,
-      },
+      chat_id,
+      message_id,
+      parse_mode: 'HTML',
+    },
+  );
+
+  await bot.editMessageReplyMarkup(
+    {
+      inline_keyboard,
+    },
+    {
+      chat_id,
+      message_id,
     },
   );
 };

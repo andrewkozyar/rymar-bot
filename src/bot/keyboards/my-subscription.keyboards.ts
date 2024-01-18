@@ -106,6 +106,111 @@ export const sendMySubscriptionKeyboard = async (
   });
 };
 
+export const editMySubscriptionKeyboard = async (
+  chat_id: number,
+  message_id: number,
+  bot: TelegramBot,
+  user: User,
+  paymentService: PaymentService,
+  redisService: RedisService,
+) => {
+  const lastPayment = await paymentService.findOne({
+    user_id: user.id,
+    status: PaymentStatusEnum.Success,
+  });
+
+  let text;
+
+  const inline_keyboard = [];
+
+  if (lastPayment) {
+    const continueDays = getDaysDifference(
+      new Date(),
+      lastPayment.expired_date,
+    );
+    const expiredDate = getDateWithoutHours(
+      lastPayment.expired_date,
+    ).toDateString();
+
+    text = getPlanInfo(user.language, lastPayment, continueDays, expiredDate);
+
+    const payData: PayDataInterface = {
+      amount: lastPayment.subscription_plan.price,
+      subscription_plan_id: lastPayment.subscription_plan_id,
+      newPrice: lastPayment.price_usd,
+      isContinue: true,
+      promocode_id: null,
+      continueDays,
+    };
+
+    await redisService.add(
+      `ContinueSubscription-${user.id}`,
+      JSON.stringify(payData),
+    );
+
+    inline_keyboard.push([
+      {
+        text:
+          user.language === UserLanguageEnum.EN
+            ? 'Continue the subscription at the old price'
+            : user.language === UserLanguageEnum.UA
+              ? 'Продовжити підписку за старою ціною'
+              : 'Продолжить подписку по старой цене',
+        callback_data: 'ContinueSubscription',
+      },
+    ]);
+  } else {
+    text =
+      user.language === UserLanguageEnum.EN
+        ? 'You do not have an active subscription'
+        : user.language === UserLanguageEnum.UA
+          ? 'У вас немає активної підписки'
+          : 'У вас нет активной подписки';
+  }
+
+  inline_keyboard.push(
+    [
+      {
+        text: `💵 ${
+          user.language === UserLanguageEnum.EN
+            ? 'List of transactions'
+            : user.language === UserLanguageEnum.UA
+              ? 'Список транзакцій'
+              : 'Список транзакций'
+        }`,
+        callback_data: 'ListOfTransactions',
+      },
+    ],
+    [
+      {
+        text:
+          user.language === UserLanguageEnum.EN
+            ? '🗒️ Subscription plans'
+            : user.language === UserLanguageEnum.UA
+              ? '🗒️ Плани підписок'
+              : '🗒️ Планы подписок',
+        callback_data: 'SendSubscriptionPlanKeyboard',
+      },
+    ],
+  );
+
+  await bot.editMessageText(text, {
+    chat_id,
+    message_id,
+    parse_mode: 'HTML',
+  });
+
+  await bot.editMessageReplyMarkup(
+    {
+      inline_keyboard,
+    },
+    {
+      chat_id,
+      message_id,
+    },
+  );
+};
+
 const getPlanInfo = (
   language: UserLanguageEnum,
   lastPayment: Payment,
