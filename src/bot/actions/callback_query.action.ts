@@ -30,7 +30,7 @@ import { editPromocodeAdminDetailsKeyboard } from '../keyboards/promocode-admin-
 import { UpdateDto as UpdatePromocodeDto } from 'src/promocode/dto';
 import { editPaymentMethodsKeyboard } from '../keyboards/payment-methods.keyboards';
 import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
-import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
+import { editPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
 import { UpdateDto as UpdatePaymentMethodDto } from 'src/paymentMethod/dto';
 import { editPaymentMethodDetailsKeyboard } from '../keyboards/payment-method-details.keyboards';
 import { sendGiveUserAccessKeyboard } from '../keyboards/give-user-access.keyboards';
@@ -737,8 +737,9 @@ export const actionCallbackQuery = (
 
       const paymentMethod = await paymentMethodService.findOne({ id: data });
 
-      return await sendPaymentMethodAdminDetailsKeyboard(
+      return await editPaymentMethodAdminDetailsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         paymentMethod,
         redisService,
@@ -751,8 +752,9 @@ export const actionCallbackQuery = (
 
       const paymentMethod = await paymentMethodService.create();
 
-      return await sendPaymentMethodAdminDetailsKeyboard(
+      return await editPaymentMethodAdminDetailsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         paymentMethod,
         redisService,
@@ -828,8 +830,9 @@ export const actionCallbackQuery = (
         is_published: data === 'true',
       });
 
-      return await sendPaymentMethodAdminDetailsKeyboard(
+      return await editPaymentMethodAdminDetailsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         paymentMethod,
         redisService,
@@ -850,8 +853,9 @@ export const actionCallbackQuery = (
         currency: data as CurrencyEnum,
       });
 
-      return await sendPaymentMethodAdminDetailsKeyboard(
+      return await editPaymentMethodAdminDetailsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         paymentMethod,
         redisService,
