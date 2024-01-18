@@ -21,12 +21,12 @@ import { editTransactionsKeyboard } from '../keyboards/transactions.keyboards';
 import { RedisService } from 'src/redis/redis.service';
 import { editAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
 import { PromocodeService } from 'src/promocode/promocode.service';
-import { sendPromocodesKeyboard } from '../keyboards/promocodes.keyboards';
-import { sendSubscriptionPlanAdminDetailsKeyboard } from '../keyboards/subscription-plan-admin-details.keyboards';
+import { editPromocodesKeyboard } from '../keyboards/promocodes.keyboards';
+import { editSubscriptionPlanAdminDetailsKeyboard } from '../keyboards/subscription-plan-admin-details.keyboards';
 import { UpdateDto as UpdatePlanDto } from 'src/subscriptionPlan/dto';
-import { sendIsPublishedKeyboard } from '../keyboards/is-published.keyboards';
+import { editIsPublishedKeyboard } from '../keyboards/is-published.keyboards';
 import { editTextWithCancelKeyboard } from '../keyboards/cancel.keyboards';
-import { sendPromocodeAdminDetailsKeyboard } from '../keyboards/promocode-admin-details.keyboards';
+import { editPromocodeAdminDetailsKeyboard } from '../keyboards/promocode-admin-details.keyboards';
 import { UpdateDto as UpdatePromocodeDto } from 'src/promocode/dto';
 import { editPaymentMethodsKeyboard } from '../keyboards/payment-methods.keyboards';
 import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
@@ -34,7 +34,7 @@ import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-meth
 import { UpdateDto as UpdatePaymentMethodDto } from 'src/paymentMethod/dto';
 import { editPaymentMethodDetailsKeyboard } from '../keyboards/payment-method-details.keyboards';
 import { sendGiveUserAccessKeyboard } from '../keyboards/give-user-access.keyboards';
-import { sendCurrencyKeyboard } from '../keyboards/currency.keyboards';
+import { editCurrencyKeyboard } from '../keyboards/currency.keyboards';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
 
 export const actionCallbackQuery = (
@@ -259,8 +259,9 @@ export const actionCallbackQuery = (
         return;
       }
 
-      return await sendSubscriptionPlanAdminDetailsKeyboard(
+      return await editSubscriptionPlanAdminDetailsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         plan,
         redisService,
@@ -273,8 +274,9 @@ export const actionCallbackQuery = (
 
       const promocode = await promocodeService.findOne({ id: data });
 
-      return await sendPromocodeAdminDetailsKeyboard(
+      return await editPromocodeAdminDetailsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         promocode,
         redisService,
@@ -445,8 +447,9 @@ export const actionCallbackQuery = (
     if (key === 'AdminPromocodes') {
       await redisService.clearData(user.id);
 
-      return await sendPromocodesKeyboard(
+      return await editPromocodesKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         promocodeService,
         user,
@@ -490,8 +493,9 @@ export const actionCallbackQuery = (
       );
 
       if (data === 'is_published') {
-        return await sendIsPublishedKeyboard(
+        return await editIsPublishedKeyboard(
           query.message.chat.id,
+          query.message.message_id,
           bot,
           'SubscriptionPlanIsPublished;',
           `AdminChooseSubscriptionPlan;${planData.id}`,
@@ -562,8 +566,9 @@ export const actionCallbackQuery = (
         is_published: data === 'true',
       });
 
-      return await sendSubscriptionPlanAdminDetailsKeyboard(
+      return await editSubscriptionPlanAdminDetailsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         plan,
         redisService,
@@ -596,8 +601,9 @@ export const actionCallbackQuery = (
 
       const plan = await planService.create();
 
-      return await sendSubscriptionPlanAdminDetailsKeyboard(
+      return await editSubscriptionPlanAdminDetailsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         plan,
         redisService,
@@ -620,8 +626,9 @@ export const actionCallbackQuery = (
       );
 
       if (data === 'is_published') {
-        return await sendIsPublishedKeyboard(
+        return await editIsPublishedKeyboard(
           query.message.chat.id,
+          query.message.message_id,
           bot,
           'PromocodeIsPublished;',
           `AdminPromocodeDetails;${promocodeData.id}`,
@@ -669,8 +676,9 @@ export const actionCallbackQuery = (
         is_published: data === 'true',
       });
 
-      return await sendPromocodeAdminDetailsKeyboard(
+      return await editPromocodeAdminDetailsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         promocode,
         redisService,
@@ -686,8 +694,9 @@ export const actionCallbackQuery = (
 
       await promocodeService.remove(promocodeData.id);
 
-      return await sendPromocodesKeyboard(
+      return await editPromocodesKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         promocodeService,
         user,
@@ -699,8 +708,9 @@ export const actionCallbackQuery = (
 
       const promocode = await promocodeService.create();
 
-      return await sendPromocodeAdminDetailsKeyboard(
+      return await editPromocodeAdminDetailsKeyboard(
         query.message.chat.id,
+        query.message.message_id,
         bot,
         promocode,
         redisService,
@@ -767,8 +777,9 @@ export const actionCallbackQuery = (
       );
 
       if (data === 'is_published') {
-        return await sendIsPublishedKeyboard(
+        return await editIsPublishedKeyboard(
           query.message.chat.id,
+          query.message.message_id,
           bot,
           'PaymentMethodIsPublished;',
           `AdminPaymentMethodDetails;${paymentMethodData.id}`,
@@ -779,8 +790,9 @@ export const actionCallbackQuery = (
       if (data === 'currency') {
         const rateToUsd = await rateService.get();
 
-        return await sendCurrencyKeyboard(
+        return await editCurrencyKeyboard(
           query.message.chat.id,
+          query.message.message_id,
           bot,
           'PaymentMethodCurrency;',
           `AdminPaymentMethodDetails;${paymentMethodData.id}`,

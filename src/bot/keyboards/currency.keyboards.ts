@@ -7,8 +7,9 @@ import {
 } from 'src/helper';
 import { User } from 'src/user/user.entity';
 
-export const sendCurrencyKeyboard = async (
-  id: number,
+export const editCurrencyKeyboard = async (
+  chat_id: number,
+  message_id: number,
   bot: TelegramBot,
   callback_data: string,
   cancel: string,
@@ -48,8 +49,7 @@ export const sendCurrencyKeyboard = async (
     },
   ]);
 
-  await bot.sendMessage(
-    id,
+  await bot.editMessageText(
     text +
       `${currencies.map((currency) =>
         currency === CurrencyEnum.USD
@@ -58,9 +58,19 @@ export const sendCurrencyKeyboard = async (
 ${currency}: ${rates[currency]}`,
       )}`,
     {
-      reply_markup: {
-        inline_keyboard,
-      },
+      chat_id,
+      message_id,
+      parse_mode: 'HTML',
+    },
+  );
+
+  await bot.editMessageReplyMarkup(
+    {
+      inline_keyboard,
+    },
+    {
+      chat_id,
+      message_id,
     },
   );
 };

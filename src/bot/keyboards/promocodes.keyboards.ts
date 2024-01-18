@@ -3,8 +3,9 @@ import { UserLanguageEnum } from 'src/helper';
 import { PromocodeService } from 'src/promocode/promocode.service';
 import { User } from 'src/user/user.entity';
 
-export const sendPromocodesKeyboard = async (
-  id: number,
+export const editPromocodesKeyboard = async (
+  chat_id: number,
+  message_id: number,
   bot: TelegramBot,
   promocodeService: PromocodeService,
   user: User,
@@ -43,8 +44,7 @@ export const sendPromocodesKeyboard = async (
     },
   ]);
 
-  await bot.sendMessage(
-    id,
+  await bot.editMessageText(
     `🗑️ ${
       user.language === UserLanguageEnum.EN
         ? 'Choose promocode:'
@@ -53,10 +53,19 @@ export const sendPromocodesKeyboard = async (
           : 'Выберите промокод:'
     }`,
     {
-      reply_markup: {
-        remove_keyboard: true,
-        inline_keyboard,
-      },
+      chat_id,
+      message_id,
+      parse_mode: 'HTML',
+    },
+  );
+
+  await bot.editMessageReplyMarkup(
+    {
+      inline_keyboard,
+    },
+    {
+      chat_id,
+      message_id,
     },
   );
 };
