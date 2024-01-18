@@ -161,7 +161,6 @@ export const actionMessage = (
         is_published: true,
       });
       const plan = await planService.findOne({ id: promocodeData });
-      await redisService.delete(`Promocode-${user.id}`);
 
       const payData: PayDataInterface = {
         amount: plan.price,
@@ -184,6 +183,8 @@ export const actionMessage = (
           promocode,
         );
       }
+
+      await redisService.delete(`Promocode-${user.id}`);
 
       await bot.sendMessage(
         msg.chat.id,
@@ -237,8 +238,6 @@ export const actionMessage = (
     );
 
     if (redisSubscriptionPlanData) {
-      await redisService.delete(`EditSubscriptionPlanAdmin-${user.id}`);
-
       const planData: UpdatePlanDto = JSON.parse(redisSubscriptionPlanData);
       planData[planData.field] = msg.text;
 
@@ -259,6 +258,8 @@ export const actionMessage = (
         );
       }
 
+      await redisService.delete(`EditSubscriptionPlanAdmin-${user.id}`);
+
       const plan = await planService.update({
         ...planData,
       });
@@ -278,8 +279,6 @@ export const actionMessage = (
     );
 
     if (redisPromocodeAdminData) {
-      await redisService.delete(`EditPromocodeAdmin-${user.id}`);
-
       const promocodeData: UpdatePromocodeDto = JSON.parse(
         redisPromocodeAdminData,
       );
@@ -301,6 +300,8 @@ export const actionMessage = (
           user,
         );
       }
+
+      await redisService.delete(`EditPromocodeAdmin-${user.id}`);
 
       const promocode = await promocodeService.update({
         ...promocodeData,
