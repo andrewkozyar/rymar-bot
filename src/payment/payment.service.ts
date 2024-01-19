@@ -70,7 +70,8 @@ export class PaymentService {
       })
       .leftJoinAndSelect('payment.subscription_plan', 'subscription_plan')
       .leftJoinAndSelect('payment.promocode', 'promocode')
-      .orderBy('payment.created_date', 'DESC');
+      .orderBy('payment.created_date', 'DESC')
+      .withDeleted();
 
     if (status) {
       paymentQuery.andWhere('payment.status = :status', { status });
@@ -116,6 +117,7 @@ export class PaymentService {
         .leftJoinAndSelect('payment.payment_method', 'payment_method')
         .leftJoinAndSelect('payment.updated_by', 'updated_by')
         .orderBy('payment.created_date', 'DESC')
+        .withDeleted()
         .getManyAndCount();
 
       return {
