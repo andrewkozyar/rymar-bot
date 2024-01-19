@@ -28,6 +28,12 @@ export class CronService {
   @Cron(CronExpression.EVERY_DAY_AT_1PM)
   async checkExpiredDate() {
     try {
+      await this.logService.create({
+        action: 'checkExpiredDate',
+        info: 'start cron job',
+        type: 'info',
+      });
+
       const { users: usersFor7DayNotification } =
         await this.userService.getUsers({
           expired_date: addDays(new Date(), 7),
