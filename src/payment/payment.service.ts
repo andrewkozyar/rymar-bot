@@ -68,10 +68,9 @@ export class PaymentService {
         id,
         user_id,
       })
+      .withDeleted()
       .leftJoinAndSelect('payment.subscription_plan', 'subscription_plan')
-      .withDeleted()
       .leftJoinAndSelect('payment.promocode', 'promocode')
-      .withDeleted()
       .orderBy('payment.created_date', 'DESC')
       .withDeleted();
 
@@ -114,16 +113,12 @@ export class PaymentService {
       }
 
       const [payments, total] = await paymentQuery
+        .withDeleted()
         .leftJoinAndSelect('payment.subscription_plan', 'subscription_plan')
-        .withDeleted()
         .leftJoinAndSelect('payment.promocode', 'promocode')
-        .withDeleted()
         .leftJoinAndSelect('payment.payment_method', 'payment_method')
-        .withDeleted()
         .leftJoinAndSelect('payment.updated_by', 'updated_by')
-        .withDeleted()
         .orderBy('payment.created_date', 'DESC')
-        .withDeleted()
         .getManyAndCount();
 
       return {
