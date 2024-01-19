@@ -191,7 +191,7 @@ export const actionCallbackQuery = async (
 
         const payData: PayDataInterface = JSON.parse(redisData);
 
-        const plan = await planService.findOne({ id: data });
+        const plan = await planService.findOne({ id: data, withDeleted: true });
 
         if (payData?.promocode_id && payData?.subscription_plan_id === data) {
           const promocode = await promocodeService.findOne({
@@ -240,6 +240,7 @@ export const actionCallbackQuery = async (
 
         const plan = await planService.findOne({
           id: payData.subscription_plan_id,
+          withDeleted: true,
         });
 
         return await editSubscriptionPlanDetailsKeyboard(

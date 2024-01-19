@@ -59,15 +59,18 @@ export class SubscriptionPlanService {
     }
   }
 
-  async findOne({ id }: GetDto): Promise<SubscriptionPlan> {
+  async findOne({ id, withDeleted }: GetDto): Promise<SubscriptionPlan> {
     const subscriptionPlan = await this.subscriptionPlanRepository
       .createQueryBuilder('subscriptionPlan')
       .where('subscriptionPlan.id = :id', {
         id,
-      })
-      .getOne();
+      });
 
-    return subscriptionPlan;
+    if (withDeleted) {
+      subscriptionPlan.withDeleted();
+    }
+
+    return subscriptionPlan.getOne();
   }
 
   async getPlans(

@@ -163,7 +163,10 @@ export const actionMessage = async (
           name: msg.text,
           is_published: true,
         });
-        const plan = await planService.findOne({ id: promocodeData });
+        const plan = await planService.findOne({
+          id: promocodeData,
+          withDeleted: true,
+        });
 
         const payData: PayDataInterface = {
           amount: plan.price,
