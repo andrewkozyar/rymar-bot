@@ -20,6 +20,7 @@ import { actionMessage } from './actions/message.action';
 import { actionCallbackQuery } from './actions/callback_query.action';
 import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
+import { LogService } from 'src/log/log.service';
 
 @Injectable()
 export class BotService {
@@ -35,6 +36,7 @@ export class BotService {
     private channelService: ChannelService,
     private paymentMethodService: PaymentMethodService,
     private rateService: ConversionRateService,
+    private logService: LogService,
   ) {
     this.bot = telegramBot(configService);
 
@@ -54,6 +56,7 @@ export class BotService {
       this.channelService,
       this.paymentMethodService,
       this.rateService,
+      this.logService,
     );
 
     actionCallbackQuery(
@@ -66,6 +69,7 @@ export class BotService {
       this.channelService,
       this.paymentMethodService,
       this.rateService,
+      this.logService,
     );
   }
 

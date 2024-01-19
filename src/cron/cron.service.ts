@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { BotService } from 'src/bot/bot.service';
@@ -12,6 +12,7 @@ import {
   getFiatAmount,
 } from 'src/helper';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
+import { LogService } from 'src/log/log.service';
 
 @Injectable()
 export class CronService {
@@ -21,51 +22,57 @@ export class CronService {
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
     private rateService: ConversionRateService,
+    private logService: LogService,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_1PM)
   async checkExpiredDate() {
-    const { users: usersFor7DayNotification } = await this.userService.getUsers(
-      {
-        expired_date: addDays(new Date(), 7),
-      },
-    );
+    try {
+      const { users: usersFor7DayNotification } =
+        await this.userService.getUsers({
+          expired_date: addDays(new Date(), 7),
+        });
 
-    if (usersFor7DayNotification.length) {
-      this.botService.notifyUsers(usersFor7DayNotification, 7);
+      if (usersFor7DayNotification.length) {
+        this.botService.notifyUsers(usersFor7DayNotification, 7);
+      }
+
+      const { users: usersFor3DayNotification } =
+        await this.userService.getUsers({
+          expired_date: addDays(new Date(), 3),
+        });
+
+      if (usersFor7DayNotification.length) {
+        this.botService.notifyUsers(usersFor3DayNotification, 3);
+      }
+
+      const { users: usersFor1DayNotification } =
+        await this.userService.getUsers({
+          expired_date: addDays(new Date(), 1),
+        });
+
+      if (usersFor7DayNotification.length) {
+        this.botService.notifyUsers(usersFor1DayNotification, 1);
+      }
+
+      const { users: expiredUsers } = await this.userService.getUsers({
+        expired_date: new Date(),
+      });
+
+      if (expiredUsers.length) {
+        this.botService.deleteExpiredUsers(expiredUsers);
+      }
+
+      await this.updateConversionRates();
+
+      return true;
+    } catch (e) {
+      this.logService.create({
+        action: 'checkExpiredDate',
+        info: JSON.stringify(e),
+        type: 'error',
+      });
     }
-
-    const { users: usersFor3DayNotification } = await this.userService.getUsers(
-      {
-        expired_date: addDays(new Date(), 3),
-      },
-    );
-
-    if (usersFor7DayNotification.length) {
-      this.botService.notifyUsers(usersFor3DayNotification, 3);
-    }
-
-    const { users: usersFor1DayNotification } = await this.userService.getUsers(
-      {
-        expired_date: addDays(new Date(), 1),
-      },
-    );
-
-    if (usersFor7DayNotification.length) {
-      this.botService.notifyUsers(usersFor1DayNotification, 1);
-    }
-
-    const { users: expiredUsers } = await this.userService.getUsers({
-      expired_date: new Date(),
-    });
-
-    if (expiredUsers.length) {
-      this.botService.deleteExpiredUsers(expiredUsers);
-    }
-
-    this.updateConversionRates();
-
-    return true;
   }
 
   // @Cron(CronExpression.EVERY_MINUTE)
@@ -99,7 +106,11 @@ export class CronService {
         USDT: 1,
       });
     } catch (e) {
-      errorHandler(`Failed to get fiat exchange rates`, 500, e);
+      errorHandler(
+        `Failed to get fiat exchange rates`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        e,
+      );
 
       return null;
     }

@@ -5,6 +5,7 @@ import { PaymentMethod } from 'src/paymentMethod/paymentMethod.entity';
 import { Promocode } from 'src/promocode/promocode.entity';
 import { Channel } from 'src/chanel/channel.entity';
 import { ConversionRate } from 'src/conversionRate/conversionRate.entity';
+import { Log } from 'src/log/log.entity';
 
 export const entities = [
   Channel,
@@ -14,4 +15,5 @@ export const entities = [
   SubscriptionPlan,
   User,
   ConversionRate,
+  Log,
 ];

@@ -116,7 +116,7 @@ const getAccountTitle = (user: User) => {
       return `👤 My account
 - <b>ID</b>: ${user.id}      
 - <b>Telegram ID</b>: ${user.chat_id}  
-- <b>Telegram nickname</b>: ${user.name}    
+- <b>Telegram nickname</b>: @${user.name}    
 - <b>Language</b>: ${user.language}      
 - <b>Email</b>: ${user.email}      
 `;
@@ -126,7 +126,7 @@ const getAccountTitle = (user: User) => {
       return `👤 Мой аккаунт
 - <b>ID</b>: ${user.id}      
 - <b>Telegram ID</b>: ${user.chat_id}   
-- <b>Telegram nickname</b>: ${user.name}   
+- <b>Telegram nickname</b>: @${user.name}   
 - <b>Язык</b>: ${user.language}      
 - <b>Почта</b>: ${user.email}      
 `;
@@ -136,7 +136,7 @@ const getAccountTitle = (user: User) => {
       return `👤 Мій аккаунт
 - <b>ID</b>: ${user.id}      
 - <b>Telegram ID</b>: ${user.chat_id}  
-- <b>Telegram nickname</b>: ${user.name}    
+- <b>Telegram nickname</b>: @${user.name}    
 - <b>Мова</b>: ${user.language}      
 - <b>Пошта</b>: ${user.email}      
 `;

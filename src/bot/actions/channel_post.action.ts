@@ -1,7 +1,7 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { ChannelService } from 'src/chanel/channel.service';
 
-export const actionChannelPost = (
+export const actionChannelPost = async (
   bot: TelegramBot,
   channelService: ChannelService,
 ) => {

@@ -12,6 +12,7 @@ import { ChannelModule } from './chanel/channel.module';
 import { PaymentMethod } from './paymentMethod/paymentMethod.entity';
 import { CronModule } from './cron/cron.module';
 import { ConversionRateModule } from './conversionRate/conversionRate.module';
+import { LogModule } from './log/log.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ConversionRateModule } from './conversionRate/conversionRate.module';
     PaymentModule,
     ChannelModule,
     PaymentMethod,
+    LogModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRES_HOST,

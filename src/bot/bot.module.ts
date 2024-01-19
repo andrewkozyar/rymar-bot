@@ -9,6 +9,7 @@ import { PaymentModule } from 'src/payment/payment.module';
 import { ChannelModule } from 'src/chanel/channel.module';
 import { PaymentMethodModule } from 'src/paymentMethod/paymentMethod.module';
 import { ConversionRateModule } from 'src/conversionRate/conversionRate.module';
+import { LogModule } from 'src/log/log.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ConversionRateModule } from 'src/conversionRate/conversionRate.module';
     ChannelModule,
     PaymentMethodModule,
     ConversionRateModule,
+    LogModule,
   ],
   providers: [BotService],
   controllers: [],
