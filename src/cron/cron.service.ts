@@ -27,7 +27,7 @@ export class CronService {
     private paymentService: PaymentService,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_DAY_AT_1PM)
   async checkExpiredDate() {
     try {
       await this.logService.create({
@@ -85,7 +85,7 @@ export class CronService {
         await this.botService.notifyUsers(usersFor7DayNotification, 7);
       }
 
-      // await this.updateConversionRates();
+      await this.updateConversionRates();
       await this.paymentService.changeExpiredStatuses();
 
       return true;
