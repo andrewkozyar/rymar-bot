@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import TelegramBot from 'node-telegram-bot-api';
 import { telegramBot } from '../configs/telegram-bot.config';
@@ -8,7 +8,6 @@ import {
   PayDataInterface,
   PaymentStatusEnum,
   UserLanguageEnum,
-  errorHandler,
 } from 'src/helper';
 import { SubscriptionPlanService } from 'src/subscriptionPlan/subscriptionPlan.service';
 import { PromocodeService } from 'src/promocode/promocode.service';
@@ -138,7 +137,7 @@ You still have the option to renew your subscription at the old price.`
             user.chat_id,
           );
 
-          return this.bot.sendMessage(
+          return await this.bot.sendMessage(
             user.chat_id,
             user.language === UserLanguageEnum.EN
               ? `‼️ Your subscription has expired! You have been removed from all channels.
@@ -153,11 +152,11 @@ If you think that an error has occurred, contact support via the "🤝 Support" 
 Если вы считаете что произошла ошибка, обратитесь за поддержкой по кнопке "🤝 Помощь"`,
           );
         } catch (e) {
-          errorHandler(
-            'Failed deleteExpiredUsers',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            e,
-          );
+          this.logService.create({
+            action: 'deleteExpiredUsers',
+            info: JSON.stringify(e),
+            type: 'error',
+          });
         }
       }),
     );

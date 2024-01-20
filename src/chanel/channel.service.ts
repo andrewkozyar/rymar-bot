@@ -8,12 +8,14 @@ import { MessageType, UserLanguageEnum, errorHandler } from '../helper';
 
 import { Channel } from './channel.entity';
 import { User } from 'src/user/user.entity';
+import { LogService } from 'src/log/log.service';
 
 @Injectable()
 export class ChannelService {
   constructor(
     @InjectRepository(Channel)
     private channelRepository: Repository<Channel>,
+    private logService: LogService,
   ) {}
   async create({ chat_id, ...dto }: CreateDto): Promise<Channel> {
     try {
@@ -92,7 +94,15 @@ export class ChannelService {
       if (channels.length) {
         await Promise.all(
           channels.map((c) => {
-            bot.restrictChatMember(Number(c.chat_id), Number(userChatId));
+            bot
+              .restrictChatMember(Number(c.chat_id), Number(userChatId))
+              .catch((e) =>
+                this.logService.create({
+                  action: 'restrictChatMember',
+                  info: JSON.stringify(e),
+                  type: 'error',
+                }),
+              );
           }),
         );
       }
