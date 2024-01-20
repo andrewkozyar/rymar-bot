@@ -23,10 +23,11 @@ export class PaymentService {
         id: dto.subscription_plan_id,
       });
 
-      const expired_date = addDays(
-        addMonths(new Date(), plan.months_count),
-        continueDays,
-      );
+      let expired_date = addMonths(new Date(), plan.months_count);
+
+      if (continueDays) {
+        expired_date = addDays(expired_date, continueDays);
+      }
 
       return await this.paymentRepository.save({
         ...dto,
@@ -135,6 +136,7 @@ export class PaymentService {
   async changeExpiredStatuses() {
     const { payments } = await this.getPayments({
       expired_date: new Date(),
+      status: PaymentStatusEnum.Success,
     });
 
     await this.paymentRepository.save(
