@@ -227,7 +227,7 @@ const getPlanInfo = (
 - <b>Expired date</b>: ${expiredDate}
 - <b>Days left</b>: ${continueDays}
       
-‼️ You have the option to renew your subscription at the old price`;
+🎁 You have the option to renew your subscription at the old price`;
 
     case UserLanguageEnum.UA:
       return `📃 Ваша підписка: ${
@@ -238,7 +238,7 @@ const getPlanInfo = (
 - <b>Дата закінчення</b>: ${expiredDate}
 - <b>Залишилось днів</b>: ${continueDays}
       
-‼️ У вас є можливість продовжити підписку за старою ціною`;
+🎁 У вас є можливість продовжити підписку за старою ціною`;
 
     case UserLanguageEnum.RU:
       return `📃 Ваша подписка: ${
@@ -249,6 +249,6 @@ const getPlanInfo = (
 - <b>Дата окончания</b>: ${expiredDate}
 - <b>Осталось дней</b>: ${continueDays}
       
-‼️ У вас есть возможность продлить подписку по старой цене`;
+🎁 У вас есть возможность продлить подписку по старой цене`;
   }
 };
