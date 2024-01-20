@@ -116,6 +116,13 @@ export class UserService {
           status: PaymentStatusEnum.Success,
         });
 
+        if (!payments.length) {
+          return {
+            users: [],
+            total: 0,
+          };
+        }
+
         userQuery.andWhere('user.id IN (:...ids)', {
           ids: payments.map((p) => p.user_id),
         });
