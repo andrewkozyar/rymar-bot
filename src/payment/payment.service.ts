@@ -89,10 +89,12 @@ export class PaymentService {
     user_id,
     expired_date,
     status,
+    expiredDateBefore,
   }: {
     user_id?: string;
     expired_date?: Date;
     status?: PaymentStatusEnum;
+    expiredDateBefore?: boolean;
   }): Promise<GetPaymentsType> {
     try {
       const paymentQuery =
@@ -105,9 +107,14 @@ export class PaymentService {
       }
 
       if (expired_date) {
-        paymentQuery.andWhere(`payment.expired_date <= :expired_date`, {
-          expired_date,
-        });
+        paymentQuery.andWhere(
+          `payment.expired_date ${
+            expiredDateBefore ? '<=' : '='
+          } :expired_date`,
+          {
+            expired_date,
+          },
+        );
       }
 
       if (status) {
@@ -140,6 +147,7 @@ export class PaymentService {
     const { payments } = await this.getPayments({
       expired_date: new Date(),
       status: PaymentStatusEnum.Success,
+      expiredDateBefore: true,
     });
 
     await this.paymentRepository.save(

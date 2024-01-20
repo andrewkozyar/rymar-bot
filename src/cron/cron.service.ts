@@ -38,6 +38,7 @@ export class CronService {
 
       const { users: expiredUsers } = await this.userService.getUsers({
         expired_date: addDays(getDateWithoutHours(new Date()), 1),
+        expiredDateBefore: true,
       });
 
       if (expiredUsers.length) {
@@ -48,6 +49,7 @@ export class CronService {
         await this.userService.getUsers({
           expired_date: addDays(getDateWithoutHours(new Date()), 2),
           notIn: expiredUsers.map((u) => u.id),
+          expiredDateBefore: false,
         });
 
       if (usersFor1DayNotification.length) {
@@ -61,6 +63,7 @@ export class CronService {
             ...expiredUsers.map((u) => u.id),
             ...usersFor1DayNotification.map((u) => u.id),
           ],
+          expiredDateBefore: false,
         });
 
       if (usersFor3DayNotification.length) {
@@ -75,13 +78,14 @@ export class CronService {
             ...usersFor1DayNotification.map((u) => u.id),
             ...usersFor3DayNotification.map((u) => u.id),
           ],
+          expiredDateBefore: false,
         });
 
       if (usersFor7DayNotification.length) {
         this.botService.notifyUsers(usersFor7DayNotification, 7);
       }
 
-      await this.updateConversionRates();
+      // await this.updateConversionRates();
       await this.paymentService.changeExpiredStatuses();
 
       return true;

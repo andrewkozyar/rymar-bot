@@ -81,6 +81,7 @@ export class UserService {
     limit = 20,
     searchKey,
     expired_date,
+    expiredDateBefore,
     names,
     notIn,
   }: {
@@ -88,6 +89,7 @@ export class UserService {
     limit?: number;
     searchKey?: string;
     expired_date?: Date;
+    expiredDateBefore?: boolean;
     names?: string[];
     notIn?: string[];
   }): Promise<GetUsersType> {
@@ -114,6 +116,7 @@ export class UserService {
         const { payments } = await this.paymentService.getPayments({
           expired_date,
           status: PaymentStatusEnum.Success,
+          expiredDateBefore,
         });
 
         if (!payments.length) {
