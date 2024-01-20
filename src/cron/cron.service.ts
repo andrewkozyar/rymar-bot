@@ -42,7 +42,7 @@ export class CronService {
       });
 
       if (expiredUsers.length) {
-        this.botService.deleteExpiredUsers(expiredUsers);
+        await this.botService.deleteExpiredUsers(expiredUsers);
       }
 
       const { users: usersFor1DayNotification } =
@@ -53,7 +53,7 @@ export class CronService {
         });
 
       if (usersFor1DayNotification.length) {
-        this.botService.notifyUsers(usersFor1DayNotification, 1);
+        await this.botService.notifyUsers(usersFor1DayNotification, 1);
       }
 
       const { users: usersFor3DayNotification } =
@@ -67,7 +67,7 @@ export class CronService {
         });
 
       if (usersFor3DayNotification.length) {
-        this.botService.notifyUsers(usersFor3DayNotification, 3);
+        await this.botService.notifyUsers(usersFor3DayNotification, 3);
       }
 
       const { users: usersFor7DayNotification } =
@@ -82,7 +82,7 @@ export class CronService {
         });
 
       if (usersFor7DayNotification.length) {
-        this.botService.notifyUsers(usersFor7DayNotification, 7);
+        await this.botService.notifyUsers(usersFor7DayNotification, 7);
       }
 
       // await this.updateConversionRates();
