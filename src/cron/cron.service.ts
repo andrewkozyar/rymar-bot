@@ -37,7 +37,7 @@ export class CronService {
       });
 
       const { users: expiredUsers } = await this.userService.getUsers({
-        expired_date: addDays(getDateWithoutHours(new Date()), 1),
+        expired_date: new Date(),
         expiredDateBefore: true,
       });
 
@@ -47,7 +47,7 @@ export class CronService {
 
       const { users: usersFor1DayNotification } =
         await this.userService.getUsers({
-          expired_date: addDays(getDateWithoutHours(new Date()), 2),
+          expired_date: addDays(getDateWithoutHours(new Date()), 1),
           notIn: expiredUsers.map((u) => u.id),
           expiredDateBefore: false,
         });
@@ -58,7 +58,7 @@ export class CronService {
 
       const { users: usersFor3DayNotification } =
         await this.userService.getUsers({
-          expired_date: addDays(getDateWithoutHours(new Date()), 4),
+          expired_date: addDays(getDateWithoutHours(new Date()), 3),
           notIn: [
             ...expiredUsers.map((u) => u.id),
             ...usersFor1DayNotification.map((u) => u.id),
@@ -72,7 +72,7 @@ export class CronService {
 
       const { users: usersFor7DayNotification } =
         await this.userService.getUsers({
-          expired_date: addDays(getDateWithoutHours(new Date()), 8),
+          expired_date: addDays(getDateWithoutHours(new Date()), 7),
           notIn: [
             ...expiredUsers.map((u) => u.id),
             ...usersFor1DayNotification.map((u) => u.id),
