@@ -7,7 +7,7 @@ import { GetPaymentsType, PaymentStatusEnum, errorHandler } from '../helper';
 
 import { Payment } from './payment.entity';
 import { SubscriptionPlanService } from 'src/subscriptionPlan/subscriptionPlan.service';
-import { addDays, addMonths } from 'src/helper/date';
+import { addDays, addMonths, getDateWithoutHours } from 'src/helper/date';
 
 @Injectable()
 export class PaymentService {
@@ -23,7 +23,10 @@ export class PaymentService {
         id: dto.subscription_plan_id,
       });
 
-      let expired_date = addMonths(new Date(), plan.months_count);
+      let expired_date = addMonths(
+        getDateWithoutHours(new Date()),
+        plan.months_count,
+      );
 
       if (continueDays) {
         expired_date = addDays(expired_date, continueDays);

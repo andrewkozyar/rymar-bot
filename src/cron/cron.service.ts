@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { BotService } from 'src/bot/bot.service';
-import { addDays } from 'src/helper/date';
+import { addDays, getDateWithoutHours } from 'src/helper/date';
 import { UserService } from 'src/user/user.service';
 import { HttpService } from '@nestjs/axios';
 import {
@@ -37,7 +37,7 @@ export class CronService {
       });
 
       const { users: expiredUsers } = await this.userService.getUsers({
-        expired_date: new Date(),
+        expired_date: addDays(getDateWithoutHours(new Date()), 1),
       });
 
       if (expiredUsers.length) {
@@ -46,7 +46,7 @@ export class CronService {
 
       const { users: usersFor1DayNotification } =
         await this.userService.getUsers({
-          expired_date: addDays(new Date(), 1),
+          expired_date: addDays(getDateWithoutHours(new Date()), 2),
           notIn: expiredUsers.map((u) => u.id),
         });
 
@@ -56,7 +56,7 @@ export class CronService {
 
       const { users: usersFor3DayNotification } =
         await this.userService.getUsers({
-          expired_date: addDays(new Date(), 3),
+          expired_date: addDays(getDateWithoutHours(new Date()), 4),
           notIn: [
             ...expiredUsers.map((u) => u.id),
             ...usersFor1DayNotification.map((u) => u.id),
@@ -69,7 +69,7 @@ export class CronService {
 
       const { users: usersFor7DayNotification } =
         await this.userService.getUsers({
-          expired_date: addDays(new Date(), 7),
+          expired_date: addDays(getDateWithoutHours(new Date()), 8),
           notIn: [
             ...expiredUsers.map((u) => u.id),
             ...usersFor1DayNotification.map((u) => u.id),
