@@ -95,10 +95,20 @@ export class ChannelService {
         await Promise.all(
           channels.map((c) => {
             bot
+              .banChatMember(Number(c.chat_id), Number(user.chat_id))
+              .catch((e) =>
+                this.logService.create({
+                  action: `banChatMember userId: ${user.id}, chatId: ${c.chat_id}`,
+                  info: JSON.stringify(e),
+                  type: 'error',
+                }),
+              );
+
+            bot
               .unbanChatMember(Number(c.chat_id), Number(user.chat_id))
               .catch((e) =>
                 this.logService.create({
-                  action: `restrictChatMember userId: ${user.id}, chatId: ${c.chat_id}`,
+                  action: `unbanChatMember userId: ${user.id}, chatId: ${c.chat_id}`,
                   info: JSON.stringify(e),
                   type: 'error',
                 }),
