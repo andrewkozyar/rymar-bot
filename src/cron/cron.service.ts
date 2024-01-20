@@ -13,6 +13,7 @@ import {
 } from 'src/helper';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
 import { LogService } from 'src/log/log.service';
+import { PaymentService } from 'src/payment/payment.service';
 
 @Injectable()
 export class CronService {
@@ -23,9 +24,10 @@ export class CronService {
     private readonly httpService: HttpService,
     private rateService: ConversionRateService,
     private logService: LogService,
+    private paymentService: PaymentService,
   ) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_1PM)
+  @Cron(CronExpression.EVERY_DAY_AT_2PM)
   async checkExpiredDate() {
     try {
       await this.logService.create({
@@ -33,33 +35,6 @@ export class CronService {
         info: 'start cron job',
         type: 'info',
       });
-
-      const { users: usersFor7DayNotification } =
-        await this.userService.getUsers({
-          expired_date: addDays(new Date(), 7),
-        });
-
-      if (usersFor7DayNotification.length) {
-        this.botService.notifyUsers(usersFor7DayNotification, 7);
-      }
-
-      const { users: usersFor3DayNotification } =
-        await this.userService.getUsers({
-          expired_date: addDays(new Date(), 3),
-        });
-
-      if (usersFor7DayNotification.length) {
-        this.botService.notifyUsers(usersFor3DayNotification, 3);
-      }
-
-      const { users: usersFor1DayNotification } =
-        await this.userService.getUsers({
-          expired_date: addDays(new Date(), 1),
-        });
-
-      if (usersFor7DayNotification.length) {
-        this.botService.notifyUsers(usersFor1DayNotification, 1);
-      }
 
       const { users: expiredUsers } = await this.userService.getUsers({
         expired_date: new Date(),
@@ -69,7 +44,45 @@ export class CronService {
         this.botService.deleteExpiredUsers(expiredUsers);
       }
 
+      const { users: usersFor1DayNotification } =
+        await this.userService.getUsers({
+          expired_date: addDays(new Date(), 1),
+          notIn: expiredUsers.map((u) => u.id),
+        });
+
+      if (usersFor1DayNotification.length) {
+        this.botService.notifyUsers(usersFor1DayNotification, 1);
+      }
+
+      const { users: usersFor3DayNotification } =
+        await this.userService.getUsers({
+          expired_date: addDays(new Date(), 3),
+          notIn: [
+            ...expiredUsers.map((u) => u.id),
+            ...usersFor1DayNotification.map((u) => u.id),
+          ],
+        });
+
+      if (usersFor3DayNotification.length) {
+        this.botService.notifyUsers(usersFor3DayNotification, 3);
+      }
+
+      const { users: usersFor7DayNotification } =
+        await this.userService.getUsers({
+          expired_date: addDays(new Date(), 7),
+          notIn: [
+            ...expiredUsers.map((u) => u.id),
+            ...usersFor1DayNotification.map((u) => u.id),
+            ...usersFor3DayNotification.map((u) => u.id),
+          ],
+        });
+
+      if (usersFor7DayNotification.length) {
+        this.botService.notifyUsers(usersFor7DayNotification, 7);
+      }
+
       await this.updateConversionRates();
+      await this.paymentService.changeExpiredStatuses();
 
       return true;
     } catch (e) {

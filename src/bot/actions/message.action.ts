@@ -359,81 +359,83 @@ export const actionMessage = async (
       if (redisUserPaymentData) {
         const payData: PayDataInterface = JSON.parse(redisUserPaymentData);
 
-        if (!msg.photo?.length) {
-          return await sendTextWithCancelKeyboard(
+        if (payData.payment_method_id) {
+          if (!msg.photo?.length) {
+            return await sendTextWithCancelKeyboard(
+              msg.chat.id,
+              bot,
+              user.language === UserLanguageEnum.EN
+                ? 'Wrong value. Please send a screenshot of the payment! 📱'
+                : user.language === UserLanguageEnum.UA
+                  ? 'Неправильне значення. Будь ласка, надішліть скрін з оплатою! 📱'
+                  : 'Неверное значение. Пожалуйста, отправьте скрин с оплатой! 📱',
+              'PayBy;' + payData.payment_method_id,
+              user,
+            );
+          }
+
+          await redisService.clearData(user.id);
+
+          const paymentMethod = await paymentMethodService.findOne({
+            id: payData.payment_method_id,
+          });
+
+          const rateToUsd = await rateService.get();
+
+          const payment = await paymentService.create({
+            ...payData,
+            status: PaymentStatusEnum.Pending,
+            amount: getFiatAmount(
+              rateToUsd[paymentMethod.currency] *
+                (payData.newPrice || payData.amount),
+            ),
+            price_usd: payData.newPrice || payData.amount,
+            user_id: user.id,
+            screenshot_message_id: msg.message_id.toString(),
+            address: paymentMethod.address,
+            currency: paymentMethod.currency,
+          });
+
+          const managers = await userService.getUsers({
+            names: admins,
+          });
+
+          const plan = await planService.findOne({
+            id: payData.subscription_plan_id,
+          });
+
+          let promocode = null;
+
+          if (payData.promocode_id) {
+            promocode = await promocodeService.findOne({
+              id: payData.promocode_id,
+            });
+          }
+
+          await Promise.all(
+            managers.users.map(async (manager) => {
+              return sendGiveUserAccessKeyboard(
+                manager.chat_id,
+                bot,
+                manager,
+                user,
+                payment,
+                plan,
+                paymentMethod,
+                promocode,
+              );
+            }),
+          );
+
+          return await bot.sendMessage(
             msg.chat.id,
-            bot,
             user.language === UserLanguageEnum.EN
-              ? 'Wrong value. Please send a screenshot of the payment! 📱'
+              ? '✅ Thank you for the payment. The manager will soon verify all the payment and if it was successful, the links to join all the chats and channels will come here.'
               : user.language === UserLanguageEnum.UA
-                ? 'Неправильне значення. Будь ласка, надішліть скрін з оплатою! 📱'
-                : 'Неверное значение. Пожалуйста, отправьте скрин с оплатой! 📱',
-            'PayBy;' + payData.payment_method_id,
-            user,
+                ? '✅ Дякуємо за оплату. Менеджер скоро перевірить вшу оплату, і якщо вона пройшла успішно, сюди прийдуть посилання для приєднання до всіх чатів та каналів.'
+                : '✅ Спасибо за оплату. Менеджер скоро проверит вашу оплату, и если она прошла успешно, сюда придут ссылки для подключения ко всем чатам и каналам.',
           );
         }
-
-        await redisService.clearData(user.id);
-
-        const paymentMethod = await paymentMethodService.findOne({
-          id: payData.payment_method_id,
-        });
-
-        const rateToUsd = await rateService.get();
-
-        const payment = await paymentService.create({
-          ...payData,
-          status: PaymentStatusEnum.Pending,
-          amount: getFiatAmount(
-            rateToUsd[paymentMethod.currency] *
-              (payData.newPrice || payData.amount),
-          ),
-          price_usd: payData.newPrice || payData.amount,
-          user_id: user.id,
-          screenshot_message_id: msg.message_id.toString(),
-          address: paymentMethod.address,
-          currency: paymentMethod.currency,
-        });
-
-        const managers = await userService.getUsers({
-          names: admins,
-        });
-
-        const plan = await planService.findOne({
-          id: payData.subscription_plan_id,
-        });
-
-        let promocode = null;
-
-        if (payData.promocode_id) {
-          promocode = await promocodeService.findOne({
-            id: payData.promocode_id,
-          });
-        }
-
-        await Promise.all(
-          managers.users.map(async (manager) => {
-            return sendGiveUserAccessKeyboard(
-              manager.chat_id,
-              bot,
-              manager,
-              user,
-              payment,
-              plan,
-              paymentMethod,
-              promocode,
-            );
-          }),
-        );
-
-        return await bot.sendMessage(
-          msg.chat.id,
-          user.language === UserLanguageEnum.EN
-            ? '✅ Thank you for the payment. The manager will soon verify all the payment and if it was successful, the links to join all the chats and channels will come here.'
-            : user.language === UserLanguageEnum.UA
-              ? '✅ Дякуємо за оплату. Менеджер скоро перевірить вшу оплату, і якщо вона пройшла успішно, сюди прийдуть посилання для приєднання до всіх чатів та каналів.'
-              : '✅ Спасибо за оплату. Менеджер скоро проверит вашу оплату, и если она прошла успешно, сюда придут ссылки для подключения ко всем чатам и каналам.',
-        );
       }
 
       await redisService.clearData(user.id);

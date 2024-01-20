@@ -6,6 +6,7 @@ import { HttpModule } from '@nestjs/axios';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConversionRateModule } from 'src/conversionRate/conversionRate.module';
 import { LogModule } from 'src/log/log.module';
+import { PaymentModule } from 'src/payment/payment.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { LogModule } from 'src/log/log.module';
     ConversionRateModule,
     ScheduleModule.forRoot(),
     LogModule,
+    PaymentModule,
   ],
   providers: [CronService],
   controllers: [],

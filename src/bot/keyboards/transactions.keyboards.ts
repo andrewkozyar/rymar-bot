@@ -167,7 +167,9 @@ ${
     ? '✅'
     : p.status === PaymentStatusEnum.Cancel
       ? '❌'
-      : '🤷‍♂️'
+      : p.status === PaymentStatusEnum.End
+        ? '🗓️'
+        : '🤷‍♂️'
 } <b>Status:</b> ${getStatusText(language, p.status)}
   <b>Amount USD:</b> ${p.price_usd}$ 
   <b>Paid amount:</b> ${p.amount} ${p.currency}
@@ -191,7 +193,9 @@ ${
     ? '✅'
     : p.status === PaymentStatusEnum.Cancel
       ? '❌'
-      : '🤷‍♂️'
+      : p.status === PaymentStatusEnum.End
+        ? '🗓️'
+        : '🤷‍♂️'
 } <b>Статус:</b> ${getStatusText(language, p.status)}
   <b>Сума в USD:</b> ${p.price_usd}$
   <b>Оплачена сума:</b> ${p.amount} ${p.currency}
@@ -215,7 +219,9 @@ ${
     ? '✅'
     : p.status === PaymentStatusEnum.Cancel
       ? '❌'
-      : '🤷‍♂️'
+      : p.status === PaymentStatusEnum.End
+        ? '🗓️'
+        : '🤷‍♂️'
 } <b>Статус:</b> ${getStatusText(language, p.status)}
   <b>Сумма в USD:</b> ${p.price_usd}$
   <b>Оплаченная сумма:</b> ${p.amount} ${p.currency}
@@ -288,5 +294,12 @@ const getStatusText = (
         : language === UserLanguageEnum.UA
           ? 'Ваш платіж успішний'
           : 'Ваш платеж успешен';
+
+    case PaymentStatusEnum.End:
+      return language === UserLanguageEnum.EN
+        ? 'The subscription for this payment has already expired'
+        : language === UserLanguageEnum.UA
+          ? 'Термін дії підписки по цьому платежу вже закінчився'
+          : 'Срок действия подписки по этому платежу уже истек';
   }
 };

@@ -131,4 +131,17 @@ export class PaymentService {
       );
     }
   }
+
+  async changeExpiredStatuses() {
+    const { payments } = await this.getPayments({
+      expired_date: new Date(),
+    });
+
+    await this.paymentRepository.save(
+      payments.map((p) => ({
+        ...p,
+        status: PaymentStatusEnum.End,
+      })),
+    );
+  }
 }

@@ -41,6 +41,7 @@ export enum PaymentStatusEnum {
   Pending = 'PENDING',
   Success = 'SUCCESS',
   Cancel = 'CANCEL',
+  End = 'END',
 }
 
 export interface ExchangeRatesApiResponseInterface {

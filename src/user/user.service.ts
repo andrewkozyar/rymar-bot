@@ -82,12 +82,14 @@ export class UserService {
     searchKey,
     expired_date,
     names,
+    notIn,
   }: {
     offset?: number;
     limit?: number;
     searchKey?: string;
     expired_date?: Date;
     names?: string[];
+    notIn?: string[];
   }): Promise<GetUsersType> {
     try {
       const userQuery = await this.userRepository.createQueryBuilder('user');
@@ -116,6 +118,12 @@ export class UserService {
 
         userQuery.andWhere('user.id IN (:...ids)', {
           ids: payments.map((p) => p.user_id),
+        });
+      }
+
+      if (notIn?.length) {
+        userQuery.andWhere('user.id NOT IN (:...notIn)', {
+          notIn,
         });
       }
 
