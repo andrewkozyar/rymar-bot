@@ -132,10 +132,7 @@ You still have the option to renew your subscription at the old price.`
     return await Promise.all(
       users.map(async (user) => {
         try {
-          await this.channelService.deleteUserFromChannels(
-            this.bot,
-            user.chat_id,
-          );
+          await this.channelService.deleteUserFromChannels(this.bot, user);
 
           return await this.bot.sendMessage(
             user.chat_id,

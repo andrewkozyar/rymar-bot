@@ -87,7 +87,7 @@ export class ChannelService {
     }
   }
 
-  async deleteUserFromChannels(bot: TelegramBot, userChatId: string) {
+  async deleteUserFromChannels(bot: TelegramBot, user: User) {
     try {
       const channels = await this.find();
 
@@ -95,10 +95,10 @@ export class ChannelService {
         await Promise.all(
           channels.map((c) => {
             bot
-              .restrictChatMember(Number(c.chat_id), Number(userChatId))
+              .restrictChatMember(Number(c.chat_id), Number(user.chat_id))
               .catch((e) =>
                 this.logService.create({
-                  action: 'restrictChatMember',
+                  action: `restrictChatMember userId: ${user.id}, chatId: ${c.chat_id}`,
                   info: JSON.stringify(e),
                   type: 'error',
                 }),
