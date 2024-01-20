@@ -101,11 +101,9 @@ export class PaymentService {
       }
 
       if (expired_date) {
-        paymentQuery
-          .distinctOn(['payment.user_id'])
-          .andWhere(`payment.expired_date <= :expired_date`, {
-            expired_date,
-          });
+        paymentQuery.andWhere(`payment.expired_date <= :expired_date`, {
+          expired_date,
+        });
       }
 
       if (status) {
