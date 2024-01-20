@@ -27,7 +27,7 @@ export class CronService {
     private paymentService: PaymentService,
   ) {}
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async checkExpiredDate() {
     try {
       await this.logService.create({
