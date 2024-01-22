@@ -375,6 +375,17 @@ export const actionCallbackQuery = async (
 
         const payData: PayDataInterface = JSON.parse(redisData);
 
+        if (!payData?.subscription_plan_id) {
+          return await editSubscriptionPlanKeyboard(
+            query.message.chat.id,
+            query.message.message_id,
+            bot,
+            planService,
+            false,
+            user,
+          );
+        }
+
         const plan = await planService.findOne({
           id: payData.subscription_plan_id,
         });
