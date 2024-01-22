@@ -359,7 +359,7 @@ export const actionMessage = async (
       if (redisUserPaymentData) {
         const payData: PayDataInterface = JSON.parse(redisUserPaymentData);
 
-        if (payData.payment_method_id) {
+        if (payData.payment_method_id && payData.subscription_plan_id) {
           if (!msg.photo?.length) {
             return await sendTextWithCancelKeyboard(
               msg.chat.id,
