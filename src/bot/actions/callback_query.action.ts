@@ -1019,6 +1019,12 @@ export const actionCallbackQuery = async (
           id: payment.user_id,
         });
 
+        await paymentService.update({
+          id: payment.id,
+          status: PaymentStatusEnum.Success,
+          updated_by_id: user.id,
+        });
+
         await editTransactionsKeyboard(
           query.message.chat.id,
           query.message.message_id,
@@ -1029,12 +1035,6 @@ export const actionCallbackQuery = async (
           user.language,
           true,
         );
-
-        await paymentService.update({
-          id: payment.id,
-          status: PaymentStatusEnum.Success,
-          updated_by_id: user.id,
-        });
 
         await bot.sendMessage(
           customer.chat_id,
@@ -1074,6 +1074,12 @@ Attention, you must join all channels and chats within 24 hours after receiving 
           id: payment.user_id,
         });
 
+        await paymentService.update({
+          id: data,
+          status: PaymentStatusEnum.Cancel,
+          updated_by_id: user.id,
+        });
+
         await editTransactionsKeyboard(
           query.message.chat.id,
           query.message.message_id,
@@ -1084,12 +1090,6 @@ Attention, you must join all channels and chats within 24 hours after receiving 
           user.language,
           false,
         );
-
-        await paymentService.update({
-          id: data,
-          status: PaymentStatusEnum.Cancel,
-          updated_by_id: user.id,
-        });
 
         await bot.sendMessage(
           query.message.chat.id,

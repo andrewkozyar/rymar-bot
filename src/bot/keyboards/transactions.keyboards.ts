@@ -95,15 +95,15 @@ export const editTransactionsKeyboard = async (
       `✅ ${
         language === UserLanguageEnum.EN
           ? `Users @${user.name} payment confirmed successfully!
-          
-          `
+
+`
           : language === UserLanguageEnum.UA
             ? `Оплата користувача @${user.name} підтверджена успішно!
-            
-            `
+
+`
             : `Оплата пользователя @${user.name} подтверждена успешно!
-            
-            `
+
+`
       }`;
   } else if (isConfirmedPayment === false) {
     text =
@@ -111,15 +111,15 @@ export const editTransactionsKeyboard = async (
       `✅ ${
         language === UserLanguageEnum.EN
           ? `Payment by user @${user.name} declined!
-          
-          `
+
+`
           : language === UserLanguageEnum.UA
             ? `Оплата користувача @${user.name} відхилена!
-            
-            `
+
+`
             : `Оплата пользователя @${user.name} отклонена!
-            
-            `
+
+`
       }`;
   }
 
