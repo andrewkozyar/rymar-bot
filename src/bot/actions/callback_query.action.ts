@@ -18,7 +18,10 @@ import {
   editSubscriptionPlanDetailsKeyboard,
   sendSubscriptionPlanDetailsKeyboard,
 } from '../keyboards/subscription-plan-details.keyboards';
-import { editSubscriptionPlanKeyboard } from '../keyboards/subscription-plans.keyboards';
+import {
+  editSubscriptionPlanKeyboard,
+  sendSubscriptionPlanKeyboard,
+} from '../keyboards/subscription-plans.keyboards';
 import { sendTimezoneKeyboard } from '../keyboards/timezone.keyboards';
 import { editTransactionsKeyboard } from '../keyboards/transactions.keyboards';
 import { RedisService } from 'src/redis/redis.service';
@@ -376,9 +379,8 @@ export const actionCallbackQuery = async (
         const payData: PayDataInterface = JSON.parse(redisData);
 
         if (!payData?.subscription_plan_id) {
-          return await editSubscriptionPlanKeyboard(
+          return await sendSubscriptionPlanKeyboard(
             query.message.chat.id,
-            query.message.message_id,
             bot,
             planService,
             false,
