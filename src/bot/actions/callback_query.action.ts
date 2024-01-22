@@ -357,6 +357,16 @@ export const actionCallbackQuery = async (
 
         const payData: PayDataInterface = JSON.parse(redisData);
 
+        if (!payData?.isContinue) {
+          return await sendSubscriptionPlanKeyboard(
+            query.message.chat.id,
+            bot,
+            planService,
+            false,
+            user,
+          );
+        }
+
         return await editPaymentMethodsKeyboard(
           query.message.chat.id,
           query.message.message_id,
