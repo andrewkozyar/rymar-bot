@@ -117,7 +117,7 @@ You still have the option to renew your subscription at the old price.`
                         : user.language === UserLanguageEnum.UA
                           ? 'Продовжити підписку за старою ціною'
                           : 'Продолжить подписку по старой цене',
-                    callback_data: 'ContinueSubscription',
+                    callback_data: 'ContinueSubscription;notification',
                   },
                 ],
               ],

@@ -14,7 +14,10 @@ import { editAccountKeyboard } from '../keyboards/account.keyboards';
 import { editLanguageKeyboard } from '../keyboards/language.keyboards';
 import { sendMenuKeyboard } from '../keyboards/menu.keyboards';
 import { editMySubscriptionKeyboard } from '../keyboards/my-subscription.keyboards';
-import { editSubscriptionPlanDetailsKeyboard } from '../keyboards/subscription-plan-details.keyboards';
+import {
+  editSubscriptionPlanDetailsKeyboard,
+  sendSubscriptionPlanDetailsKeyboard,
+} from '../keyboards/subscription-plan-details.keyboards';
 import { editSubscriptionPlanKeyboard } from '../keyboards/subscription-plans.keyboards';
 import { sendTimezoneKeyboard } from '../keyboards/timezone.keyboards';
 import { editTransactionsKeyboard } from '../keyboards/transactions.keyboards';
@@ -242,6 +245,17 @@ export const actionCallbackQuery = async (
           id: payData.subscription_plan_id,
           withDeleted: true,
         });
+
+        if (data === 'notification') {
+          return await sendSubscriptionPlanDetailsKeyboard(
+            query.message.chat.id,
+            bot,
+            plan,
+            redisService,
+            user,
+            payData,
+          );
+        }
 
         return await editSubscriptionPlanDetailsKeyboard(
           query.message.chat.id,
