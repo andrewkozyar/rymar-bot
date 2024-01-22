@@ -81,27 +81,64 @@ export const editTransactionsKeyboard = async (
   paymentService: PaymentService,
   isAdminPanel: boolean,
   language: UserLanguageEnum,
+  isConfirmedPayment: boolean = null,
 ) => {
   const { payments, total } = await paymentService.getPayments({
     user_id: user.id,
   });
 
-  let text;
+  let text = '';
+
+  if (isConfirmedPayment) {
+    text =
+      text +
+      `✅ ${
+        language === UserLanguageEnum.EN
+          ? `Users @${user.name} payment confirmed successfully!
+          
+          `
+          : language === UserLanguageEnum.UA
+            ? `Оплата користувача @${user.name} підтверджена успішно!
+            
+            `
+            : `Оплата пользователя @${user.name} подтверждена успешно!
+            
+            `
+      }`;
+  } else if (isConfirmedPayment === false) {
+    text =
+      text +
+      `✅ ${
+        language === UserLanguageEnum.EN
+          ? `Payment by user @${user.name} declined!
+          
+          `
+          : language === UserLanguageEnum.UA
+            ? `Оплата користувача @${user.name} відхилена!
+            
+            `
+            : `Оплата пользователя @${user.name} отклонена!
+            
+            `
+      }`;
+  }
 
   if (payments.length) {
-    text = `🗄️ ${getUserInfoText(language, isAdminPanel, user)} ${
-      language === UserLanguageEnum.EN
-        ? `had ${total} payments!
+    text =
+      text +
+      `🗄️ ${getUserInfoText(language, isAdminPanel, user)} ${
+        language === UserLanguageEnum.EN
+          ? `had ${total} payments!
 
 <b>List of payments:</b>`
-        : language === UserLanguageEnum.UA
-          ? `є платежів: ${total}!
+          : language === UserLanguageEnum.UA
+            ? `є платежів: ${total}!
   
 <b>Список платежів:</b>`
-          : `есть платежей: ${total}!
+            : `есть платежей: ${total}!
 
 <b>Список платежей:</b>`
-    }`;
+      }`;
 
     payments.forEach((p) => {
       text = text + getPaymentInfoText(language, p, isAdminPanel);
@@ -276,24 +313,24 @@ const getStatusText = (
   switch (status) {
     case PaymentStatusEnum.Cancel:
       return language === UserLanguageEnum.EN
-        ? 'Your payment has not been confirmed by the manager'
+        ? 'payment has not been confirmed by the manager'
         : language === UserLanguageEnum.UA
-          ? 'Ваш платіж не підтверджено менеджером'
-          : 'Ваш платеж не подтвержден менеджером';
+          ? 'платіж не підтверджено менеджером'
+          : 'платеж не подтвержден менеджером';
 
     case PaymentStatusEnum.Pending:
       return language === UserLanguageEnum.EN
-        ? 'Your payment is still pending'
+        ? 'payment is still pending'
         : language === UserLanguageEnum.UA
-          ? 'Ваш платіж ще очікує розгляду'
-          : 'Ваш платеж еще ожидает рассмотрения';
+          ? 'платіж ще очікує розгляду'
+          : 'платеж еще ожидает рассмотрения';
 
     case PaymentStatusEnum.Success:
       return language === UserLanguageEnum.EN
-        ? 'Your payment is successful'
+        ? 'payment is successful'
         : language === UserLanguageEnum.UA
-          ? 'Ваш платіж успішний'
-          : 'Ваш платеж успешен';
+          ? 'платіж успішний'
+          : 'платеж успешен';
 
     case PaymentStatusEnum.End:
       return language === UserLanguageEnum.EN

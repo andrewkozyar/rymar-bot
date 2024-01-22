@@ -1002,24 +1002,39 @@ export const actionCallbackQuery = async (
       if (key === 'GiveUserAccessConfirm') {
         await redisService.clearData(user.id);
 
-        const payment = await paymentService.update({
+        const payment = await paymentService.findOne({
           id: data,
-          status: PaymentStatusEnum.Success,
-          updated_by_id: user.id,
+          status: PaymentStatusEnum.Pending,
         });
+
+        if (!payment) {
+          return await logService.create({
+            action: 'callback_query',
+            info: `GiveUserAccessConfirm no payment bug. data: ${data}`,
+            type: 'error',
+          });
+        }
 
         const customer = await userService.findOne({
           id: payment.user_id,
         });
 
-        await bot.sendMessage(
+        await editTransactionsKeyboard(
           query.message.chat.id,
-          user.language === UserLanguageEnum.EN
-            ? `✅ User @${customer.name} payment confirmed successfully!`
-            : user.language === UserLanguageEnum.UA
-              ? `✅ Оплата користувача @${customer.name} підтверджена успішно!`
-              : `✅ Оплата пользователя @${customer.name} подтверждена успешно!`,
+          query.message.message_id,
+          bot,
+          customer,
+          paymentService,
+          true,
+          user.language,
+          true,
         );
+
+        await paymentService.update({
+          id: payment.id,
+          status: PaymentStatusEnum.Success,
+          updated_by_id: user.id,
+        });
 
         await bot.sendMessage(
           customer.chat_id,
@@ -1042,14 +1057,38 @@ Attention, you must join all channels and chats within 24 hours after receiving 
       if (key === 'GiveUserAccessDecline') {
         await redisService.clearData(user.id);
 
-        const payment = await paymentService.update({
+        const payment = await paymentService.findOne({
           id: data,
-          status: PaymentStatusEnum.Cancel,
-          updated_by_id: user.id,
+          status: PaymentStatusEnum.Pending,
         });
+
+        if (!payment) {
+          return await logService.create({
+            action: 'callback_query',
+            info: `GiveUserAccessDecline no payment bug. data: ${data}`,
+            type: 'error',
+          });
+        }
 
         const customer = await userService.findOne({
           id: payment.user_id,
+        });
+
+        await editTransactionsKeyboard(
+          query.message.chat.id,
+          query.message.message_id,
+          bot,
+          customer,
+          paymentService,
+          true,
+          user.language,
+          false,
+        );
+
+        await paymentService.update({
+          id: data,
+          status: PaymentStatusEnum.Cancel,
+          updated_by_id: user.id,
         });
 
         await bot.sendMessage(

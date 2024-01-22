@@ -16,6 +16,7 @@ import { actionCallbackQuery } from './actions/callback_query.action';
 import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
 import { LogService } from 'src/log/log.service';
+import { admins } from './keyboards/account.keyboards';
 
 @Injectable()
 export class BotService {
@@ -109,6 +110,23 @@ You still have the option to renew your subscription at the old price.`
       users.map(async (user) => {
         try {
           await this.channelService.deleteUserFromChannels(this.bot, user);
+
+          const managers = await this.userService.getUsers({
+            names: admins,
+          });
+
+          await Promise.all(
+            managers.users.map(async (manager) => {
+              return this.bot.sendMessage(
+                manager.chat_id,
+                manager.language === UserLanguageEnum.EN
+                  ? `‼️ Users @${user.name} subscription has expired! He have been removed from all channels.`
+                  : manager.language === UserLanguageEnum.UA
+                    ? `‼️ Термін дії підписки користувача @${user.name} закінчився! Його було видалено з усіх каналів.`
+                    : `‼️ Срок действия подписки пользователя @${user.name} истек! Он был удален со всех каналов`,
+              );
+            }),
+          );
 
           return await this.bot.sendMessage(
             user.chat_id,
