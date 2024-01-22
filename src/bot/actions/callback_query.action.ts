@@ -43,6 +43,7 @@ import { sendGiveUserAccessKeyboard } from '../keyboards/give-user-access.keyboa
 import { editCurrencyKeyboard } from '../keyboards/currency.keyboards';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
 import { LogService } from 'src/log/log.service';
+import { getDaysDifference } from 'src/helper/date';
 
 export const actionCallbackQuery = async (
   bot: TelegramBot,
@@ -238,18 +239,32 @@ export const actionCallbackQuery = async (
       }
 
       if (key === 'ContinueSubscription') {
-        const redisData = await redisService.get(
-          `ContinueSubscription-${user.id}`,
+        const lastPayment = await paymentService.findOne({
+          user_id: user.id,
+          status: PaymentStatusEnum.Success,
+        });
+
+        const continueDays = getDaysDifference(
+          new Date(),
+          lastPayment.expired_date,
         );
 
-        const payData: PayDataInterface = JSON.parse(redisData);
+        const payData: PayDataInterface = {
+          amount: lastPayment.subscription_plan.price,
+          subscription_plan_id: lastPayment.subscription_plan_id,
+          newPrice: lastPayment.price_usd,
+          isContinue: true,
+          promocode_id: null,
+          continueDays,
+          isFromNotification: data === 'notification',
+        };
 
         const plan = await planService.findOne({
           id: payData.subscription_plan_id,
           withDeleted: true,
         });
 
-        if (data === 'notification') {
+        if (payData.isFromNotification) {
           return await sendSubscriptionPlanDetailsKeyboard(
             query.message.chat.id,
             bot,
@@ -470,7 +485,6 @@ export const actionCallbackQuery = async (
           bot,
           user,
           paymentService,
-          redisService,
         );
       }
 

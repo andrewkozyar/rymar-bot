@@ -95,7 +95,6 @@ export const actionMessage = async (
           bot,
           user,
           paymentService,
-          redisService,
         );
       }
 

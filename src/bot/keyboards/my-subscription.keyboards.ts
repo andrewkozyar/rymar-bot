@@ -1,13 +1,8 @@
 import TelegramBot from 'node-telegram-bot-api';
-import {
-  PayDataInterface,
-  PaymentStatusEnum,
-  UserLanguageEnum,
-} from 'src/helper';
+import { PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
 import { getDateWithoutHours, getDaysDifference } from 'src/helper/date';
 import { Payment } from 'src/payment/payment.entity';
 import { PaymentService } from 'src/payment/payment.service';
-import { RedisService } from 'src/redis/redis.service';
 import { User } from 'src/user/user.entity';
 
 export const sendMySubscriptionKeyboard = async (
@@ -15,7 +10,6 @@ export const sendMySubscriptionKeyboard = async (
   bot: TelegramBot,
   user: User,
   paymentService: PaymentService,
-  redisService: RedisService,
 ) => {
   const lastPayment = await paymentService.findOne({
     user_id: user.id,
@@ -36,20 +30,6 @@ export const sendMySubscriptionKeyboard = async (
     ).toDateString();
 
     text = getPlanInfo(user.language, lastPayment, continueDays, expiredDate);
-
-    const payData: PayDataInterface = {
-      amount: lastPayment.subscription_plan.price,
-      subscription_plan_id: lastPayment.subscription_plan_id,
-      newPrice: lastPayment.price_usd,
-      isContinue: true,
-      promocode_id: null,
-      continueDays,
-    };
-
-    await redisService.add(
-      `ContinueSubscription-${user.id}`,
-      JSON.stringify(payData),
-    );
 
     inline_keyboard.push([
       {
@@ -112,7 +92,6 @@ export const editMySubscriptionKeyboard = async (
   bot: TelegramBot,
   user: User,
   paymentService: PaymentService,
-  redisService: RedisService,
 ) => {
   const lastPayment = await paymentService.findOne({
     user_id: user.id,
@@ -133,20 +112,6 @@ export const editMySubscriptionKeyboard = async (
     ).toDateString();
 
     text = getPlanInfo(user.language, lastPayment, continueDays, expiredDate);
-
-    const payData: PayDataInterface = {
-      amount: lastPayment.subscription_plan.price,
-      subscription_plan_id: lastPayment.subscription_plan_id,
-      newPrice: lastPayment.price_usd,
-      isContinue: true,
-      promocode_id: null,
-      continueDays,
-    };
-
-    await redisService.add(
-      `ContinueSubscription-${user.id}`,
-      JSON.stringify(payData),
-    );
 
     inline_keyboard.push([
       {

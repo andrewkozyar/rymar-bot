@@ -4,11 +4,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import { telegramBot } from '../configs/telegram-bot.config';
 import { RedisService } from '../redis/redis.service';
 import { UserService } from '../user/user.service';
-import {
-  PayDataInterface,
-  PaymentStatusEnum,
-  UserLanguageEnum,
-} from 'src/helper';
+import { UserLanguageEnum } from 'src/helper';
 import { SubscriptionPlanService } from 'src/subscriptionPlan/subscriptionPlan.service';
 import { PromocodeService } from 'src/promocode/promocode.service';
 import { PaymentService } from 'src/payment/payment.service';
@@ -75,26 +71,6 @@ export class BotService {
   async notifyUsers(users: User[], expiredDays: number) {
     return await Promise.all(
       users.map(async (user) => {
-        const lastPayment = await this.paymentService.findOne({
-          user_id: user.id,
-          status: PaymentStatusEnum.Success,
-        });
-
-        const payData: PayDataInterface = {
-          amount: lastPayment.subscription_plan.price,
-          subscription_plan_id: lastPayment.subscription_plan_id,
-          newPrice: lastPayment.price_usd,
-          isContinue: true,
-          promocode_id: null,
-          isFromNotification: true,
-          continueDays: expiredDays,
-        };
-
-        await this.redisService.add(
-          `ContinueSubscription-${user.id}`,
-          JSON.stringify(payData),
-        );
-
         return this.bot.sendMessage(
           user.chat_id,
           user.language === UserLanguageEnum.EN
