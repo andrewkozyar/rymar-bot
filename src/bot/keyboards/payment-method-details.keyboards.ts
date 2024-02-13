@@ -56,11 +56,18 @@ export const editPaymentMethodDetailsKeyboard = async (
     ],
   ];
 
-  await bot.editMessageText(text, {
-    chat_id,
-    message_id,
-    parse_mode: 'HTML',
-  });
+  await bot.editMessageText(
+    paymentMethod[`descriptionEN${user.language}`] +
+      `
+    
+` +
+      text,
+    {
+      chat_id,
+      message_id,
+      parse_mode: 'HTML',
+    },
+  );
 
   await bot.editMessageReplyMarkup(
     {
@@ -76,12 +83,18 @@ export const editPaymentMethodDetailsKeyboard = async (
     user.language === UserLanguageEnum.EN
       ? `Payment address for ${paymentMethod.name}:
 
+Click to copy 👇
+
 `
       : user.language === UserLanguageEnum.UA
         ? `Платіжна адреса для ${paymentMethod.name}:
 
+Натисніть щоб скопіювати 👇
+
 `
         : `Платежный адрес для ${paymentMethod.name}:
+
+Нажмите, чтобы скопировать 👇
 
 `;
 
