@@ -24,10 +24,16 @@ export const editPaymentMethodDetailsKeyboard = async (
 
   const text =
     user.language === UserLanguageEnum.EN
-      ? `Pay ${priceToShow} to the account that will arrive in the next message. Attention, carefully check the payment method, amount and network so as not to lose funds!`
+      ? `After payment, press the "I paid" button and send a screenshot of the payment here in a message. The bot will check the payment and send a link to the channels in a few minutes.
+
+Pay ${priceToShow} to the account that will arrive in the next message. Attention, carefully check the payment method, amount and network so as not to lose funds!`
       : user.language === UserLanguageEnum.UA
-        ? `Оплатіть ${priceToShow} на рахунок який прийде наступним повідомленням. Увага перевірте уважно метод оплати, суму  та мережу, щоб не втратити кошти!`
-        : `Оплатите ${priceToShow} на счет, который придет следующим сообщением. Внимание проверьте метод оплаты, сумму и сеть, чтобы не потерять средства!`;
+        ? `Після оплати натиніть кнопку "Я оплатив" та надішліть скріншот з оплатою сюди в повідомлення. Бот перевірить оплату та за кілька хвилин надішле посилання в канали.
+        
+Оплатіть ${priceToShow} на рахунок який прийде наступним повідомленням. Увага перевірте уважно метод оплати, суму  та мережу, щоб не втратити кошти!`
+        : `После оплаты нажмите кнопку "Я оплатил" и отправьте скриншот с оплатой сюда в сообщение. Бот проверит оплату и через несколько минут отправит ссылку в каналы.
+
+Оплатите ${priceToShow} на счет, который придет следующим сообщением. Внимание проверьте метод оплаты, сумму и сеть, чтобы не потерять средства!`;
 
   const inline_keyboard = [
     [
