@@ -207,7 +207,7 @@ export const actionCallbackQuery = async (
             `BuySubscriptionPlan-${user.id}`,
             JSON.stringify({
               ...payData,
-              payment_method_id: null,
+              addressMessageId: null,
             }),
           );
         }
@@ -395,7 +395,7 @@ export const actionCallbackQuery = async (
             `BuySubscriptionPlan-${user.id}`,
             JSON.stringify({
               ...payData,
-              payment_method_id: null,
+              addressMessageId: null,
             }),
           );
         }
@@ -430,7 +430,7 @@ export const actionCallbackQuery = async (
             `BuySubscriptionPlan-${user.id}`,
             JSON.stringify({
               ...payData,
-              payment_method_id: null,
+              addressMessageId: null,
             }),
           );
         }
@@ -491,7 +491,7 @@ export const actionCallbackQuery = async (
             `BuySubscriptionPlan-${user.id}`,
             JSON.stringify({
               ...payData,
-              payment_method_id: null,
+              addressMessageId: null,
             }),
           );
         }
