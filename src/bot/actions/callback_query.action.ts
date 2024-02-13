@@ -492,17 +492,18 @@ export const actionCallbackQuery = async (
             JSON.stringify({
               ...payData,
               addressMessageId: null,
+              payment_method_id: paymentMethod.id,
+            }),
+          );
+        } else {
+          await redisService.add(
+            `BuySubscriptionPlan-${user.id}`,
+            JSON.stringify({
+              ...payData,
+              payment_method_id: paymentMethod.id,
             }),
           );
         }
-
-        await redisService.add(
-          `BuySubscriptionPlan-${user.id}`,
-          JSON.stringify({
-            ...payData,
-            payment_method_id: paymentMethod.id,
-          }),
-        );
 
         return await editTextWithCancelKeyboard(
           query.message.chat.id,
