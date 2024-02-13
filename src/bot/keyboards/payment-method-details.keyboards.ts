@@ -104,7 +104,7 @@ Click to copy 👇
 
 `;
 
-  await bot.sendMessage(
+  return await bot.sendMessage(
     chat_id,
     addressText + '`' + paymentMethod.address + '`',
     {

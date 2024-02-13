@@ -198,6 +198,13 @@ export const actionCallbackQuery = async (
 
         const payData: PayDataInterface = JSON.parse(redisData);
 
+        if (payData.addressMessageId) {
+          await bot.deleteMessage(
+            query.message.chat.id,
+            payData.addressMessageId,
+          );
+        }
+
         const plan = await planService.findOne({ id: data, withDeleted: true });
 
         if (payData?.promocode_id && payData?.subscription_plan_id === data) {
@@ -372,6 +379,13 @@ export const actionCallbackQuery = async (
 
         const payData: PayDataInterface = JSON.parse(redisData);
 
+        if (payData.addressMessageId) {
+          await bot.deleteMessage(
+            query.message.chat.id,
+            payData.addressMessageId,
+          );
+        }
+
         return await editPaymentMethodsKeyboard(
           query.message.chat.id,
           query.message.message_id,
@@ -393,6 +407,13 @@ export const actionCallbackQuery = async (
 
         const payData: PayDataInterface = JSON.parse(redisData);
 
+        if (payData.addressMessageId) {
+          await bot.deleteMessage(
+            query.message.chat.id,
+            payData.addressMessageId,
+          );
+        }
+
         if (!payData?.subscription_plan_id) {
           return await sendSubscriptionPlanKeyboard(
             query.message.chat.id,
@@ -409,7 +430,7 @@ export const actionCallbackQuery = async (
 
         const rateToUsd = await rateService.get();
 
-        return await editPaymentMethodDetailsKeyboard(
+        const addressMessage = await editPaymentMethodDetailsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
@@ -419,6 +440,16 @@ export const actionCallbackQuery = async (
           getFiatAmount(rateToUsd[paymentMethod.currency] * plan.price),
           getFiatAmount(rateToUsd[paymentMethod.currency] * payData.newPrice),
         );
+
+        await redisService.add(
+          `BuySubscriptionPlan-${user.id}`,
+          JSON.stringify({
+            ...payData,
+            addressMessageId: addressMessage.message_id,
+          }),
+        );
+
+        return;
       }
 
       if (key === 'UserPaid') {
@@ -429,6 +460,13 @@ export const actionCallbackQuery = async (
         );
 
         const payData: PayDataInterface = JSON.parse(redisData);
+
+        if (payData.addressMessageId) {
+          await bot.deleteMessage(
+            query.message.chat.id,
+            payData.addressMessageId,
+          );
+        }
 
         await redisService.add(
           `BuySubscriptionPlan-${user.id}`,

@@ -80,4 +80,5 @@ export interface PayDataInterface {
   payment_method_id?: string;
   isFromNotification?: boolean;
   continueDays?: number;
+  addressMessageId?: number;
 }
