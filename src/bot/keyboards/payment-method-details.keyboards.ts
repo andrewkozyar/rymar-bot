@@ -57,7 +57,7 @@ export const editPaymentMethodDetailsKeyboard = async (
   ];
 
   await bot.editMessageText(
-    paymentMethod[`descriptionEN${user.language}`] +
+    paymentMethod[`description${user.language}`] +
       `
     
 ` +
