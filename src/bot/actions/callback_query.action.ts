@@ -203,6 +203,13 @@ export const actionCallbackQuery = async (
             query.message.chat.id,
             payData.addressMessageId,
           );
+          await redisService.add(
+            `BuySubscriptionPlan-${user.id}`,
+            JSON.stringify({
+              ...payData,
+              payment_method_id: null,
+            }),
+          );
         }
 
         const plan = await planService.findOne({ id: data, withDeleted: true });
@@ -384,6 +391,13 @@ export const actionCallbackQuery = async (
             query.message.chat.id,
             payData.addressMessageId,
           );
+          await redisService.add(
+            `BuySubscriptionPlan-${user.id}`,
+            JSON.stringify({
+              ...payData,
+              payment_method_id: null,
+            }),
+          );
         }
 
         return await editPaymentMethodsKeyboard(
@@ -411,6 +425,13 @@ export const actionCallbackQuery = async (
           await bot.deleteMessage(
             query.message.chat.id,
             payData.addressMessageId,
+          );
+          await redisService.add(
+            `BuySubscriptionPlan-${user.id}`,
+            JSON.stringify({
+              ...payData,
+              payment_method_id: null,
+            }),
           );
         }
 
@@ -465,6 +486,13 @@ export const actionCallbackQuery = async (
           await bot.deleteMessage(
             query.message.chat.id,
             payData.addressMessageId,
+          );
+          await redisService.add(
+            `BuySubscriptionPlan-${user.id}`,
+            JSON.stringify({
+              ...payData,
+              payment_method_id: null,
+            }),
           );
         }
 
