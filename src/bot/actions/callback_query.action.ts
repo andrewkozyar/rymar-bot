@@ -198,7 +198,7 @@ export const actionCallbackQuery = async (
 
         const payData: PayDataInterface = JSON.parse(redisData);
 
-        if (payData.addressMessageId) {
+        if (payData?.addressMessageId) {
           await bot.deleteMessage(
             query.message.chat.id,
             payData.addressMessageId,
@@ -379,7 +379,7 @@ export const actionCallbackQuery = async (
 
         const payData: PayDataInterface = JSON.parse(redisData);
 
-        if (payData.addressMessageId) {
+        if (payData?.addressMessageId) {
           await bot.deleteMessage(
             query.message.chat.id,
             payData.addressMessageId,
@@ -407,7 +407,7 @@ export const actionCallbackQuery = async (
 
         const payData: PayDataInterface = JSON.parse(redisData);
 
-        if (payData.addressMessageId) {
+        if (payData?.addressMessageId) {
           await bot.deleteMessage(
             query.message.chat.id,
             payData.addressMessageId,
@@ -461,7 +461,7 @@ export const actionCallbackQuery = async (
 
         const payData: PayDataInterface = JSON.parse(redisData);
 
-        if (payData.addressMessageId) {
+        if (payData?.addressMessageId) {
           await bot.deleteMessage(
             query.message.chat.id,
             payData.addressMessageId,
