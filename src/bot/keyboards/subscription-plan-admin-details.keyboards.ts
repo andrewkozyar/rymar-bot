@@ -25,13 +25,9 @@ export const sendSubscriptionPlanAdminDetailsKeyboard = async (
 
 - <b>months count</b>: ${plan.months_count}
   
-- <b>nameEN</b>: ${plan.nameEN}
-
 - <b>nameUA</b>: ${plan.nameUA}
 
 - <b>nameRU</b>: ${plan.nameRU}
-
-- <b>descriptionEN</b>: ${plan.descriptionEN}
 
 - <b>descriptionUA</b>: ${plan.descriptionUA}
 
@@ -75,10 +71,10 @@ ${
           },
         ],
         [
-          {
-            text: `nameEN`,
-            callback_data: callback_data + 'nameEN',
-          },
+          // {
+          //   text: `nameEN`,
+          //   callback_data: callback_data + 'nameEN',
+          // },
           {
             text: `nameUA`,
             callback_data: callback_data + 'nameUA',
@@ -89,10 +85,10 @@ ${
           },
         ],
         [
-          {
-            text: `descriptionEN`,
-            callback_data: callback_data + 'descriptionEN',
-          },
+          // {
+          //   text: `descriptionEN`,
+          //   callback_data: callback_data + 'descriptionEN',
+          // },
           {
             text: `descriptionUA`,
             callback_data: callback_data + 'descriptionUA',
@@ -153,13 +149,9 @@ export const editSubscriptionPlanAdminDetailsKeyboard = async (
 
 - <b>months count</b>: ${plan.months_count}
   
-- <b>nameEN</b>: ${plan.nameEN}
-
 - <b>nameUA</b>: ${plan.nameUA}
 
 - <b>nameRU</b>: ${plan.nameRU}
-
-- <b>descriptionEN</b>: ${plan.descriptionEN}
 
 - <b>descriptionUA</b>: ${plan.descriptionUA}
 
@@ -199,10 +191,10 @@ ${
       },
     ],
     [
-      {
-        text: `nameEN`,
-        callback_data: callback_data + 'nameEN',
-      },
+      // {
+      //   text: `nameEN`,
+      //   callback_data: callback_data + 'nameEN',
+      // },
       {
         text: `nameUA`,
         callback_data: callback_data + 'nameUA',
@@ -213,10 +205,10 @@ ${
       },
     ],
     [
-      {
-        text: `descriptionEN`,
-        callback_data: callback_data + 'descriptionEN',
-      },
+      // {
+      //   text: `descriptionEN`,
+      //   callback_data: callback_data + 'descriptionEN',
+      // },
       {
         text: `descriptionUA`,
         callback_data: callback_data + 'descriptionUA',

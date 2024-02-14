@@ -21,10 +21,10 @@ export const editLanguageKeyboard = async (
             text: '🇷🇺 Русский',
             callback_data: callback_data + 'RU',
           },
-          {
-            text: '🇺🇸 English',
-            callback_data: callback_data + 'EN',
-          },
+          // {
+          //   text: '🇺🇸 English',
+          //   callback_data: callback_data + 'EN',
+          // },
         ],
         [
           // {

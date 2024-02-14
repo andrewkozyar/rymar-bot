@@ -29,8 +29,6 @@ export const sendPaymentMethodAdminDetailsKeyboard = async (
 
 - <b>currency</b>: ${paymentMethod.currency}
 
-- <b>descriptionEN</b>: ${paymentMethod.descriptionEN}
-
 - <b>descriptionUA</b>: ${paymentMethod.descriptionUA}
 
 - <b>descriptionRU</b>: ${paymentMethod.descriptionRU}
@@ -67,6 +65,8 @@ ${
             text: `is published`,
             callback_data: callback_data + 'is_published',
           },
+        ],
+        [
           {
             text: `address`,
             callback_data: callback_data + 'address',
@@ -77,10 +77,10 @@ ${
           },
         ],
         [
-          {
-            text: `descriptionEN`,
-            callback_data: callback_data + 'descriptionEN',
-          },
+          // {
+          //   text: `descriptionEN`,
+          //   callback_data: callback_data + 'descriptionEN',
+          // },
           {
             text: `descriptionUA`,
             callback_data: callback_data + 'descriptionUA',
