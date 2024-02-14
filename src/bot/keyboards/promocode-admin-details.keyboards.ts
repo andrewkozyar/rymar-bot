@@ -21,11 +21,17 @@ export const sendPromocodeAdminDetailsKeyboard = async (
 
 - <b>name</b>: ${promocode.name}
 
+--------------
+
 - <b>is published</b>: ${promocode.is_published} ${
     promocode.is_published ? '✅' : '❌'
   }
 
+--------------
+
 - <b>sale percent</b>: ${promocode.sale_percent}
+
+--------------
 
 ${
   user.language === UserLanguageEnum.EN
@@ -115,11 +121,17 @@ export const editPromocodeAdminDetailsKeyboard = async (
 
 - <b>name</b>: ${promocode.name}
 
+--------------
+
 - <b>is published</b>: ${promocode.is_published} ${
     promocode.is_published ? '✅' : '❌'
   }
 
+--------------
+
 - <b>sale percent</b>: ${promocode.sale_percent}
+
+--------------
 
 ${
   user.language === UserLanguageEnum.EN

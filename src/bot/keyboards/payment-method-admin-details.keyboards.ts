@@ -21,17 +21,29 @@ export const sendPaymentMethodAdminDetailsKeyboard = async (
 
 - <b>name</b>: ${paymentMethod.name}
 
+--------------
+
 - <b>is published</b>: ${paymentMethod.is_published} ${
     paymentMethod.is_published ? '✅' : '❌'
   }
 
+--------------
+
 - <b>address</b>: ${paymentMethod.address}
+
+--------------
 
 - <b>currency</b>: ${paymentMethod.currency}
 
+--------------
+
 - <b>descriptionUA</b>: ${paymentMethod.descriptionUA}
 
+--------------
+
 - <b>descriptionRU</b>: ${paymentMethod.descriptionRU}
+
+--------------
 
 ${
   user.language === UserLanguageEnum.EN
@@ -137,19 +149,29 @@ export const editPaymentMethodAdminDetailsKeyboard = async (
 
 - <b>name</b>: ${paymentMethod.name}
 
+--------------
+
 - <b>is published</b>: ${paymentMethod.is_published} ${
     paymentMethod.is_published ? '✅' : '❌'
   }
 
+  --------------
+
 - <b>address</b>: ${paymentMethod.address}
+
+--------------
 
 - <b>currency</b>: ${paymentMethod.currency}
 
-- <b>descriptionEN</b>: ${paymentMethod.descriptionEN}
+--------------
 
 - <b>descriptionUA</b>: ${paymentMethod.descriptionUA}
 
+--------------
+
 - <b>descriptionRU</b>: ${paymentMethod.descriptionRU}
+
+--------------
 
 ${
   user.language === UserLanguageEnum.EN
@@ -179,6 +201,8 @@ ${
         text: `is published`,
         callback_data: callback_data + 'is_published',
       },
+    ],
+    [
       {
         text: `address`,
         callback_data: callback_data + 'address',
@@ -189,10 +213,10 @@ ${
       },
     ],
     [
-      {
-        text: `descriptionEN`,
-        callback_data: callback_data + 'descriptionEN',
-      },
+      // {
+      //   text: `descriptionEN`,
+      //   callback_data: callback_data + 'descriptionEN',
+      // },
       {
         text: `descriptionUA`,
         callback_data: callback_data + 'descriptionUA',

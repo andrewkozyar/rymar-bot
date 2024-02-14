@@ -21,17 +21,31 @@ export const sendSubscriptionPlanAdminDetailsKeyboard = async (
 
 - <b>price</b>: ${plan.price}
 
+--------------
+
 - <b>is published</b>: ${plan.is_published} ${plan.is_published ? '✅' : '❌'}
 
+--------------
+
 - <b>months count</b>: ${plan.months_count}
+
+--------------
   
 - <b>nameUA</b>: ${plan.nameUA}
 
+--------------
+
 - <b>nameRU</b>: ${plan.nameRU}
+
+--------------
 
 - <b>descriptionUA</b>: ${plan.descriptionUA}
 
+--------------
+
 - <b>descriptionRU</b>: ${plan.descriptionRU}
+
+--------------
 
 ${
   user.language === UserLanguageEnum.EN
@@ -145,17 +159,31 @@ export const editSubscriptionPlanAdminDetailsKeyboard = async (
 
 - <b>price</b>: ${plan.price}
 
+--------------
+
 - <b>is published</b>: ${plan.is_published} ${plan.is_published ? '✅' : '❌'}
 
+--------------
+
 - <b>months count</b>: ${plan.months_count}
+
+--------------
   
 - <b>nameUA</b>: ${plan.nameUA}
 
+--------------
+
 - <b>nameRU</b>: ${plan.nameRU}
+
+--------------
 
 - <b>descriptionUA</b>: ${plan.descriptionUA}
 
+--------------
+
 - <b>descriptionRU</b>: ${plan.descriptionRU}
+
+--------------
 
 ${
   user.language === UserLanguageEnum.EN
