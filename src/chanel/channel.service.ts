@@ -65,7 +65,10 @@ export class ChannelService {
     return channel;
   }
 
-  async find(searchKey?: string): Promise<Channel[]> {
+  async find(
+    is_for_subscription: boolean,
+    searchKey?: string,
+  ): Promise<Channel[]> {
     try {
       const channelQuery = this.channelRepository.createQueryBuilder('channel');
 
@@ -73,6 +76,15 @@ export class ChannelService {
         channelQuery.andWhere(`(LOWER(channel.name) LIKE LOWER(:searchKey))`, {
           searchKey: `%${searchKey}%`,
         });
+      }
+
+      if (is_for_subscription) {
+        channelQuery.andWhere(
+          `channel.is_for_subscription = :is_for_subscription`,
+          {
+            is_for_subscription,
+          },
+        );
       }
 
       const channels = await channelQuery.getMany();
@@ -89,7 +101,7 @@ export class ChannelService {
 
   async deleteUserFromChannels(bot: TelegramBot, user: User) {
     try {
-      const channels = await this.find();
+      const channels = await this.find(true);
 
       if (channels.length) {
         await Promise.all(
@@ -127,7 +139,7 @@ export class ChannelService {
 
   async sendChannelsLinks(bot: TelegramBot, user: User) {
     try {
-      const channels = await this.find();
+      const channels = await this.find(true);
 
       if (channels.length) {
         await Promise.all(

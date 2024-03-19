@@ -13,4 +13,10 @@ export class Channel {
 
   @Column({ nullable: true })
   type: string;
+
+  @Column({ default: false })
+  is_for_subscription: boolean;
+
+  @Column({ nullable: true })
+  resend_to: string;
 }

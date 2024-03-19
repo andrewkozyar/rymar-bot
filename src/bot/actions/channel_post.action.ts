@@ -1,15 +1,33 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { ChannelService } from 'src/chanel/channel.service';
+import { LogService } from 'src/log/log.service';
 
 export const actionChannelPost = async (
   bot: TelegramBot,
   channelService: ChannelService,
+  logService: LogService,
 ) => {
   return bot.on('channel_post', async (post) => {
-    await channelService.create({
-      chat_id: post.chat.id,
-      name: post.chat.title,
-      type: post.chat.type,
-    });
+    try {
+      const chanel = await channelService.create({
+        chat_id: post.chat.id,
+        name: post.chat.title,
+        type: post.chat.type,
+      });
+
+      if (chanel.resend_to) {
+        await bot.forwardMessage(
+          chanel.resend_to,
+          chanel.chat_id,
+          Number(post.message_id),
+        );
+      }
+    } catch (e) {
+      logService.create({
+        action: 'channel_post',
+        info: JSON.stringify(e.stack),
+        type: 'error',
+      });
+    }
   });
 };

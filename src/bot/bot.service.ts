@@ -40,7 +40,7 @@ export class BotService {
   }
 
   async startBot() {
-    actionChannelPost(this.bot, this.channelService);
+    actionChannelPost(this.bot, this.channelService, this.logService);
 
     actionMessage(
       this.bot,
