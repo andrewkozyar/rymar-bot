@@ -39,8 +39,8 @@ export const sendAdminPanelKeyboard = async (
                 user.language === UserLanguageEnum.EN
                   ? '🗃️ User transactions'
                   : user.language === UserLanguageEnum.UA
-                    ? '🗃️ Транзакції користувачів'
-                    : '🗃️ Пользовательские транзакции',
+                    ? '🗃️ Транзакції'
+                    : '🗃️ Транзакции',
               callback_data: 'AdminUserTransactions',
             },
             {
@@ -116,8 +116,8 @@ export const editAdminPanelKeyboard = async (
           user.language === UserLanguageEnum.EN
             ? '🗃️ User transactions'
             : user.language === UserLanguageEnum.UA
-              ? '🗃️ Транзакції користувачів'
-              : '🗃️ Пользовательские транзакции',
+              ? '🗃️ Транзакції'
+              : '🗃️ Транзакции',
         callback_data: 'AdminUserTransactions',
       },
       {

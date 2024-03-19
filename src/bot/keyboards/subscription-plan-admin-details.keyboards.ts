@@ -262,11 +262,11 @@ ${
       //   callback_data: callback_data + 'descriptionEN',
       // },
       {
-        text: `descriptionUA`,
+        text: `укр описание`,
         callback_data: callback_data + 'descriptionUA',
       },
       {
-        text: `descriptionRU`,
+        text: `ру описание`,
         callback_data: callback_data + 'descriptionRU',
       },
     ],
