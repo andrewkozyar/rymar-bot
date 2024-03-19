@@ -68,7 +68,7 @@ export const sendLanguageKeyboard = async (
 ) => {
   const callback_data = isUser ? 'ChangeLanguage;' : 'FirstLogin;';
 
-  await bot.sendMessage(id, 'Choose your language:', {
+  await bot.sendMessage(id, 'Выберите язык:', {
     reply_markup: {
       remove_keyboard: true,
       inline_keyboard: [
@@ -77,9 +77,13 @@ export const sendLanguageKeyboard = async (
             text: '🇷🇺 Русский',
             callback_data: callback_data + 'RU',
           },
+          // {
+          //   text: '🇺🇸 English',
+          //   callback_data: callback_data + 'EN',
+          // },
           {
-            text: '🇺🇸 English',
-            callback_data: callback_data + 'EN',
+            text: '🇺🇦 Українська',
+            callback_data: callback_data + 'UA',
           },
         ],
         [
@@ -87,10 +91,6 @@ export const sendLanguageKeyboard = async (
           //   text: 'Polski',
           //   callback_data: callback_data + 'PL',
           // },
-          {
-            text: '🇺🇦 Українська',
-            callback_data: callback_data + 'UA',
-          },
         ],
         // [
         //   {
