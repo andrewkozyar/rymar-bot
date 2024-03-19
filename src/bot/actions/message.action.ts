@@ -112,10 +112,10 @@ export const actionMessage = async (
         return await bot.sendMessage(
           msg.chat.id,
           user.language === UserLanguageEnum.EN
-            ? 'For support, please contact @rymar'
+            ? 'For support, please contact @rymar_m'
             : user.language === UserLanguageEnum.UA
-              ? 'Щоб отримати підтримку, зв’яжіться з @rymar'
-              : 'Для поддержки обращайтесь к @rymar',
+              ? 'Щоб отримати підтримку, зв’яжіться з @rymar_m'
+              : 'Для поддержки обращайтесь к @rymar_m',
         );
       }
 
