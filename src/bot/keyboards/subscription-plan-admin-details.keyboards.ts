@@ -169,31 +169,37 @@ export const editSubscriptionPlanAdminDetailsKeyboard = async (
         : 'Данные плана подписки'
   }:
 
-- <b>price</b>: ${plan.price}
+- <b>цена</b>: ${plan.price}
 
 --------------
 
-- <b>is published</b>: ${plan.is_published} ${plan.is_published ? '✅' : '❌'}
+- <b>опубликовано ли</b>: ${plan.is_published} ${
+    plan.is_published ? '✅' : '❌'
+  }
 
 --------------
 
-- <b>months count</b>: ${plan.months_count}
+- <b>количество месяцев</b>: ${plan.months_count}
+
+--------------
+
+- <b>порядковый номер</b>: ${plan.position}
 
 --------------
   
-- <b>nameUA</b>: ${plan.nameUA}
+- <b>укр название</b>: ${plan.nameUA}
 
 --------------
 
-- <b>nameRU</b>: ${plan.nameRU}
+- <b>ру название</b>: ${plan.nameRU}
 
 --------------
 
-- <b>descriptionUA</b>: ${plan.descriptionUA}
+- <b>укр описание</b>: ${plan.descriptionUA}
 
 --------------
 
-- <b>descriptionRU</b>: ${plan.descriptionRU}
+- <b>ру описание</b>: ${plan.descriptionRU}
 
 --------------
 
@@ -218,16 +224,22 @@ ${
   const inline_keyboard = [
     [
       {
-        text: `price`,
+        text: `цена`,
         callback_data: callback_data + 'price',
       },
       {
-        text: `is published status`,
+        text: `опубликовано ли`,
         callback_data: callback_data + 'is_published',
       },
+    ],
+    [
       {
-        text: `months count`,
+        text: `количество месяцев`,
         callback_data: callback_data + 'months_count',
+      },
+      {
+        text: `порядковый номер`,
+        callback_data: callback_data + 'position',
       },
     ],
     [
@@ -236,11 +248,11 @@ ${
       //   callback_data: callback_data + 'nameEN',
       // },
       {
-        text: `nameUA`,
+        text: `укр название`,
         callback_data: callback_data + 'nameUA',
       },
       {
-        text: `nameRU`,
+        text: `ру название`,
         callback_data: callback_data + 'nameRU',
       },
     ],
