@@ -39,6 +39,9 @@ export class SubscriptionPlan {
   @Column({ nullable: true })
   months_count: number;
 
+  @Column({ nullable: true })
+  position: number;
+
   @CreateDateColumn()
   created_date: Date;
 

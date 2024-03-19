@@ -104,7 +104,7 @@ export class SubscriptionPlanService {
       }
 
       const [subscriptionPlans, total] = await subscriptionPlanQuery
-        .orderBy('subscriptionPlan.created_date', 'DESC')
+        .orderBy('subscriptionPlan.position', 'ASC')
         .skip(offset)
         .take(limit)
         .getManyAndCount();

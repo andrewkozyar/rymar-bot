@@ -19,17 +19,17 @@ export const sendPromocodeAdminDetailsKeyboard = async (
         : 'Данные промокода'
   }:
 
-- <b>name</b>: ${promocode.name}
+- <b>название</b>: ${promocode.name}
 
 --------------
 
-- <b>is published</b>: ${promocode.is_published} ${
+- <b>опубликовано ли</b>: ${promocode.is_published} ${
     promocode.is_published ? '✅' : '❌'
   }
 
 --------------
 
-- <b>sale percent</b>: ${promocode.sale_percent}
+- <b>процент скидки</b>: ${promocode.sale_percent}
 
 --------------
 
@@ -58,19 +58,19 @@ ${
       inline_keyboard: [
         [
           {
-            text: `name`,
+            text: `название`,
             callback_data: callback_data + 'name',
           },
         ],
         [
           {
-            text: `is published`,
+            text: `опубликовано ли`,
             callback_data: callback_data + 'is_published',
           },
         ],
         [
           {
-            text: `sale percent`,
+            text: `процент скидки`,
             callback_data: callback_data + 'sale_percent',
           },
         ],
@@ -119,17 +119,17 @@ export const editPromocodeAdminDetailsKeyboard = async (
         : 'Данные промокода'
   }:
 
-- <b>name</b>: ${promocode.name}
+- <b>название</b>: ${promocode.name}
 
 --------------
 
-- <b>is published</b>: ${promocode.is_published} ${
+- <b>опубликовано ли</b>: ${promocode.is_published} ${
     promocode.is_published ? '✅' : '❌'
   }
 
 --------------
 
-- <b>sale percent</b>: ${promocode.sale_percent}
+- <b>процент скидки</b>: ${promocode.sale_percent}
 
 --------------
 
@@ -154,19 +154,19 @@ ${
   const inline_keyboard = [
     [
       {
-        text: `name`,
+        text: `название`,
         callback_data: callback_data + 'name',
       },
     ],
     [
       {
-        text: `is published`,
+        text: `опубликовано ли`,
         callback_data: callback_data + 'is_published',
       },
     ],
     [
       {
-        text: `sale percent`,
+        text: `процент скидки`,
         callback_data: callback_data + 'sale_percent',
       },
     ],

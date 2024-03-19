@@ -19,29 +19,29 @@ export const sendPaymentMethodAdminDetailsKeyboard = async (
         : 'Данные о способе оплаты'
   }:
 
-- <b>name</b>: ${paymentMethod.name}
+- <b>название</b>: ${paymentMethod.name}
 
 --------------
 
-- <b>is published</b>: ${paymentMethod.is_published} ${
+- <b>опубликовано ли</b>: ${paymentMethod.is_published} ${
     paymentMethod.is_published ? '✅' : '❌'
   }
 
 --------------
 
-- <b>address</b>: ${paymentMethod.address}
+- <b>адресс</b>: ${paymentMethod.address}
 
 --------------
 
-- <b>currency</b>: ${paymentMethod.currency}
+- <b>валюта</b>: ${paymentMethod.currency}
 
 --------------
 
-- <b>descriptionUA</b>: ${paymentMethod.descriptionUA}
+- <b>укр описание</b>: ${paymentMethod.descriptionUA}
 
 --------------
 
-- <b>descriptionRU</b>: ${paymentMethod.descriptionRU}
+- <b>ру описание</b>: ${paymentMethod.descriptionRU}
 
 --------------
 
@@ -70,21 +70,21 @@ ${
       inline_keyboard: [
         [
           {
-            text: `name`,
+            text: `название`,
             callback_data: callback_data + 'name',
           },
           {
-            text: `is published`,
+            text: `опубликовано ли`,
             callback_data: callback_data + 'is_published',
           },
         ],
         [
           {
-            text: `address`,
+            text: `адресс`,
             callback_data: callback_data + 'address',
           },
           {
-            text: `currency`,
+            text: `валюта`,
             callback_data: callback_data + 'currency',
           },
         ],
@@ -94,11 +94,11 @@ ${
           //   callback_data: callback_data + 'descriptionEN',
           // },
           {
-            text: `descriptionUA`,
+            text: `укр описание`,
             callback_data: callback_data + 'descriptionUA',
           },
           {
-            text: `descriptionRU`,
+            text: `ру описание`,
             callback_data: callback_data + 'descriptionRU',
           },
         ],
@@ -147,29 +147,29 @@ export const editPaymentMethodAdminDetailsKeyboard = async (
         : 'Данные о способе оплаты'
   }:
 
-- <b>name</b>: ${paymentMethod.name}
+- <b>название</b>: ${paymentMethod.name}
 
 --------------
 
-- <b>is published</b>: ${paymentMethod.is_published} ${
+- <b>опубликовано ли</b>: ${paymentMethod.is_published} ${
     paymentMethod.is_published ? '✅' : '❌'
   }
 
   --------------
 
-- <b>address</b>: ${paymentMethod.address}
+- <b>адресс</b>: ${paymentMethod.address}
 
 --------------
 
-- <b>currency</b>: ${paymentMethod.currency}
+- <b>валюта</b>: ${paymentMethod.currency}
 
 --------------
 
-- <b>descriptionUA</b>: ${paymentMethod.descriptionUA}
+- <b>укр описание</b>: ${paymentMethod.descriptionUA}
 
 --------------
 
-- <b>descriptionRU</b>: ${paymentMethod.descriptionRU}
+- <b>ру описание</b>: ${paymentMethod.descriptionRU}
 
 --------------
 
@@ -194,21 +194,21 @@ ${
   const inline_keyboard = [
     [
       {
-        text: `name`,
+        text: `название`,
         callback_data: callback_data + 'name',
       },
       {
-        text: `is published`,
+        text: `опубликовано ли`,
         callback_data: callback_data + 'is_published',
       },
     ],
     [
       {
-        text: `address`,
+        text: `адресс`,
         callback_data: callback_data + 'address',
       },
       {
-        text: `currency`,
+        text: `валюта`,
         callback_data: callback_data + 'currency',
       },
     ],
@@ -218,11 +218,11 @@ ${
       //   callback_data: callback_data + 'descriptionEN',
       // },
       {
-        text: `descriptionUA`,
+        text: `укр описание`,
         callback_data: callback_data + 'descriptionUA',
       },
       {
-        text: `descriptionRU`,
+        text: `ру описание`,
         callback_data: callback_data + 'descriptionRU',
       },
     ],
