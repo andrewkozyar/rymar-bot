@@ -77,6 +77,9 @@ export class Payment {
   @Column()
   expired_date: Date;
 
+  @Column({ nullable: true })
+  admins_payment_messages: string;
+
   @CreateDateColumn()
   created_date: Date;
 

@@ -1082,16 +1082,22 @@ export const actionCallbackQuery = async (
           updated_by_id: user.id,
         });
 
-        await editTransactionsKeyboard(
-          query.message.chat.id,
-          query.message.message_id,
-          bot,
-          customer,
-          paymentService,
-          true,
-          user.language,
-          true,
-        );
+        const adminsPaymentMessages: { message_id: number; chat_id: number }[] =
+          JSON.parse(payment.admins_payment_messages);
+
+        adminsPaymentMessages.forEach(async (paymentMessage) => {
+          await editTransactionsKeyboard(
+            paymentMessage.chat_id,
+            paymentMessage.message_id,
+            bot,
+            customer,
+            paymentService,
+            true,
+            user.language,
+            true,
+            user,
+          );
+        });
 
         await bot.sendMessage(
           customer.chat_id,
@@ -1137,25 +1143,31 @@ Attention, you must join all channels and chats within 24 hours after receiving 
           updated_by_id: user.id,
         });
 
-        await editTransactionsKeyboard(
-          query.message.chat.id,
-          query.message.message_id,
-          bot,
-          customer,
-          paymentService,
-          true,
-          user.language,
-          false,
-        );
+        const adminsPaymentMessages: { message_id: number; chat_id: number }[] =
+          JSON.parse(payment.admins_payment_messages);
 
-        await bot.sendMessage(
-          query.message.chat.id,
-          user.language === UserLanguageEnum.EN
-            ? `❌ Payment by user @${customer.name} declined!`
-            : user.language === UserLanguageEnum.UA
-              ? `❌ Оплата користувача @${customer.name} відхилена!`
-              : `❌ Оплата пользователя @${customer.name} отклонена!`,
-        );
+        adminsPaymentMessages.forEach(async (paymentMessage) => {
+          await editTransactionsKeyboard(
+            paymentMessage.chat_id,
+            paymentMessage.message_id,
+            bot,
+            customer,
+            paymentService,
+            true,
+            user.language,
+            false,
+            user,
+          );
+
+          await bot.sendMessage(
+            paymentMessage.chat_id,
+            user.language === UserLanguageEnum.EN
+              ? `❌ Payment by user @${customer.name} declined!`
+              : user.language === UserLanguageEnum.UA
+                ? `❌ Оплата користувача @${customer.name} відхилена адміністратором @${user.name}!`
+                : `❌ Оплата пользователя @${customer.name} отклонена администратором @${user.name}!`,
+          );
+        });
 
         return await bot.sendMessage(
           customer.chat_id,

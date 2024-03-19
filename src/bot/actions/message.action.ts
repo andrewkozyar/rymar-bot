@@ -411,9 +411,9 @@ export const actionMessage = async (
             });
           }
 
-          await Promise.all(
+          const admins_payment_messages = await Promise.all(
             managers.users.map(async (manager) => {
-              return sendGiveUserAccessKeyboard(
+              const message = await sendGiveUserAccessKeyboard(
                 manager.chat_id,
                 bot,
                 manager,
@@ -423,8 +423,18 @@ export const actionMessage = async (
                 paymentMethod,
                 promocode,
               );
+
+              return {
+                message_id: message.message_id,
+                chat_id: Number(manager.chat_id),
+              };
             }),
           );
+
+          await paymentService.update({
+            ...payment,
+            admins_payment_messages: JSON.stringify(admins_payment_messages),
+          });
 
           return await bot.sendMessage(
             msg.chat.id,

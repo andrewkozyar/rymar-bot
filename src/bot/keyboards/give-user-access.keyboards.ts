@@ -30,7 +30,7 @@ export const sendGiveUserAccessKeyboard = async (
     customer.chat_id,
     Number(payment.screenshot_message_id),
   );
-  await bot.sendMessage(id, text, {
+  return await bot.sendMessage(id, text, {
     parse_mode: 'HTML',
     reply_markup: {
       remove_keyboard: true,

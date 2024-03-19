@@ -82,6 +82,7 @@ export const editTransactionsKeyboard = async (
   isAdminPanel: boolean,
   language: UserLanguageEnum,
   isConfirmedPayment: boolean = null,
+  admin?: User,
 ) => {
   const { payments, total } = await paymentService.getPayments({
     user_id: user.id,
@@ -98,10 +99,10 @@ export const editTransactionsKeyboard = async (
 
 `
           : language === UserLanguageEnum.UA
-            ? `Оплата користувача @${user.name} підтверджена успішно!
+            ? `Оплата користувача @${user.name} підтверджена успішно адміністратором @${admin.name}!
 
 `
-            : `Оплата пользователя @${user.name} подтверждена успешно!
+            : `Оплата пользователя @${user.name} подтверждена успешно администратором @${admin.name}!
 
 `
       }`;
@@ -114,10 +115,10 @@ export const editTransactionsKeyboard = async (
 
 `
           : language === UserLanguageEnum.UA
-            ? `Оплата користувача @${user.name} відхилена!
+            ? `Оплата користувача @${user.name} відхилена адміністратором @${admin.name}!
 
 `
-            : `Оплата пользователя @${user.name} отклонена!
+            : `Оплата пользователя @${user.name} отклонена администратором @${admin.name}!
 
 `
       }`;
