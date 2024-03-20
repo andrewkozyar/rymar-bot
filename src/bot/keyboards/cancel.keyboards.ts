@@ -31,8 +31,11 @@ export const sendTextWithCancelKeyboard = async (
           reply_markup: {
             inline_keyboard,
           },
+          parse_mode: 'HTML',
         }
-      : undefined,
+      : {
+          parse_mode: 'HTML',
+        },
   );
 };
 

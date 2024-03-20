@@ -33,7 +33,7 @@ export class Log {
   @JoinColumn({ referencedColumnName: 'id', name: 'user_id' })
   user: User;
 
-  @Column({ default: false })
+  @Column({ nullable: true })
   action: string;
 
   @CreateDateColumn()

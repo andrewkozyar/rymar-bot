@@ -29,14 +29,12 @@ import { sendAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
 import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
 import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
 import { UpdateDto as UpdatePaymentMethodDto } from 'src/paymentMethod/dto';
-import {
-  editTextWithCancelKeyboard,
-  sendTextWithCancelKeyboard,
-} from '../keyboards/cancel.keyboards';
+import { sendTextWithCancelKeyboard } from '../keyboards/cancel.keyboards';
 import { sendGiveUserAccessKeyboard } from '../keyboards/give-user-access.keyboards';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
 import { LogService } from 'src/log/log.service';
 import { notifyAdminAboutNewUser } from '../helpers/notifyAdminAboutNewUser';
+import { getDateWithoutHours } from 'src/helper/date';
 
 export const actionMessage = async (
   bot: TelegramBot,
@@ -60,7 +58,7 @@ export const actionMessage = async (
         });
       }
 
-      const user = await userService.findOne({ chat_id: msg.chat.id });
+      let user = await userService.findOne({ chat_id: msg.chat.id });
 
       if (msg.text === '/start' || !user) {
         if (user) {
@@ -70,12 +68,18 @@ export const actionMessage = async (
         if (!user) {
           await notifyAdminAboutNewUser(bot, msg.chat.username, userService);
 
-          await userService.create({
+          user = await userService.create({
             chat_id: msg.chat.id,
             language: UserLanguageEnum.RU,
             name: msg.chat.username,
           });
         }
+
+        await logService.create({
+          user_id: user.id,
+          info: 'нажал кнопку start',
+          type: LogTypeEnum.USER,
+        });
 
         return await sendLanguageKeyboard(msg.chat.id, bot);
       }
@@ -95,6 +99,12 @@ export const actionMessage = async (
             user,
           );
         }
+
+        await logService.create({
+          user_id: user.id,
+          info: `ввел емейл на "${trimEmail(msg.text)}"`,
+          type: LogTypeEnum.USER,
+        });
 
         const updatedUser = await userService.update(user.id, {
           email: trimEmail(msg.text),
@@ -125,6 +135,12 @@ export const actionMessage = async (
       ) {
         await redisService.clearData(user.id);
 
+        await logService.create({
+          user_id: user.id,
+          info: `нажал кнопку "${msg.text}"`,
+          type: LogTypeEnum.USER,
+        });
+
         return await sendSubscriptionPlanKeyboard(
           msg.chat.id,
           bot,
@@ -141,6 +157,12 @@ export const actionMessage = async (
       ) {
         await redisService.clearData(user.id);
 
+        await logService.create({
+          user_id: user.id,
+          info: `нажал кнопку "${msg.text}"`,
+          type: LogTypeEnum.USER,
+        });
+
         return await sendMySubscriptionKeyboard(
           msg.chat.id,
           bot,
@@ -154,11 +176,23 @@ export const actionMessage = async (
       ) {
         await redisService.clearData(user.id);
 
+        await logService.create({
+          user_id: user.id,
+          info: `нажал кнопку "${msg.text}"`,
+          type: LogTypeEnum.USER,
+        });
+
         return await sendAccountKeyboard(msg.chat.id, bot, user);
       }
 
       if (['🤝 Support', '🤝 Допомога', '🤝 Помощь'].includes(msg.text)) {
         await redisService.clearData(user.id);
+
+        await logService.create({
+          user_id: user.id,
+          info: `нажал кнопку "${msg.text}"`,
+          type: LogTypeEnum.USER,
+        });
 
         return await bot.sendMessage(
           msg.chat.id,
@@ -188,8 +222,14 @@ export const actionMessage = async (
           );
         }
 
+        await logService.create({
+          user_id: user.id,
+          info: `поменял емейл на "${trimEmail(msg.text)}"`,
+          type: LogTypeEnum.USER,
+        });
+
         const updatedUser = await userService.update(user.id, {
-          email: msg.text,
+          email: trimEmail(msg.text),
         });
         await sendMenuKeyboard(
           msg.chat.id,
@@ -229,6 +269,12 @@ export const actionMessage = async (
         await redisService.delete(`Promocode-${user.id}`);
 
         if (promocode) {
+          await logService.create({
+            user_id: user.id,
+            info: `‼️ ввел промокод "${msg.text}"`,
+            type: LogTypeEnum.USER,
+          });
+
           payData.promocode_id = promocode.id;
 
           return await sendSubscriptionPlanDetailsKeyboard(
@@ -313,13 +359,17 @@ export const actionMessage = async (
         const userInfo = `ID: ${finedUser.id}\nemail: ${finedUser.email}\nnickname: @${finedUser.name}\n\n`;
         const logs = await logService.get(finedUser.id);
 
-        return await editTextWithCancelKeyboard(
+        return await sendTextWithCancelKeyboard(
           msg.chat.id,
-          msg.message_id,
           bot,
           userInfo +
             logs
-              .map((log) => `<b>${log.created_date}</b>\n${log.info}`)
+              .map(
+                (log) =>
+                  `<b>${getDateWithoutHours(log.created_date)}</b>\n${
+                    log.info
+                  }`,
+              )
               .join('\n'),
           `AdminPanel`,
           user,
@@ -520,6 +570,12 @@ export const actionMessage = async (
           await paymentService.update({
             ...payment,
             admins_payment_messages: JSON.stringify(admins_payment_messages),
+          });
+
+          await logService.create({
+            user_id: user.id,
+            info: `‼️ отправил скриншот с оплатой`,
+            type: LogTypeEnum.USER,
           });
 
           return await bot.sendMessage(

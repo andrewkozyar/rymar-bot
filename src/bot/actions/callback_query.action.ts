@@ -88,32 +88,18 @@ export const actionCallbackQuery = async (
         );
       }
 
-      if (key === 'FirstLogin') {
-        await sendMenuKeyboard(
-          query.message.chat.id,
-          bot,
-          user.language === UserLanguageEnum.EN
-            ? '👋 Hi. Let`s start'
-            : user.language === UserLanguageEnum.UA
-              ? '👋 Привіт. Давайте почнемо'
-              : '👋 Привет. Давайте начнем',
-          user.language,
-        );
-
-        return await editAccountKeyboard(
-          query.message.chat.id,
-          query.message.message_id,
-          bot,
-          user,
-        );
-      }
-
       if (!user) {
         return;
       }
 
       if (key === 'ChangeLanguageMenu') {
         await redisService.clearData(user.id);
+
+        await logService.create({
+          user_id: user.id,
+          info: `нажал "изменить язык"`,
+          type: LogTypeEnum.USER,
+        });
 
         return await editLanguageKeyboard(
           query.message.chat.id,
@@ -124,6 +110,12 @@ export const actionCallbackQuery = async (
 
       if (key === 'ChangeLanguage') {
         await redisService.clearData(user.id);
+
+        await logService.create({
+          user_id: user.id,
+          info: `изменил язык на ${data}`,
+          type: LogTypeEnum.USER,
+        });
 
         const updatedUser = await userService.update(user.id, {
           language: data as unknown as UserLanguageEnum,
@@ -175,6 +167,12 @@ export const actionCallbackQuery = async (
       if (key === 'BackToAccount') {
         await redisService.clearData(user.id);
 
+        await logService.create({
+          user_id: user.id,
+          info: `зашел на "мой акаунт"`,
+          type: LogTypeEnum.USER,
+        });
+
         return await editAccountKeyboard(
           query.message.chat.id,
           query.message.message_id,
@@ -187,6 +185,12 @@ export const actionCallbackQuery = async (
         await redisService.clearData(user.id);
 
         await redisService.add(`ChangeEmail-${user.id}`, 'waiting');
+
+        await logService.create({
+          user_id: user.id,
+          info: `нажал на "изменить емейл"`,
+          type: LogTypeEnum.USER,
+        });
 
         return await editTextWithCancelKeyboard(
           query.message.chat.id,
@@ -224,6 +228,12 @@ export const actionCallbackQuery = async (
         }
 
         const plan = await planService.findOne({ id: data, withDeleted: true });
+
+        await logService.create({
+          user_id: user.id,
+          info: `зашел детали плана подписки "${plan.nameRU}"`,
+          type: LogTypeEnum.USER,
+        });
 
         if (payData?.promocode_id && payData?.subscription_plan_id === data) {
           const promocode = await promocodeService.findOne({
@@ -289,6 +299,12 @@ export const actionCallbackQuery = async (
           withDeleted: true,
         });
 
+        await logService.create({
+          user_id: user.id,
+          info: `‼️ нажал на продление плана подписки "${plan.nameRU}"`,
+          type: LogTypeEnum.USER,
+        });
+
         if (payData.isFromNotification) {
           return await sendSubscriptionPlanDetailsKeyboard(
             query.message.chat.id,
@@ -348,6 +364,12 @@ export const actionCallbackQuery = async (
       if (key === 'SendSubscriptionPlanKeyboard') {
         await redisService.clearData(user.id);
 
+        await logService.create({
+          user_id: user.id,
+          info: `нажал на "Планы подписок"`,
+          type: LogTypeEnum.USER,
+        });
+
         return await editSubscriptionPlanKeyboard(
           query.message.chat.id,
           query.message.message_id,
@@ -376,6 +398,12 @@ export const actionCallbackQuery = async (
 
         await redisService.add(`Promocode-${user.id}`, data);
 
+        await logService.create({
+          user_id: user.id,
+          info: `‼️ нажал на введение промокода`,
+          type: LogTypeEnum.USER,
+        });
+
         return await editTextWithCancelKeyboard(
           query.message.chat.id,
           query.message.message_id,
@@ -396,6 +424,12 @@ export const actionCallbackQuery = async (
         );
 
         const payData: PayDataInterface = JSON.parse(redisData);
+
+        await logService.create({
+          user_id: user.id,
+          info: `‼️ нажал на купить план`,
+          type: LogTypeEnum.USER,
+        });
 
         if (payData?.addressMessageId) {
           await bot.deleteMessage(
@@ -429,6 +463,12 @@ export const actionCallbackQuery = async (
         const redisData = await redisService.get(
           `BuySubscriptionPlan-${user.id}`,
         );
+
+        await logService.create({
+          user_id: user.id,
+          info: `‼️ выбрал метод оплаты "${paymentMethod.name}"`,
+          type: LogTypeEnum.USER,
+        });
 
         const payData: PayDataInterface = JSON.parse(redisData);
 
@@ -491,6 +531,12 @@ export const actionCallbackQuery = async (
           `BuySubscriptionPlan-${user.id}`,
         );
 
+        await logService.create({
+          user_id: user.id,
+          info: `‼️ нажал на "я оплатил"`,
+          type: LogTypeEnum.USER,
+        });
+
         const payData: PayDataInterface = JSON.parse(redisData);
 
         if (payData?.addressMessageId) {
@@ -546,6 +592,12 @@ export const actionCallbackQuery = async (
 
       if (key === 'MySubscription') {
         await redisService.clearData(user.id);
+
+        await logService.create({
+          user_id: user.id,
+          info: `нажал на "моя подписка"`,
+          type: LogTypeEnum.USER,
+        });
 
         return await editMySubscriptionKeyboard(
           query.message.chat.id,
