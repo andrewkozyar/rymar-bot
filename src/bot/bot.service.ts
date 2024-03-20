@@ -4,7 +4,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import { telegramBot } from '../configs/telegram-bot.config';
 import { RedisService } from '../redis/redis.service';
 import { UserService } from '../user/user.service';
-import { UserLanguageEnum } from 'src/helper';
+import { LogTypeEnum, UserLanguageEnum } from 'src/helper';
 import { SubscriptionPlanService } from 'src/subscriptionPlan/subscriptionPlan.service';
 import { PromocodeService } from 'src/promocode/promocode.service';
 import { PaymentService } from 'src/payment/payment.service';
@@ -146,7 +146,7 @@ If you think that an error has occurred, contact support via the "🤝 Support" 
           this.logService.create({
             action: 'deleteExpiredUsers',
             info: JSON.stringify(e),
-            type: 'error',
+            type: LogTypeEnum.ERROR,
           });
         }
       }),

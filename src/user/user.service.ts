@@ -77,6 +77,8 @@ export class UserService {
   }
 
   async getUsers({
+    orderBy = 'created_date',
+    all,
     offset = 0,
     limit = 20,
     searchKey,
@@ -85,6 +87,8 @@ export class UserService {
     names,
     notIn,
   }: {
+    orderBy?: 'name' | 'created_date';
+    all?: boolean;
     offset?: number;
     limit?: number;
     searchKey?: string;
@@ -137,11 +141,17 @@ export class UserService {
         });
       }
 
-      const [users, total] = await userQuery
-        .orderBy('user.created_date', 'DESC')
-        .skip(offset)
-        .take(limit)
-        .getManyAndCount();
+      if (!all) {
+        userQuery.skip(offset).take(limit);
+      }
+
+      if (orderBy === 'created_date') {
+        userQuery.orderBy('user.created_date', 'DESC');
+      } else if (orderBy === 'name') {
+        userQuery.orderBy('user.name', 'ASC');
+      }
+
+      const [users, total] = await userQuery.getManyAndCount();
 
       return {
         users,

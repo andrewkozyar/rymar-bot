@@ -57,11 +57,29 @@ export const sendAdminPanelKeyboard = async (
             {
               text:
                 user.language === UserLanguageEnum.EN
-                  ? '👥 Pending users'
+                  ? '⏳ Pending users'
                   : user.language === UserLanguageEnum.UA
-                    ? '👥 Користувачі в очікуванні'
-                    : '👥 Ожидающие пользователи',
+                    ? '⏳ Користувачі в очікуванні'
+                    : '⏳ Ожидающие пользователи',
               callback_data: 'PendingUsers',
+            },
+          ],
+          [
+            {
+              text:
+                user.language === UserLanguageEnum.UA
+                  ? '👥 Список користувачів'
+                  : '👥 Список пользователей',
+              callback_data: 'UsersList',
+            },
+          ],
+          [
+            {
+              text:
+                user.language === UserLanguageEnum.UA
+                  ? '🔎 Короки користувача'
+                  : '🔎 Шаги пользователя',
+              callback_data: 'UsersStep',
             },
           ],
           [
@@ -134,11 +152,29 @@ export const editAdminPanelKeyboard = async (
       {
         text:
           user.language === UserLanguageEnum.EN
-            ? '👥 Pending users'
+            ? '⏳ Pending users'
             : user.language === UserLanguageEnum.UA
-              ? '👥 Користувачі в очікуванні'
-              : '👥 Ожидающие пользователи',
+              ? '⏳ Користувачі в очікуванні'
+              : '⏳ Ожидающие пользователи',
         callback_data: 'PendingUsers',
+      },
+    ],
+    [
+      {
+        text:
+          user.language === UserLanguageEnum.UA
+            ? '👥 Список користувачів'
+            : '👥 Список пользователей',
+        callback_data: 'UsersList',
+      },
+    ],
+    [
+      {
+        text:
+          user.language === UserLanguageEnum.UA
+            ? '🔎 Короки користувача'
+            : '🔎 Шаги пользователя',
+        callback_data: 'UsersStep',
       },
     ],
     [

@@ -8,6 +8,7 @@ import { HttpService } from '@nestjs/axios';
 import {
   CurrencyEnum,
   ExchangeRatesApiResponseInterface,
+  LogTypeEnum,
   errorHandler,
   getFiatAmount,
 } from 'src/helper';
@@ -33,7 +34,7 @@ export class CronService {
       await this.logService.create({
         action: 'checkExpiredDate',
         info: 'start cron job',
-        type: 'info',
+        type: LogTypeEnum.INFO,
       });
 
       const { users: expiredUsers } = await this.userService.getUsers({
@@ -93,7 +94,7 @@ export class CronService {
       this.logService.create({
         action: 'checkExpiredDate',
         info: JSON.stringify(e),
-        type: 'error',
+        type: LogTypeEnum.ERROR,
       });
     }
   }

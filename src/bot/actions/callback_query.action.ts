@@ -2,6 +2,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import { ChannelService } from 'src/chanel/channel.service';
 import {
   CurrencyEnum,
+  LogTypeEnum,
   PayDataInterface,
   PaymentStatusEnum,
   UserLanguageEnum,
@@ -587,6 +588,43 @@ export const actionCallbackQuery = async (
         );
       }
 
+      if (key === 'UsersStep') {
+        await redisService.clearData(user.id);
+
+        await redisService.add(`UsersStep-${user.id}`, 'waiting');
+
+        return await editTextWithCancelKeyboard(
+          query.message.chat.id,
+          query.message.message_id,
+          bot,
+          user.language === UserLanguageEnum.EN
+            ? `🖊️ Enter user nickname!`
+            : user.language === UserLanguageEnum.UA
+              ? `🖊️ Введіть nickname користувача!`
+              : `🖊️ Введите nickname пользователя!`,
+          `AdminPanel`,
+          user,
+        );
+      }
+
+      if (key === 'UsersList') {
+        await redisService.clearData(user.id);
+
+        const users = await userService.getUsers({
+          all: true,
+          orderBy: 'name',
+        });
+
+        return await editTextWithCancelKeyboard(
+          query.message.chat.id,
+          query.message.message_id,
+          bot,
+          users.users.map((user) => `@${user.name}`).join('\n'),
+          `AdminPanel`,
+          user,
+        );
+      }
+
       if (key === 'EditSubscriptionPlanAdmin') {
         const redisData = await redisService.get(
           `EditSubscriptionPlanAdmin-${user.id}`,
@@ -1068,7 +1106,7 @@ export const actionCallbackQuery = async (
           return await logService.create({
             action: 'callback_query',
             info: `GiveUserAccessConfirm no payment bug. data: ${data}`,
-            type: 'error',
+            type: LogTypeEnum.ERROR,
           });
         }
 
@@ -1129,7 +1167,7 @@ Attention, you must join all channels and chats within 24 hours after receiving 
           return await logService.create({
             action: 'callback_query',
             info: `GiveUserAccessDecline no payment bug. data: ${data}`,
-            type: 'error',
+            type: LogTypeEnum.ERROR,
           });
         }
 
@@ -1188,7 +1226,7 @@ If you could not solve the problem, or you think that an error has occurred, con
       logService.create({
         action: 'callback_query',
         info: JSON.stringify(e.stack),
-        type: 'error',
+        type: LogTypeEnum.ERROR,
       });
     }
   });

@@ -17,6 +17,7 @@ import { sendSubscriptionPlanAdminDetailsKeyboard } from '../keyboards/subscript
 import { sendPromocodeAdminDetailsKeyboard } from '../keyboards/promocode-admin-details.keyboards';
 import { UpdateDto as UpdatePromocodeDto } from 'src/promocode/dto';
 import {
+  LogTypeEnum,
   PayDataInterface,
   PaymentStatusEnum,
   UserLanguageEnum,
@@ -28,7 +29,10 @@ import { sendAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
 import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
 import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
 import { UpdateDto as UpdatePaymentMethodDto } from 'src/paymentMethod/dto';
-import { sendTextWithCancelKeyboard } from '../keyboards/cancel.keyboards';
+import {
+  editTextWithCancelKeyboard,
+  sendTextWithCancelKeyboard,
+} from '../keyboards/cancel.keyboards';
 import { sendGiveUserAccessKeyboard } from '../keyboards/give-user-access.keyboards';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
 import { LogService } from 'src/log/log.service';
@@ -237,6 +241,41 @@ export const actionMessage = async (
           paymentService,
           true,
           user.language,
+        );
+      }
+
+      // get user transactions
+      const usersStepData = await redisService.get(`UsersStep-${user.id}`);
+
+      if (usersStepData) {
+        await redisService.delete(`UsersStep-${user.id}`);
+
+        const finedUser = await userService.findOne({
+          name: msg.text.replace('@', '').trim(),
+        });
+
+        if (!finedUser) {
+          await bot.sendMessage(
+            msg.chat.id,
+            `😢 User ${msg.text} is not fined!`,
+          );
+
+          return await sendAdminPanelKeyboard(msg.chat.id, bot, user);
+        }
+
+        const userInfo = `ID: ${finedUser.id}\nemail: ${finedUser.email}\nnickname: @${finedUser.name}\n\n`;
+        const logs = await logService.get(finedUser.id);
+
+        return await editTextWithCancelKeyboard(
+          msg.chat.id,
+          msg.message_id,
+          bot,
+          userInfo +
+            logs
+              .map((log) => `<b>${log.created_date}</b>\n${log.info}`)
+              .join('\n'),
+          `AdminPanel`,
+          user,
         );
       }
 
@@ -462,7 +501,7 @@ export const actionMessage = async (
       logService.create({
         action: 'message',
         info: JSON.stringify(e.stack),
-        type: 'error',
+        type: LogTypeEnum.ERROR,
       });
     }
   });

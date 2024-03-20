@@ -1,5 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { ChannelService } from 'src/chanel/channel.service';
+import { LogTypeEnum } from 'src/helper';
 import { LogService } from 'src/log/log.service';
 
 export const actionChannelPost = async (
@@ -26,7 +27,7 @@ export const actionChannelPost = async (
       logService.create({
         action: 'channel_post',
         info: JSON.stringify(e.stack),
-        type: 'error',
+        type: LogTypeEnum.ERROR,
       });
     }
   });

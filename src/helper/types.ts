@@ -82,3 +82,9 @@ export interface PayDataInterface {
   continueDays?: number;
   addressMessageId?: number;
 }
+
+export enum LogTypeEnum {
+  INFO = 'info',
+  ERROR = 'error',
+  USER = 'user',
+}

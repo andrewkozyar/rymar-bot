@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { errorHandler } from '../helper';
+import { LogTypeEnum, errorHandler } from '../helper';
 
 import { Log } from './log.entity';
 
@@ -15,13 +15,22 @@ export class LogService {
 
   async create(dto: {
     info: string;
-    type: string;
+    type: LogTypeEnum;
     action: string;
+    user_id?: string;
   }): Promise<Log> {
     try {
       return await this.LogRepository.save(dto);
     } catch (e) {
       errorHandler(`Failed to create Log`, HttpStatus.INTERNAL_SERVER_ERROR, e);
+    }
+  }
+
+  async get(user_id: string): Promise<Log[]> {
+    try {
+      return await this.LogRepository.find({ where: { user_id } });
+    } catch (e) {
+      errorHandler(`Failed to get Logs`, HttpStatus.INTERNAL_SERVER_ERROR, e);
     }
   }
 }

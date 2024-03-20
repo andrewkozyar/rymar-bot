@@ -4,7 +4,12 @@ import { Repository } from 'typeorm';
 import TelegramBot from 'node-telegram-bot-api';
 
 import { CreateDto, GetDto } from './dto';
-import { MessageType, UserLanguageEnum, errorHandler } from '../helper';
+import {
+  LogTypeEnum,
+  MessageType,
+  UserLanguageEnum,
+  errorHandler,
+} from '../helper';
 
 import { Channel } from './channel.entity';
 import { User } from 'src/user/user.entity';
@@ -112,7 +117,7 @@ export class ChannelService {
                 this.logService.create({
                   action: `banChatMember userId: ${user.id}, chatId: ${c.chat_id}`,
                   info: JSON.stringify(e),
-                  type: 'error',
+                  type: LogTypeEnum.ERROR,
                 }),
               );
 
@@ -122,7 +127,7 @@ export class ChannelService {
                 this.logService.create({
                   action: `unbanChatMember userId: ${user.id}, chatId: ${c.chat_id}`,
                   info: JSON.stringify(e),
-                  type: 'error',
+                  type: LogTypeEnum.ERROR,
                 }),
               );
           }),
