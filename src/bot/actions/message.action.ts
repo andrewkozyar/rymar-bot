@@ -65,7 +65,51 @@ export const actionMessage = async (
         if (user) {
           await redisService.clearData(user.id);
         }
-        return await sendLanguageKeyboard(msg.chat.id, bot, !!user);
+
+        if (!user) {
+          await userService.create({
+            chat_id: msg.chat.id,
+            language: UserLanguageEnum.RU,
+            name: msg.chat.username,
+          });
+        }
+
+        return await sendLanguageKeyboard(msg.chat.id, bot);
+      }
+
+      // check email
+      if (!user.email) {
+        if (!validateEmail(trimEmail(msg.text))) {
+          return await sendTextWithCancelKeyboard(
+            msg.chat.id,
+            bot,
+            user.language === UserLanguageEnum.EN
+              ? 'Wrong value. Submit a valid email!'
+              : user.language === UserLanguageEnum.UA
+                ? 'Неправильне значення. Надішліть правильну електронну пошту!'
+                : 'Неверное значение. Отправьте правильную электронную почту!',
+            user.email ? 'BackToAccount;' : null,
+            user,
+          );
+        }
+
+        const updatedUser = await userService.update(user.id, {
+          email: trimEmail(msg.text),
+        });
+
+        await sendMenuKeyboard(
+          msg.chat.id,
+          bot,
+          user.language === UserLanguageEnum.EN
+            ? '👋 Hi. Let`s start'
+            : user.language === UserLanguageEnum.UA
+              ? '👋 Привіт. Давайте почнемо'
+              : '👋 Привет. Давайте начнем',
+          user.language,
+        );
+
+        await redisService.delete(`ChangeEmail-${user.id}`);
+        return await sendAccountKeyboard(msg.chat.id, bot, updatedUser);
       }
 
       // menu buttons
@@ -244,7 +288,7 @@ export const actionMessage = async (
         );
       }
 
-      // get user transactions
+      // get user steps
       const usersStepData = await redisService.get(`UsersStep-${user.id}`);
 
       if (usersStepData) {

@@ -3,10 +3,9 @@ import TelegramBot from 'node-telegram-bot-api';
 export const editLanguageKeyboard = async (
   chat_id: number,
   bot: TelegramBot,
-  isUser: boolean,
   message_id: number,
 ) => {
-  const callback_data = isUser ? 'ChangeLanguage;' : 'FirstLogin;';
+  const callback_data = 'ChangeLanguage;';
 
   await bot.editMessageText('Choose your language:', {
     chat_id,
@@ -61,12 +60,8 @@ export const editLanguageKeyboard = async (
   );
 };
 
-export const sendLanguageKeyboard = async (
-  id: number,
-  bot: TelegramBot,
-  isUser: boolean,
-) => {
-  const callback_data = isUser ? 'ChangeLanguage;' : 'FirstLogin;';
+export const sendLanguageKeyboard = async (id: number, bot: TelegramBot) => {
+  const callback_data = 'ChangeLanguage;';
 
   await bot.sendMessage(id, 'Выберите язык:', {
     reply_markup: {

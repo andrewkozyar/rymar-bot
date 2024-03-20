@@ -9,24 +9,31 @@ export const sendTextWithCancelKeyboard = async (
   callback_data: string,
   user: User,
 ) => {
-  await bot.sendMessage(id, text, {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: `🚫 ${
-              user.language === UserLanguageEnum.EN
-                ? 'Cancel'
-                : user.language === UserLanguageEnum.UA
-                  ? 'Скасувати'
-                  : 'Отменить'
-            }`,
-            callback_data: callback_data,
+  const inline_keyboard = [
+    [
+      {
+        text: `🚫 ${
+          user.language === UserLanguageEnum.EN
+            ? 'Cancel'
+            : user.language === UserLanguageEnum.UA
+              ? 'Скасувати'
+              : 'Отменить'
+        }`,
+        callback_data: callback_data,
+      },
+    ],
+  ];
+  await bot.sendMessage(
+    id,
+    text,
+    callback_data
+      ? {
+          reply_markup: {
+            inline_keyboard,
           },
-        ],
-      ],
-    },
-  });
+        }
+      : undefined,
+  );
 };
 
 export const editTextWithCancelKeyboard = async (
@@ -58,13 +65,15 @@ export const editTextWithCancelKeyboard = async (
     parse_mode: 'HTML',
   });
 
-  await bot.editMessageReplyMarkup(
-    {
-      inline_keyboard,
-    },
-    {
-      chat_id,
-      message_id,
-    },
-  );
+  if (callback_data) {
+    await bot.editMessageReplyMarkup(
+      {
+        inline_keyboard,
+      },
+      {
+        chat_id,
+        message_id,
+      },
+    );
+  }
 };

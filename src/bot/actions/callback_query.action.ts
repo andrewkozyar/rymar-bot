@@ -69,31 +69,42 @@ export const actionCallbackQuery = async (
         await redisService.delete(`ChangeEmail-${user.id}`);
       }
 
-      if (key === 'FirstLogin') {
-        const createdUser =
-          user ||
-          (await userService.create({
-            chat_id: query.message.chat.id,
-            language: data as unknown as UserLanguageEnum,
-            name: query.message.chat.username,
-          }));
+      if (!user.email) {
+        await redisService.clearData(user.id);
 
+        await redisService.add(`ChangeEmail-${user.id}`, 'waiting');
+
+        return await editTextWithCancelKeyboard(
+          query.message.chat.id,
+          query.message.message_id,
+          bot,
+          user.language === UserLanguageEnum.EN
+            ? '🖊️ Enter your email address!'
+            : user.language === UserLanguageEnum.UA
+              ? '🖊️ Введіть адресу вашої електронної пошти!'
+              : '🖊️ Введите ваш адрес электронной почты!',
+          null,
+          user,
+        );
+      }
+
+      if (key === 'FirstLogin') {
         await sendMenuKeyboard(
           query.message.chat.id,
           bot,
-          createdUser.language === UserLanguageEnum.EN
+          user.language === UserLanguageEnum.EN
             ? '👋 Hi. Let`s start'
-            : createdUser.language === UserLanguageEnum.UA
+            : user.language === UserLanguageEnum.UA
               ? '👋 Привіт. Давайте почнемо'
               : '👋 Привет. Давайте начнем',
-          createdUser.language,
+          user.language,
         );
 
         return await editAccountKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
-          createdUser,
+          user,
         );
       }
 
@@ -107,7 +118,6 @@ export const actionCallbackQuery = async (
         return await editLanguageKeyboard(
           query.message.chat.id,
           bot,
-          true,
           query.message.message_id,
         );
       }
