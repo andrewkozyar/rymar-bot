@@ -36,6 +36,7 @@ import {
 import { sendGiveUserAccessKeyboard } from '../keyboards/give-user-access.keyboards';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
 import { LogService } from 'src/log/log.service';
+import { notifyAdminAboutNewUser } from '../helpers/notifyAdminAboutNewUser';
 
 export const actionMessage = async (
   bot: TelegramBot,
@@ -67,6 +68,8 @@ export const actionMessage = async (
         }
 
         if (!user) {
+          await notifyAdminAboutNewUser(bot, msg.chat.username, userService);
+
           await userService.create({
             chat_id: msg.chat.id,
             language: UserLanguageEnum.RU,
