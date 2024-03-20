@@ -44,9 +44,11 @@ import { LogModule } from './log/log.module';
       autoLoadEntities: true,
       logNotifications: true,
       logging: 'all',
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      ssl: process.env.DATABASE_URL
+        ? {
+            rejectUnauthorized: false,
+          }
+        : false,
     }),
   ],
   controllers: [],

@@ -37,3 +37,5 @@ lerna-debug.log*
 
 .env
 dump.rdb
+
+package-lock.json
