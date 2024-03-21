@@ -10,5 +10,5 @@ export class GetDto {
   user_id?: string;
 
   @IsString({ message: 'Must be a string' })
-  readonly status?: PaymentStatusEnum;
+  readonly statuses?: PaymentStatusEnum[];
 }

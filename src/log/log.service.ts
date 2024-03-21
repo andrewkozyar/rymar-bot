@@ -39,7 +39,10 @@ export class LogService {
 
   async get(user_id: string): Promise<Log[]> {
     try {
-      return await this.LogRepository.find({ where: { user_id } });
+      return await this.LogRepository.find({
+        where: { user_id },
+        order: { created_date: 'DESC' },
+      });
     } catch (e) {
       errorHandler(`Failed to get Logs`, HttpStatus.INTERNAL_SERVER_ERROR, e);
     }

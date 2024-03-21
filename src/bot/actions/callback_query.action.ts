@@ -45,6 +45,7 @@ import { editCurrencyKeyboard } from '../keyboards/currency.keyboards';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
 import { LogService } from 'src/log/log.service';
 import { getDaysDifference } from 'src/helper/date';
+import { notifyUserAboutPlan } from '../helpers/notifyUserAboutPlan';
 
 export const actionCallbackQuery = async (
   bot: TelegramBot,
@@ -276,7 +277,7 @@ export const actionCallbackQuery = async (
       if (key === 'ContinueSubscription') {
         const lastPayment = await paymentService.findOne({
           user_id: user.id,
-          status: PaymentStatusEnum.Success,
+          statuses: [PaymentStatusEnum.Success],
         });
 
         const continueDays = getDaysDifference(
@@ -425,9 +426,22 @@ export const actionCallbackQuery = async (
 
         const payData: PayDataInterface = JSON.parse(redisData);
 
+        const todaysLogs = await logService.getOne(user.id);
+
+        if (!todaysLogs.info.includes('нажал на заплатить')) {
+          setTimeout(
+            () => notifyUserAboutPlan(user, bot, paymentService),
+            1000 * 60 * 60 * 5,
+          );
+          setTimeout(
+            () => notifyUserAboutPlan(user, bot, paymentService),
+            1000 * 60 * 60 * 24,
+          );
+        }
+
         await logService.create({
           user_id: user.id,
-          info: `‼️ нажал на купить план`,
+          info: `‼️ нажал на заплатить`,
           type: LogTypeEnum.USER,
         });
 
@@ -578,6 +592,12 @@ export const actionCallbackQuery = async (
 
       if (key === 'ListOfTransactions') {
         await redisService.clearData(user.id);
+
+        await logService.create({
+          user_id: user.id,
+          info: `нажал на "список транзакций"`,
+          type: LogTypeEnum.USER,
+        });
 
         return await editTransactionsKeyboard(
           query.message.chat.id,
@@ -1161,7 +1181,7 @@ export const actionCallbackQuery = async (
 
         const payment = await paymentService.findOne({
           id: data,
-          status: PaymentStatusEnum.Pending,
+          statuses: [PaymentStatusEnum.Pending],
         });
 
         if (!payment) {
@@ -1222,7 +1242,7 @@ Attention, you must join all channels and chats within 24 hours after receiving 
 
         const payment = await paymentService.findOne({
           id: data,
-          status: PaymentStatusEnum.Pending,
+          statuses: [PaymentStatusEnum.Pending],
         });
 
         if (!payment) {

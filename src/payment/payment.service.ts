@@ -65,7 +65,7 @@ export class PaymentService {
     }
   }
 
-  async findOne({ id, user_id, status }: GetDto): Promise<Payment> {
+  async findOne({ id, user_id, statuses }: GetDto): Promise<Payment> {
     const paymentQuery = await this.paymentRepository
       .createQueryBuilder('payment')
       .where('payment.id = :id OR user_id = :user_id', {
@@ -78,8 +78,8 @@ export class PaymentService {
       .orderBy('payment.created_date', 'DESC')
       .withDeleted();
 
-    if (status) {
-      paymentQuery.andWhere('payment.status = :status', { status });
+    if (statuses.length) {
+      paymentQuery.andWhere('payment.status IN (:...statuses)', { statuses });
     }
 
     return paymentQuery.getOne();

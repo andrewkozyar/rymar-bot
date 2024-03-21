@@ -13,7 +13,7 @@ export const sendMySubscriptionKeyboard = async (
 ) => {
   const lastPayment = await paymentService.findOne({
     user_id: user.id,
-    status: PaymentStatusEnum.Success,
+    statuses: [PaymentStatusEnum.Success],
   });
 
   let text;
@@ -95,7 +95,7 @@ export const editMySubscriptionKeyboard = async (
 ) => {
   const lastPayment = await paymentService.findOne({
     user_id: user.id,
-    status: PaymentStatusEnum.Success,
+    statuses: [PaymentStatusEnum.Success],
   });
 
   let text;
