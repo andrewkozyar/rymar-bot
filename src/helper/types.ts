@@ -88,3 +88,11 @@ export enum LogTypeEnum {
   ERROR = 'error',
   USER = 'user',
 }
+
+export enum LaterTypeEnum {
+  BuyPlan = 'BuyPlan',
+  ContinueBuyingPlan = 'ContinueBuyingPlan',
+  DeclineBuyPlan = 'DeclineBuyPlan',
+  EndPlanIn = 'EndPlanIn',
+  EndPlan = 'EndPlan',
+}

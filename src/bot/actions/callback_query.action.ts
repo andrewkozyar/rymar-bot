@@ -2,6 +2,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import { ChannelService } from 'src/chanel/channel.service';
 import {
   CurrencyEnum,
+  LaterTypeEnum,
   LogTypeEnum,
   PayDataInterface,
   PaymentStatusEnum,
@@ -46,6 +47,7 @@ import { ConversionRateService } from 'src/conversionRate/conversionRate.service
 import { LogService } from 'src/log/log.service';
 import { getDaysDifference } from 'src/helper/date';
 import { notifyUserAboutPlan } from '../helpers/notifyUserAboutPlan';
+import { sendEmail } from 'src/helper/mailer';
 
 export const actionCallbackQuery = async (
   bot: TelegramBot,
@@ -430,11 +432,11 @@ export const actionCallbackQuery = async (
 
         if (!todaysLogs.info.includes('нажал на заплатить')) {
           setTimeout(
-            () => notifyUserAboutPlan(user, bot, paymentService),
+            () => notifyUserAboutPlan(user, bot, paymentService, logService),
             1000 * 60 * 60 * 5,
           );
           setTimeout(
-            () => notifyUserAboutPlan(user, bot, paymentService),
+            () => notifyUserAboutPlan(user, bot, paymentService, logService),
             1000 * 60 * 60 * 24,
           );
         }
@@ -1205,7 +1207,7 @@ export const actionCallbackQuery = async (
         const adminsPaymentMessages: { message_id: number; chat_id: number }[] =
           JSON.parse(payment.admins_payment_messages);
 
-        adminsPaymentMessages.forEach(async (paymentMessage) => {
+        adminsPaymentMessages?.forEach(async (paymentMessage) => {
           await editTransactionsKeyboard(
             paymentMessage.chat_id,
             paymentMessage.message_id,
@@ -1218,6 +1220,20 @@ export const actionCallbackQuery = async (
             user,
           );
         });
+
+        const plan = await planService.findOne({
+          id: payment.subscription_plan_id,
+        });
+
+        await sendEmail(
+          customer.email,
+          LaterTypeEnum.BuyPlan,
+          customer.language,
+          logService,
+          {
+            plan: plan[`name${customer.language}`],
+          },
+        );
 
         await bot.sendMessage(
           customer.chat_id,
@@ -1288,6 +1304,20 @@ Attention, you must join all channels and chats within 24 hours after receiving 
                 : `❌ Оплата пользователя @${customer.name} отклонена администратором @${user.name}!`,
           );
         });
+
+        const plan = await planService.findOne({
+          id: payment.subscription_plan_id,
+        });
+
+        await sendEmail(
+          customer.email,
+          LaterTypeEnum.DeclineBuyPlan,
+          customer.language,
+          logService,
+          {
+            plan: plan[`name${customer.language}`],
+          },
+        );
 
         return await bot.sendMessage(
           customer.chat_id,

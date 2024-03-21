@@ -78,7 +78,7 @@ export class PaymentService {
       .orderBy('payment.created_date', 'DESC')
       .withDeleted();
 
-    if (statuses.length) {
+    if (statuses?.length) {
       paymentQuery.andWhere('payment.status IN (:...statuses)', { statuses });
     }
 

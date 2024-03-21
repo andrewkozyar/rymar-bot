@@ -1,5 +1,7 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
+import { LaterTypeEnum, PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
+import { sendEmail } from 'src/helper/mailer';
+import { LogService } from 'src/log/log.service';
 import { PaymentService } from 'src/payment/payment.service';
 import { User } from 'src/user/user.entity';
 
@@ -7,6 +9,7 @@ export const notifyUserAboutPlan = async (
   user: User,
   bot: TelegramBot,
   paymentService: PaymentService,
+  logService: LogService,
 ) => {
   const payment = await paymentService.findOne({
     user_id: user.id,
@@ -14,6 +17,13 @@ export const notifyUserAboutPlan = async (
   });
 
   if (!payment) {
+    await sendEmail(
+      user.email,
+      LaterTypeEnum.ContinueBuyingPlan,
+      user.language,
+      logService,
+    );
+
     await bot.sendMessage(
       user.chat_id,
       user.language === UserLanguageEnum.UA

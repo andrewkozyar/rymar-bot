@@ -4,7 +4,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import { telegramBot } from '../configs/telegram-bot.config';
 import { RedisService } from '../redis/redis.service';
 import { UserService } from '../user/user.service';
-import { LogTypeEnum, UserLanguageEnum } from 'src/helper';
+import { LaterTypeEnum, LogTypeEnum, UserLanguageEnum } from 'src/helper';
 import { SubscriptionPlanService } from 'src/subscriptionPlan/subscriptionPlan.service';
 import { PromocodeService } from 'src/promocode/promocode.service';
 import { PaymentService } from 'src/payment/payment.service';
@@ -17,6 +17,7 @@ import { PaymentMethodService } from 'src/paymentMethod/paymentMethod.service';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
 import { LogService } from 'src/log/log.service';
 import { admins } from './keyboards/account.keyboards';
+import { sendEmail } from 'src/helper/mailer';
 
 @Injectable()
 export class BotService {
@@ -72,6 +73,16 @@ export class BotService {
   async notifyUsers(users: User[], expiredDays: number) {
     return await Promise.all(
       users.map(async (user) => {
+        await sendEmail(
+          user.email,
+          LaterTypeEnum.EndPlanIn,
+          user.language,
+          this.logService,
+          {
+            days: expiredDays,
+          },
+        );
+
         return this.bot.sendMessage(
           user.chat_id,
           user.language === UserLanguageEnum.EN
@@ -126,6 +137,13 @@ You still have the option to renew your subscription at the old price.`
                     : `‼️ Срок действия подписки пользователя @${user.name} истек! Он был удален со всех каналов`,
               );
             }),
+          );
+
+          await sendEmail(
+            user.email,
+            LaterTypeEnum.EndPlan,
+            user.language,
+            this.logService,
           );
 
           return await this.bot.sendMessage(
