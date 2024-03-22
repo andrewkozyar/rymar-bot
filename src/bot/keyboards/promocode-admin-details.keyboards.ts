@@ -33,6 +33,12 @@ export const sendPromocodeAdminDetailsKeyboard = async (
 
 --------------
 
+- <b>многоразовый ли</b>: ${promocode.is_multiple} ${
+    promocode.is_multiple ? '✅' : '❌'
+  }
+
+--------------
+
 ${
   user.language === UserLanguageEnum.EN
     ? 'Choose field to update'
@@ -72,6 +78,12 @@ ${
           {
             text: `процент скидки`,
             callback_data: callback_data + 'sale_percent',
+          },
+        ],
+        [
+          {
+            text: `многоразовый ли`,
+            callback_data: callback_data + 'is_multiple',
           },
         ],
         [
@@ -133,6 +145,12 @@ export const editPromocodeAdminDetailsKeyboard = async (
 
 --------------
 
+- <b>многоразовый ли</b>: ${promocode.is_multiple} ${
+    promocode.is_multiple ? '✅' : '❌'
+  }
+
+--------------
+
 ${
   user.language === UserLanguageEnum.EN
     ? 'Choose field to update'
@@ -168,6 +186,12 @@ ${
       {
         text: `процент скидки`,
         callback_data: callback_data + 'sale_percent',
+      },
+    ],
+    [
+      {
+        text: `многоразовый ли`,
+        callback_data: callback_data + 'is_multiple',
       },
     ],
     [

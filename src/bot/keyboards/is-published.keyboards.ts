@@ -9,13 +9,14 @@ export const editIsPublishedKeyboard = async (
   callback_data: string,
   cancel: string,
   user: User,
+  is_multiple: boolean = false,
 ) => {
   const inline_keyboard = [
     [
       {
         text: `${
-          user.language === UserLanguageEnum.EN
-            ? 'Is published'
+          is_multiple
+            ? 'Многоразовый'
             : user.language === UserLanguageEnum.UA
               ? 'Опубліковано'
               : 'Опубликовано'
@@ -24,8 +25,8 @@ export const editIsPublishedKeyboard = async (
       },
       {
         text: `${
-          user.language === UserLanguageEnum.EN
-            ? 'Is not published'
+          is_multiple
+            ? 'Одноразовый'
             : user.language === UserLanguageEnum.UA
               ? 'Не опубліковано'
               : 'Не опубликовано'

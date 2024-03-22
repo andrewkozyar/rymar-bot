@@ -26,6 +26,9 @@ export class Payment {
   @Column({ nullable: true, type: 'float' })
   price_usd: number;
 
+  @Column({ nullable: true, type: 'float' })
+  full_price_usd: number;
+
   @Column({ nullable: true })
   address: string;
 

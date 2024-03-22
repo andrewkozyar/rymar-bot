@@ -16,6 +16,10 @@ export class UpdateDto {
   @IsOptional()
   is_published?: boolean;
 
+  @IsBoolean({ message: 'Must be a boolean' })
+  @IsOptional()
+  is_multiple?: boolean;
+
   @IsString({ message: 'Must be a string' })
   @IsOptional()
   field?: string;

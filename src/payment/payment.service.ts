@@ -88,12 +88,12 @@ export class PaymentService {
   async getPayments({
     user_id,
     expired_date,
-    status,
+    statuses,
     expiredDateBefore,
   }: {
     user_id?: string;
     expired_date?: Date;
-    status?: PaymentStatusEnum;
+    statuses?: PaymentStatusEnum[];
     expiredDateBefore?: boolean;
   }): Promise<GetPaymentsType> {
     try {
@@ -117,8 +117,8 @@ export class PaymentService {
         );
       }
 
-      if (status) {
-        paymentQuery.andWhere('payment.status = :status', { status });
+      if (statuses?.length) {
+        paymentQuery.andWhere('payment.status IN (:...statuses)', { statuses });
       }
 
       const [payments, total] = await paymentQuery
@@ -146,7 +146,7 @@ export class PaymentService {
   async changeExpiredStatuses() {
     const { payments } = await this.getPayments({
       expired_date: new Date(),
-      status: PaymentStatusEnum.Success,
+      statuses: [PaymentStatusEnum.Success],
       expiredDateBefore: true,
     });
 

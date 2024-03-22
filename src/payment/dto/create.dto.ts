@@ -43,4 +43,6 @@ export class CreateDto {
 
   @IsNumber()
   continueDays?: number;
+
+  readonly full_price_usd?: number;
 }

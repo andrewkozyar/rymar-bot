@@ -10,4 +10,9 @@ export class GetDto {
 
   @IsBoolean()
   readonly is_published?: boolean;
+
+  @IsBoolean({ message: 'Must be a boolean' })
+  is_multiple?: boolean;
+
+  user_id?: string;
 }

@@ -288,7 +288,7 @@ export const actionCallbackQuery = async (
         );
 
         const payData: PayDataInterface = {
-          amount: lastPayment.subscription_plan.price,
+          amount: lastPayment.full_price_usd,
           subscription_plan_id: lastPayment.subscription_plan_id,
           newPrice: lastPayment.price_usd,
           isContinue: true,
@@ -296,6 +296,28 @@ export const actionCallbackQuery = async (
           continueDays,
           isFromNotification: data === 'notification',
         };
+
+        if (lastPayment.promocode_id) {
+          const promocode = await promocodeService.findOne({
+            id: lastPayment.promocode_id,
+          });
+
+          const userPayments = await paymentService.getPayments({
+            user_id: user.id,
+            statuses: [
+              PaymentStatusEnum.End,
+              PaymentStatusEnum.Success,
+              PaymentStatusEnum.Pending,
+            ],
+          });
+
+          if (
+            !promocode.is_multiple &&
+            userPayments.payments.find((p) => p.promocode_id === promocode.id)
+          ) {
+            payData.newPrice = lastPayment.full_price_usd;
+          }
+        }
 
         const plan = await planService.findOne({
           id: payData.subscription_plan_id,
@@ -874,6 +896,18 @@ export const actionCallbackQuery = async (
           );
         }
 
+        if (data === 'is_multiple') {
+          return await editIsPublishedKeyboard(
+            query.message.chat.id,
+            query.message.message_id,
+            bot,
+            'PromocodeIsMultiple;',
+            `AdminPromocodeDetails;${promocodeData.id}`,
+            user,
+            true,
+          );
+        }
+
         if (data === 'sale_percent') {
           return await editTextWithCancelKeyboard(
             query.message.chat.id,
@@ -914,6 +948,29 @@ export const actionCallbackQuery = async (
         const promocode = await promocodeService.update({
           ...promocodeData,
           is_published: data === 'true',
+        });
+
+        return await editPromocodeAdminDetailsKeyboard(
+          query.message.chat.id,
+          query.message.message_id,
+          bot,
+          promocode,
+          redisService,
+          user,
+        );
+      }
+
+      if (key === 'PromocodeIsMultiple') {
+        const redisData = await redisService.get(
+          `EditPromocodeAdmin-${user.id}`,
+        );
+        await redisService.clearData(user.id);
+
+        const promocodeData: UpdatePromocodeDto = JSON.parse(redisData);
+
+        const promocode = await promocodeService.update({
+          ...promocodeData,
+          is_multiple: data === 'true',
         });
 
         return await editPromocodeAdminDetailsKeyboard(
@@ -1130,7 +1187,7 @@ export const actionCallbackQuery = async (
         await redisService.clearData(user.id);
 
         const { payments } = await paymentService.getPayments({
-          status: PaymentStatusEnum.Pending,
+          statuses: [PaymentStatusEnum.Pending],
         });
 
         if (!payments.length) {

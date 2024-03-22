@@ -35,6 +35,7 @@ import { ConversionRateService } from 'src/conversionRate/conversionRate.service
 import { LogService } from 'src/log/log.service';
 import { notifyAdminAboutNewUser } from '../helpers/notifyAdminAboutNewUser';
 import { getDateWithoutHours } from 'src/helper/date';
+import { Promocode } from 'src/promocode/promocode.entity';
 
 export const actionMessage = async (
   bot: TelegramBot,
@@ -253,6 +254,15 @@ export const actionMessage = async (
           name: msg.text,
           is_published: true,
         });
+
+        const userPayments = await paymentService.getPayments({
+          user_id: user.id,
+          statuses: [
+            PaymentStatusEnum.End,
+            PaymentStatusEnum.Success,
+            PaymentStatusEnum.Pending,
+          ],
+        });
         const plan = await planService.findOne({
           id: promocodeData,
           withDeleted: true,
@@ -267,6 +277,26 @@ export const actionMessage = async (
         };
 
         await redisService.delete(`Promocode-${user.id}`);
+
+        if (
+          !promocode.is_multiple &&
+          userPayments.payments.find((p) => p.promocode_id === promocode.id)
+        ) {
+          await bot.sendMessage(
+            msg.chat.id,
+            user.language === UserLanguageEnum.UA
+              ? `❌ Цей promo code можна використати тільки один раз!`
+              : `❌ Этот promo code можно использовать только один раз!`,
+          );
+          return await sendSubscriptionPlanDetailsKeyboard(
+            msg.chat.id,
+            bot,
+            plan,
+            redisService,
+            user,
+            payData,
+          );
+        }
 
         if (promocode) {
           await logService.create({
@@ -529,6 +559,7 @@ export const actionMessage = async (
             screenshot_message_id: msg.message_id.toString(),
             address: paymentMethod.address,
             currency: paymentMethod.currency,
+            full_price_usd: payData.amount,
           });
 
           const managers = await userService.getUsers({
@@ -539,12 +570,28 @@ export const actionMessage = async (
             id: payData.subscription_plan_id,
           });
 
-          let promocode = null;
+          let promocode: Promocode = null;
 
           if (payData.promocode_id) {
             promocode = await promocodeService.findOne({
               id: payData.promocode_id,
             });
+
+            const userPayments = await paymentService.getPayments({
+              user_id: user.id,
+              statuses: [
+                PaymentStatusEnum.End,
+                PaymentStatusEnum.Success,
+                PaymentStatusEnum.Pending,
+              ],
+            });
+
+            if (
+              !promocode.is_multiple &&
+              userPayments.payments.find((p) => p.promocode_id === promocode.id)
+            ) {
+              promocode = null;
+            }
           }
 
           const admins_payment_messages = await Promise.all(

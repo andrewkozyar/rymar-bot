@@ -21,6 +21,9 @@ export class Promocode {
   @Column({ default: false })
   is_published: boolean;
 
+  @Column({ default: false })
+  is_multiple: boolean;
+
   @CreateDateColumn()
   created_date: Date;
 

@@ -119,7 +119,7 @@ export class UserService {
       if (expired_date) {
         const { payments } = await this.paymentService.getPayments({
           expired_date,
-          status: PaymentStatusEnum.Success,
+          statuses: [PaymentStatusEnum.Success],
           expiredDateBefore,
         });
 
