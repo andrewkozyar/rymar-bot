@@ -72,6 +72,10 @@ export const actionCallbackQuery = async (
         await redisService.delete(`ChangeEmail-${user.id}`);
       }
 
+      if (!user) {
+        return;
+      }
+
       if (!user.email) {
         await redisService.clearData(user.id);
 
@@ -89,10 +93,6 @@ export const actionCallbackQuery = async (
           null,
           user,
         );
-      }
-
-      if (!user) {
-        return;
       }
 
       if (key === 'ChangeLanguageMenu') {
