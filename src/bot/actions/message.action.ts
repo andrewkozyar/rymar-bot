@@ -400,7 +400,7 @@ export const actionMessage = async (
                     log.info
                   }`,
               )
-              .join('\n'),
+              .join('\n\n'),
           `AdminPanel`,
           user,
         );
