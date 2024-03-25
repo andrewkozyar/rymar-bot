@@ -1222,7 +1222,7 @@ export const actionCallbackQuery = async (
             id: payment.user_id,
           });
 
-          return sendGiveUserAccessKeyboard(
+          return await sendGiveUserAccessKeyboard(
             query.message.chat.id,
             bot,
             user,
