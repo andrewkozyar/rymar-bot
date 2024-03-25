@@ -44,7 +44,7 @@ export const sendSubscriptionPlanDetailsKeyboard = async (
     },
   ]);
 
-  if (!payData.isContinue) {
+  if (!payData?.isContinue) {
     inline_keyboard.push([
       {
         text: `🎁 Promo code`,
@@ -63,7 +63,7 @@ export const sendSubscriptionPlanDetailsKeyboard = async (
               ? 'Назад'
               : 'Назад'
         }`,
-        callback_data: payData.isContinue
+        callback_data: payData?.isContinue
           ? 'MySubscription'
           : 'SendSubscriptionPlanKeyboard',
       },
@@ -119,7 +119,7 @@ export const editSubscriptionPlanDetailsKeyboard = async (
     },
   ]);
 
-  if (!payData.isContinue) {
+  if (!payData?.isContinue) {
     inline_keyboard.push([
       {
         text: `🎁 Promo code`,
@@ -138,7 +138,7 @@ export const editSubscriptionPlanDetailsKeyboard = async (
               ? 'Назад'
               : 'Назад'
         }`,
-        callback_data: payData.isContinue
+        callback_data: payData?.isContinue
           ? 'MySubscription'
           : 'SendSubscriptionPlanKeyboard',
       },

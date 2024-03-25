@@ -490,7 +490,7 @@ export const actionCallbackQuery = async (
           paymentMethodService,
           user,
           false,
-          payData.isContinue,
+          payData?.isContinue,
           data,
         );
       }
