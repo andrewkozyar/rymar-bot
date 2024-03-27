@@ -1,11 +1,12 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { BotService } from 'src/bot/bot.service';
+import { BotService } from 'src/bot-vice-city/bot/bot.service';
 import { addDays, getDateWithoutHours } from 'src/helper/date';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/bot-vice-city/user/user.service';
 import { HttpService } from '@nestjs/axios';
 import {
+  BotEnum,
   CurrencyEnum,
   ExchangeRatesApiResponseInterface,
   LogTypeEnum,
@@ -14,7 +15,7 @@ import {
 } from 'src/helper';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
 import { LogService } from 'src/log/log.service';
-import { PaymentService } from 'src/payment/payment.service';
+import { PaymentService } from 'src/bot-vice-city/payment/payment.service';
 
 @Injectable()
 export class CronService {
@@ -35,6 +36,7 @@ export class CronService {
         action: 'checkExpiredDate',
         info: 'start cron job',
         type: LogTypeEnum.INFO,
+        bot: BotEnum.VIBE_CITY,
       });
 
       const { users: expiredUsers } = await this.userService.getUsers({
@@ -95,6 +97,7 @@ export class CronService {
         action: 'checkExpiredDate',
         info: JSON.stringify(e),
         type: LogTypeEnum.ERROR,
+        bot: BotEnum.VIBE_CITY,
       });
     }
   }

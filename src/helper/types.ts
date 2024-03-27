@@ -1,7 +1,7 @@
-import { Promocode } from 'src/promocode/promocode.entity';
-import { SubscriptionPlan } from '../subscriptionPlan/subscriptionPlan.entity';
-import { User } from '../user/user.entity';
-import { Payment } from 'src/payment/payment.entity';
+import { Promocode } from 'src/bot-vice-city/promocode/promocode.entity';
+import { SubscriptionPlan } from '../bot-vice-city/subscriptionPlan/subscriptionPlan.entity';
+import { User } from '../bot-vice-city/user/user.entity';
+import { Payment } from 'src/bot-vice-city/payment/payment.entity';
 
 export class GetUsersType {
   readonly users: User[];
@@ -87,6 +87,11 @@ export enum LogTypeEnum {
   INFO = 'info',
   ERROR = 'error',
   USER = 'user',
+}
+
+export enum BotEnum {
+  VIBE_CITY = 'VIBE_CITY',
+  HESOYAM = 'HESOYAM',
 }
 
 export enum LaterTypeEnum {

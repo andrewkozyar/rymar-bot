@@ -1,21 +1,18 @@
 import { Module } from '@nestjs/common';
 import { RedisModule } from './redis/redis.module';
-import { BotModule } from './bot/bot.module';
-import { UserModule } from './user/user.module';
-import { SubscriptionPlanModule } from './subscriptionPlan/subscriptionPlan.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { entities } from './db/entities';
 import { ConfigModule } from '@nestjs/config';
-import { PromocodeModule } from './promocode/promocode.module';
-import { PaymentModule } from './payment/payment.module';
-import { ChannelModule } from './chanel/channel.module';
-import { PaymentMethod } from './paymentMethod/paymentMethod.entity';
 import { CronModule } from './cron/cron.module';
 import { ConversionRateModule } from './conversionRate/conversionRate.module';
 import { LogModule } from './log/log.module';
+import { BotHesoyamModule } from './bot-hesoyam/bot-hesoyam.module';
+import { BotVibeCityModule } from './bot-vice-city/bot-vibe-city.module';
 
 @Module({
   imports: [
+    BotHesoyamModule,
+    BotVibeCityModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
@@ -23,13 +20,6 @@ import { LogModule } from './log/log.module';
     RedisModule,
     CronModule,
     ConversionRateModule,
-    BotModule,
-    UserModule,
-    PromocodeModule,
-    SubscriptionPlanModule,
-    PaymentModule,
-    ChannelModule,
-    PaymentMethod,
     LogModule,
     TypeOrmModule.forRoot({
       type: 'postgres',

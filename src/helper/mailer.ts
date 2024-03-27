@@ -2,7 +2,7 @@ import * as nodemailer from 'nodemailer';
 import handlebars from 'handlebars';
 import * as fs from 'fs';
 import Mail from 'nodemailer/lib/mailer';
-import { LaterTypeEnum, LogTypeEnum, UserLanguageEnum } from './types';
+import { BotEnum, LaterTypeEnum, LogTypeEnum, UserLanguageEnum } from './types';
 import { LogService } from 'src/log/log.service';
 
 export const sendEmail = async (
@@ -10,6 +10,7 @@ export const sendEmail = async (
   laterType: LaterTypeEnum,
   lang: UserLanguageEnum,
   logService: LogService,
+  bot: BotEnum,
   htmlData?: { plan?: string; days?: number },
 ) => {
   const client = nodemailer.createTransport({
@@ -41,6 +42,7 @@ export const sendEmail = async (
       action: 'sendEmail',
       info: JSON.stringify(e.stack),
       type: LogTypeEnum.ERROR,
+      bot,
     }),
   );
 };
