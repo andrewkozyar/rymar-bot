@@ -1,16 +1,16 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { UserLanguageEnum } from 'src/helper';
-import { User } from '../../user/user.entity';
+import { UserHesoyam } from '../../user/user.entity';
 import { ChannelService } from '../../chanel/channel.service';
-import { SubscriptionPlan } from '../../subscriptionPlan/subscriptionPlan.entity';
+import { SubscriptionPlanHesoyam } from '../../subscriptionPlan/subscriptionPlan.entity';
 
 export const editSubscriptionPlanChannelsKeyboard = async (
   chat_id: number,
   message_id: number,
   bot: TelegramBot,
-  subscriptionPlan: SubscriptionPlan,
+  subscriptionPlan: SubscriptionPlanHesoyam,
   channelService: ChannelService,
-  user: User,
+  user: UserHesoyam,
 ) => {
   const callback_data = 'PlanChannel;';
 

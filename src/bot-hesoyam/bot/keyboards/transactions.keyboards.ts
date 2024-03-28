@@ -1,79 +1,10 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
-import { PaymentHesoyam } from 'src/bot-hesoyam/payment/payment.entity';
-import { PaymentService } from 'src/bot-hesoyam/payment/payment.service';
-import { UserHesoyam } from 'src/bot-hesoyam/user/user.entity';
+import { PaymentHesoyam } from '../../payment/payment.entity';
+import { PaymentService } from '../../payment/payment.service';
+import { UserHesoyam } from '../../user/user.entity';
 
 export const sendTransactionsKeyboard = async (
-  id: number,
-  bot: TelegramBot,
-  user: UserHesoyam,
-  paymentService: PaymentService,
-  isAdminPanel: boolean,
-  language: UserLanguageEnum,
-) => {
-  const { payments, total } = await paymentService.getPayments({
-    user_id: user.id,
-  });
-
-  let text;
-
-  if (payments.length) {
-    text = `🗄️ ${getUserInfoText(language, isAdminPanel, user)} ${
-      language === UserLanguageEnum.EN
-        ? `had ${total} payments!
-
-<b>List of payments:</b>`
-        : language === UserLanguageEnum.UA
-          ? `є платежів: ${total}!
-  
-<b>Список платежів:</b>`
-          : `есть платежей: ${total}!
-
-<b>Список платежей:</b>`
-    }`;
-
-    payments.forEach((p) => {
-      text = text + getPaymentInfoText(language, p, isAdminPanel);
-
-      if (p.promocode) {
-        text =
-          text +
-          `
-<b>Promo code</b>: ${p.promocode.name}`;
-      }
-    });
-  } else {
-    text = `${getUserInfoText(
-      language,
-      isAdminPanel,
-      user,
-    )} ${getNoPaymentsInfoText(language)}`;
-  }
-
-  await bot.sendMessage(id, text, {
-    parse_mode: 'HTML',
-    reply_markup: {
-      remove_keyboard: true,
-      inline_keyboard: [
-        [
-          {
-            text: `⬅️ ${
-              language === UserLanguageEnum.EN
-                ? 'Back'
-                : language === UserLanguageEnum.UA
-                  ? 'Назад'
-                  : 'Назад'
-            }`,
-            callback_data: isAdminPanel ? 'AdminPanel' : 'MySubscription',
-          },
-        ],
-      ],
-    },
-  });
-};
-
-export const editTransactionsKeyboard = async (
   chat_id: number,
   message_id: number,
   bot: TelegramBot,
@@ -81,6 +12,7 @@ export const editTransactionsKeyboard = async (
   paymentService: PaymentService,
   isAdminPanel: boolean,
   language: UserLanguageEnum,
+  edit = false,
   isConfirmedPayment: boolean = null,
   admin?: UserHesoyam,
 ) => {
@@ -174,21 +106,30 @@ export const editTransactionsKeyboard = async (
     ],
   ];
 
-  await bot.editMessageText(text, {
-    chat_id,
-    message_id,
-    parse_mode: 'HTML',
-  });
-
-  await bot.editMessageReplyMarkup(
-    {
-      inline_keyboard,
-    },
-    {
+  if (!edit) {
+    await bot.sendMessage(chat_id, text, {
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard,
+      },
+    });
+  } else {
+    await bot.editMessageText(text, {
       chat_id,
       message_id,
-    },
-  );
+      parse_mode: 'HTML',
+    });
+
+    await bot.editMessageReplyMarkup(
+      {
+        inline_keyboard,
+      },
+      {
+        chat_id,
+        message_id,
+      },
+    );
+  }
 };
 
 const getPaymentInfoText = (

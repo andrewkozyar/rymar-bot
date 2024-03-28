@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { ChannelService } from 'src/bot-vice-city/chanel/channel.service';
+import { ChannelService } from '../../chanel/channel.service';
 import {
   BotEnum,
   CurrencyEnum,
@@ -10,37 +10,30 @@ import {
   UserLanguageEnum,
   getFiatAmount,
 } from 'src/helper';
-import { PaymentService } from 'src/bot-vice-city/payment/payment.service';
-import { SubscriptionPlanService } from 'src/bot-vice-city/subscriptionPlan/subscriptionPlan.service';
-import { UserService } from 'src/bot-vice-city/user/user.service';
-import { editAccountKeyboard } from '../keyboards/account.keyboards';
-import { editLanguageKeyboard } from '../keyboards/language.keyboards';
+import { PaymentService } from '../../payment/payment.service';
+import { SubscriptionPlanService } from '../../subscriptionPlan/subscriptionPlan.service';
+import { UserService } from '../../user/user.service';
+import { sendAccountKeyboard } from '../keyboards/account.keyboards';
+import { sendLanguageKeyboard } from '../keyboards/language.keyboards';
 import { sendMenuKeyboard } from '../keyboards/menu.keyboards';
-import { editMySubscriptionKeyboard } from '../keyboards/my-subscription.keyboards';
-import {
-  editSubscriptionPlanDetailsKeyboard,
-  sendSubscriptionPlanDetailsKeyboard,
-} from '../keyboards/subscription-plan-details.keyboards';
-import {
-  editSubscriptionPlanKeyboard,
-  sendSubscriptionPlanKeyboard,
-} from '../keyboards/subscription-plans.keyboards';
-import { sendTimezoneKeyboard } from '../keyboards/timezone.keyboards';
-import { editTransactionsKeyboard } from '../keyboards/transactions.keyboards';
+import { sendMySubscriptionKeyboard } from '../keyboards/my-subscription.keyboards';
+import { sendSubscriptionPlanDetailsKeyboard } from '../keyboards/subscription-plan-details.keyboards';
+import { sendSubscriptionPlanKeyboard } from '../keyboards/subscription-plans.keyboards';
+import { sendTransactionsKeyboard } from '../keyboards/transactions.keyboards';
 import { RedisService } from 'src/redis/redis.service';
-import { editAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
-import { PromocodeService } from 'src/bot-vice-city/promocode/promocode.service';
+import { sendAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
+import { PromocodeService } from '../../promocode/promocode.service';
 import { editPromocodesKeyboard } from '../keyboards/promocodes.keyboards';
-import { editSubscriptionPlanAdminDetailsKeyboard } from '../keyboards/subscription-plan-admin-details.keyboards';
-import { UpdateDto as UpdatePlanDto } from 'src/bot-vice-city/subscriptionPlan/dto';
+import { sendSubscriptionPlanAdminDetailsKeyboard } from '../keyboards/subscription-plan-admin-details.keyboards';
+import { UpdateDto as UpdatePlanDto } from '../../subscriptionPlan/dto';
 import { editIsPublishedKeyboard } from '../keyboards/is-published.keyboards';
-import { editTextWithCancelKeyboard } from '../keyboards/cancel.keyboards';
-import { editPromocodeAdminDetailsKeyboard } from '../keyboards/promocode-admin-details.keyboards';
-import { UpdateDto as UpdatePromocodeDto } from 'src/bot-vice-city/promocode/dto';
+import { sendTextWithCancelKeyboard } from '../keyboards/cancel.keyboards';
+import { sendPromocodeAdminDetailsKeyboard } from '../keyboards/promocode-admin-details.keyboards';
+import { UpdateDto as UpdatePromocodeDto } from '../../promocode/dto';
 import { editPaymentMethodsKeyboard } from '../keyboards/payment-methods.keyboards';
-import { PaymentMethodService } from 'src/bot-vice-city/paymentMethod/paymentMethod.service';
-import { editPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
-import { UpdateDto as UpdatePaymentMethodDto } from 'src/bot-vice-city/paymentMethod/dto';
+import { PaymentMethodService } from '../../paymentMethod/paymentMethod.service';
+import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
+import { UpdateDto as UpdatePaymentMethodDto } from '../../paymentMethod/dto';
 import { editPaymentMethodDetailsKeyboard } from '../keyboards/payment-method-details.keyboards';
 import { sendGiveUserAccessKeyboard } from '../keyboards/give-user-access.keyboards';
 import { editCurrencyKeyboard } from '../keyboards/currency.keyboards';
@@ -83,7 +76,7 @@ export const actionCallbackQuery = async (
 
         await redisService.add(`ChangeEmail-${user.id}`, 'waiting');
 
-        return await editTextWithCancelKeyboard(
+        return await sendTextWithCancelKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
@@ -94,6 +87,7 @@ export const actionCallbackQuery = async (
               : '🖊️ Введите ваш адрес электронной почты!',
           null,
           user,
+          true,
         );
       }
 
@@ -107,10 +101,11 @@ export const actionCallbackQuery = async (
           bot: BotEnum.VIBE_CITY,
         });
 
-        return await editLanguageKeyboard(
+        return await sendLanguageKeyboard(
           query.message.chat.id,
-          bot,
           query.message.message_id,
+          bot,
+          true,
         );
       }
 
@@ -137,37 +132,12 @@ export const actionCallbackQuery = async (
               : '✅ Язык изменен',
           updatedUser.language,
         );
-        return await editAccountKeyboard(
+        return await sendAccountKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           updatedUser,
-        );
-      }
-
-      if (key === 'ChangeTimezoneMenu') {
-        await redisService.clearData(user.id);
-
-        return await sendTimezoneKeyboard(query.message.chat.id, bot);
-      }
-
-      if (key === 'ChangeTimezone') {
-        await redisService.clearData(user.id);
-
-        const updatedUser = await userService.update(user.id, {
-          timezone: data,
-        });
-        await sendMenuKeyboard(
-          query.message.chat.id,
-          bot,
-          'Timezone is changed',
-          user.language,
-        );
-        return await editAccountKeyboard(
-          query.message.chat.id,
-          query.message.message_id,
-          bot,
-          updatedUser,
+          true,
         );
       }
 
@@ -181,11 +151,12 @@ export const actionCallbackQuery = async (
           bot: BotEnum.VIBE_CITY,
         });
 
-        return await editAccountKeyboard(
+        return await sendAccountKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           user,
+          true,
         );
       }
 
@@ -201,7 +172,7 @@ export const actionCallbackQuery = async (
           bot: BotEnum.VIBE_CITY,
         });
 
-        return await editTextWithCancelKeyboard(
+        return await sendTextWithCancelKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
@@ -212,6 +183,7 @@ export const actionCallbackQuery = async (
               : '🖊️ Введите ваш адрес электронной почты!',
           'BackToAccount',
           user,
+          true,
         );
       }
 
@@ -250,7 +222,7 @@ export const actionCallbackQuery = async (
             id: payData.promocode_id,
           });
 
-          return await editSubscriptionPlanDetailsKeyboard(
+          return await sendSubscriptionPlanDetailsKeyboard(
             query.message.chat.id,
             query.message.message_id,
             bot,
@@ -259,6 +231,7 @@ export const actionCallbackQuery = async (
             user,
             payData,
             promocode,
+            true,
           );
         }
 
@@ -272,7 +245,7 @@ export const actionCallbackQuery = async (
           isContinue: false,
         };
 
-        return await editSubscriptionPlanDetailsKeyboard(
+        return await sendSubscriptionPlanDetailsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
@@ -280,6 +253,8 @@ export const actionCallbackQuery = async (
           redisService,
           user,
           planPayData,
+          null,
+          true,
         );
       }
 
@@ -341,6 +316,7 @@ export const actionCallbackQuery = async (
         if (payData.isFromNotification) {
           return await sendSubscriptionPlanDetailsKeyboard(
             query.message.chat.id,
+            null,
             bot,
             plan,
             redisService,
@@ -349,7 +325,7 @@ export const actionCallbackQuery = async (
           );
         }
 
-        return await editSubscriptionPlanDetailsKeyboard(
+        return await sendSubscriptionPlanDetailsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
@@ -357,6 +333,8 @@ export const actionCallbackQuery = async (
           redisService,
           user,
           payData,
+          null,
+          true,
         );
       }
 
@@ -369,13 +347,14 @@ export const actionCallbackQuery = async (
           return;
         }
 
-        return await editSubscriptionPlanAdminDetailsKeyboard(
+        return await sendSubscriptionPlanAdminDetailsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           plan,
           redisService,
           user,
+          true,
         );
       }
 
@@ -384,13 +363,14 @@ export const actionCallbackQuery = async (
 
         const promocode = await promocodeService.findOne({ id: data });
 
-        return await editPromocodeAdminDetailsKeyboard(
+        return await sendPromocodeAdminDetailsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           promocode,
           redisService,
           user,
+          true,
         );
       }
 
@@ -404,26 +384,28 @@ export const actionCallbackQuery = async (
           bot: BotEnum.VIBE_CITY,
         });
 
-        return await editSubscriptionPlanKeyboard(
+        return await sendSubscriptionPlanKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           planService,
           false,
           user,
+          true,
         );
       }
 
       if (key === 'SendSubscriptionPlanAdminKeyboard') {
         await redisService.clearData(user.id);
 
-        return await editSubscriptionPlanKeyboard(
+        return await sendSubscriptionPlanKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           planService,
           true,
           user,
+          true,
         );
       }
 
@@ -439,7 +421,7 @@ export const actionCallbackQuery = async (
           bot: BotEnum.VIBE_CITY,
         });
 
-        return await editTextWithCancelKeyboard(
+        return await sendTextWithCancelKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
@@ -450,6 +432,7 @@ export const actionCallbackQuery = async (
               : '🖊️ Введите promo code!',
           `ChooseSubscriptionPlan;${data}`,
           user,
+          true,
         );
       }
 
@@ -539,6 +522,7 @@ export const actionCallbackQuery = async (
         if (!payData?.subscription_plan_id) {
           return await sendSubscriptionPlanKeyboard(
             query.message.chat.id,
+            null,
             bot,
             planService,
             false,
@@ -613,7 +597,7 @@ export const actionCallbackQuery = async (
           );
         }
 
-        return await editTextWithCancelKeyboard(
+        return await sendTextWithCancelKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
@@ -624,6 +608,7 @@ export const actionCallbackQuery = async (
               : 'Пожалуйста, отправьте скрин с оплатой! 📱',
           'PayBy;' + data,
           user,
+          true,
         );
       }
 
@@ -637,7 +622,7 @@ export const actionCallbackQuery = async (
           bot: BotEnum.VIBE_CITY,
         });
 
-        return await editTransactionsKeyboard(
+        return await sendTransactionsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
@@ -645,6 +630,7 @@ export const actionCallbackQuery = async (
           paymentService,
           false,
           user.language,
+          true,
         );
       }
 
@@ -658,23 +644,25 @@ export const actionCallbackQuery = async (
           bot: BotEnum.VIBE_CITY,
         });
 
-        return await editMySubscriptionKeyboard(
+        return await sendMySubscriptionKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           user,
           paymentService,
+          true,
         );
       }
 
       if (key === 'AdminPanel') {
         await redisService.clearData(user.id);
 
-        return await editAdminPanelKeyboard(
+        return await sendAdminPanelKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           user,
+          true,
         );
       }
 
@@ -695,7 +683,7 @@ export const actionCallbackQuery = async (
 
         await redisService.add(`AdminUserTransactions-${user.id}`, 'waiting');
 
-        return await editTextWithCancelKeyboard(
+        return await sendTextWithCancelKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
@@ -706,6 +694,7 @@ export const actionCallbackQuery = async (
               : `🖊️ Введите nickname пользователя!`,
           `AdminPanel`,
           user,
+          true,
         );
       }
 
@@ -714,7 +703,7 @@ export const actionCallbackQuery = async (
 
         await redisService.add(`UsersStep-${user.id}`, 'waiting');
 
-        return await editTextWithCancelKeyboard(
+        return await sendTextWithCancelKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
@@ -725,6 +714,7 @@ export const actionCallbackQuery = async (
               : `🖊️ Введите nickname пользователя!`,
           `AdminPanel`,
           user,
+          true,
         );
       }
 
@@ -736,13 +726,14 @@ export const actionCallbackQuery = async (
           orderBy: 'name',
         });
 
-        return await editTextWithCancelKeyboard(
+        return await sendTextWithCancelKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           users.users.map((user) => `@${user.name}`).join('\n'),
           `AdminPanel`,
           user,
+          true,
         );
       }
 
@@ -788,7 +779,7 @@ export const actionCallbackQuery = async (
         }
 
         if (['price', 'months_count'].includes(data)) {
-          return await editTextWithCancelKeyboard(
+          return await sendTextWithCancelKeyboard(
             query.message.chat.id,
             query.message.message_id,
             bot,
@@ -805,13 +796,14 @@ export const actionCallbackQuery = async (
                   } для плана подписки! Должно быть целое число.`,
             `AdminChooseSubscriptionPlan;${planData.id}`,
             user,
+            true,
           );
         }
 
         if (
           ['descriptionEN', 'descriptionUA', 'descriptionRU'].includes(data)
         ) {
-          return await editTextWithCancelKeyboard(
+          return await sendTextWithCancelKeyboard(
             query.message.chat.id,
             query.message.message_id,
             bot,
@@ -822,10 +814,11 @@ export const actionCallbackQuery = async (
                 : `Введите новый ${data} для плана подписки! Если там указана цена, напишите ее не число, а {{price}}. Требуется, чтобы клиенты получили правильную сумму после использования промокода.`,
             `AdminChooseSubscriptionPlan;${planData.id}`,
             user,
+            true,
           );
         }
 
-        return await editTextWithCancelKeyboard(
+        return await sendTextWithCancelKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
@@ -836,6 +829,7 @@ export const actionCallbackQuery = async (
               : `Введите новый ${data} для плана подписки!`,
           `AdminChooseSubscriptionPlan;${planData.id}`,
           user,
+          true,
         );
       }
 
@@ -852,13 +846,14 @@ export const actionCallbackQuery = async (
           is_published: data === 'true',
         });
 
-        return await editSubscriptionPlanAdminDetailsKeyboard(
+        return await sendSubscriptionPlanAdminDetailsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           plan,
           redisService,
           user,
+          true,
         );
       }
 
@@ -872,13 +867,14 @@ export const actionCallbackQuery = async (
 
         await planService.remove(planData.id);
 
-        return await editSubscriptionPlanKeyboard(
+        return await sendSubscriptionPlanKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           planService,
           true,
           user,
+          true,
         );
       }
 
@@ -887,13 +883,14 @@ export const actionCallbackQuery = async (
 
         const plan = await planService.create();
 
-        return await editSubscriptionPlanAdminDetailsKeyboard(
+        return await sendSubscriptionPlanAdminDetailsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           plan,
           redisService,
           user,
+          true,
         );
       }
 
@@ -937,7 +934,7 @@ export const actionCallbackQuery = async (
         }
 
         if (data === 'sale_percent') {
-          return await editTextWithCancelKeyboard(
+          return await sendTextWithCancelKeyboard(
             query.message.chat.id,
             query.message.message_id,
             bot,
@@ -948,10 +945,11 @@ export const actionCallbackQuery = async (
                 : `Введите новое число процентов скидки для промокода! Должно быть целое число.`,
             `AdminPromocodeDetails;${promocodeData.id}`,
             user,
+            true,
           );
         }
 
-        return await editTextWithCancelKeyboard(
+        return await sendTextWithCancelKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
@@ -962,6 +960,7 @@ export const actionCallbackQuery = async (
               : `Введите новый ${data} для промокода!`,
           `AdminPromocodeDetails;${promocodeData.id}`,
           user,
+          true,
         );
       }
 
@@ -978,13 +977,14 @@ export const actionCallbackQuery = async (
           is_published: data === 'true',
         });
 
-        return await editPromocodeAdminDetailsKeyboard(
+        return await sendPromocodeAdminDetailsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           promocode,
           redisService,
           user,
+          true,
         );
       }
 
@@ -1001,13 +1001,14 @@ export const actionCallbackQuery = async (
           is_multiple: data === 'true',
         });
 
-        return await editPromocodeAdminDetailsKeyboard(
+        return await sendPromocodeAdminDetailsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           promocode,
           redisService,
           user,
+          true,
         );
       }
 
@@ -1035,13 +1036,14 @@ export const actionCallbackQuery = async (
 
         const promocode = await promocodeService.create();
 
-        return await editPromocodeAdminDetailsKeyboard(
+        return await sendPromocodeAdminDetailsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           promocode,
           redisService,
           user,
+          true,
         );
       }
 
@@ -1064,13 +1066,14 @@ export const actionCallbackQuery = async (
 
         const paymentMethod = await paymentMethodService.findOne({ id: data });
 
-        return await editPaymentMethodAdminDetailsKeyboard(
+        return await sendPaymentMethodAdminDetailsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           paymentMethod,
           redisService,
           user,
+          true,
         );
       }
 
@@ -1079,13 +1082,14 @@ export const actionCallbackQuery = async (
 
         const paymentMethod = await paymentMethodService.create();
 
-        return await editPaymentMethodAdminDetailsKeyboard(
+        return await sendPaymentMethodAdminDetailsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           paymentMethod,
           redisService,
           user,
+          true,
         );
       }
 
@@ -1130,7 +1134,7 @@ export const actionCallbackQuery = async (
           );
         }
 
-        return await editTextWithCancelKeyboard(
+        return await sendTextWithCancelKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
@@ -1141,6 +1145,7 @@ export const actionCallbackQuery = async (
               : `Введите новый ${data} для способа оплаты!`,
           `AdminPaymentMethodDetails;${paymentMethodData.id}`,
           user,
+          true,
         );
       }
 
@@ -1157,13 +1162,14 @@ export const actionCallbackQuery = async (
           is_published: data === 'true',
         });
 
-        return await editPaymentMethodAdminDetailsKeyboard(
+        return await sendPaymentMethodAdminDetailsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           paymentMethod,
           redisService,
           user,
+          true,
         );
       }
 
@@ -1180,13 +1186,14 @@ export const actionCallbackQuery = async (
           currency: data as CurrencyEnum,
         });
 
-        return await editPaymentMethodAdminDetailsKeyboard(
+        return await sendPaymentMethodAdminDetailsKeyboard(
           query.message.chat.id,
           query.message.message_id,
           bot,
           paymentMethod,
           redisService,
           user,
+          true,
         );
       }
 
@@ -1327,7 +1334,7 @@ export const actionCallbackQuery = async (
           JSON.parse(payment.admins_payment_messages);
 
         adminsPaymentMessages?.forEach(async (paymentMessage) => {
-          await editTransactionsKeyboard(
+          await sendTransactionsKeyboard(
             paymentMessage.chat_id,
             paymentMessage.message_id,
             bot,
@@ -1335,6 +1342,7 @@ export const actionCallbackQuery = async (
             paymentService,
             true,
             user.language,
+            true,
             true,
             user,
           );
@@ -1404,7 +1412,7 @@ Attention, you must join all channels and chats within 24 hours after receiving 
           JSON.parse(payment.admins_payment_messages);
 
         adminsPaymentMessages.forEach(async (paymentMessage) => {
-          await editTransactionsKeyboard(
+          await sendTransactionsKeyboard(
             paymentMessage.chat_id,
             paymentMessage.message_id,
             bot,
@@ -1412,6 +1420,7 @@ Attention, you must join all channels and chats within 24 hours after receiving 
             paymentService,
             true,
             user.language,
+            true,
             false,
             user,
           );

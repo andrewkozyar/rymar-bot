@@ -5,7 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
+import { ChannelHesoyam } from '../chanel/channel.entity';
 
 @Entity()
 export class SubscriptionPlanHesoyam {
@@ -41,6 +44,10 @@ export class SubscriptionPlanHesoyam {
 
   @Column({ nullable: true })
   position: number;
+
+  @ManyToMany(() => ChannelHesoyam)
+  @JoinTable()
+  channels: ChannelHesoyam[];
 
   @CreateDateColumn()
   created_date: Date;

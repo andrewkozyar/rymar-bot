@@ -20,7 +20,9 @@ export class SubscriptionPlanService {
 
   async create(dto: CreateDto = {}): Promise<SubscriptionPlanHesoyam> {
     try {
-      return await this.subscriptionPlanRepository.save(dto);
+      const plan = await this.subscriptionPlanRepository.save(dto);
+
+      return await this.findOne({ id: plan.id });
     } catch (e) {
       errorHandler(
         `Failed to create subscriptionPlan`,
@@ -41,10 +43,43 @@ export class SubscriptionPlanService {
         id,
       });
 
-      return this.subscriptionPlanRepository.save({
+      await this.subscriptionPlanRepository.save({
         ...subscriptionPlan,
         ...dto,
       });
+
+      return await this.findOne({ id: subscriptionPlan.id });
+    } catch (e) {
+      errorHandler(
+        `Failed to update subscriptionPlan`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        e,
+      );
+    }
+  }
+
+  async updateChannel({
+    id,
+    channelId,
+    add,
+  }: {
+    id: string;
+    channelId: string;
+    add: boolean;
+  }) {
+    try {
+      const subscriptionPlan = await this.findOne({
+        id,
+      });
+
+      await this.subscriptionPlanRepository.save({
+        ...subscriptionPlan,
+        channels: add
+          ? [...subscriptionPlan.channels, { id: channelId }]
+          : subscriptionPlan.channels.filter((ch) => ch.id !== channelId),
+      });
+
+      return true;
     } catch (e) {
       errorHandler(
         `Failed to update subscriptionPlan`,
@@ -70,6 +105,7 @@ export class SubscriptionPlanService {
   async findOne({ id, withDeleted }: GetDto): Promise<SubscriptionPlanHesoyam> {
     const subscriptionPlan = await this.subscriptionPlanRepository
       .createQueryBuilder('subscriptionPlan')
+      .leftJoinAndSelect('subscriptionPlan.channels', 'channels')
       .where('subscriptionPlan.id = :id', {
         id,
       });

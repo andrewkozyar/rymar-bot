@@ -1,97 +1,17 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
 import { getDateWithoutHours, getDaysDifference } from 'src/helper/date';
-import { Payment } from 'src/bot-vice-city/payment/payment.entity';
-import { PaymentService } from 'src/bot-vice-city/payment/payment.service';
-import { User } from 'src/bot-vice-city/user/user.entity';
+import { Payment } from '../../payment/payment.entity';
+import { PaymentService } from '../../payment/payment.service';
+import { User } from '../../user/user.entity';
 
 export const sendMySubscriptionKeyboard = async (
-  id: number,
-  bot: TelegramBot,
-  user: User,
-  paymentService: PaymentService,
-) => {
-  const lastPayment = await paymentService.findOne({
-    user_id: user.id,
-    statuses: [PaymentStatusEnum.Success],
-  });
-
-  let text;
-
-  const inline_keyboard = [];
-
-  if (lastPayment) {
-    const continueDays = getDaysDifference(
-      new Date(),
-      lastPayment.expired_date,
-    );
-    const expiredDate = getDateWithoutHours(
-      lastPayment.expired_date,
-    ).toDateString();
-
-    text = getPlanInfo(user.language, lastPayment, continueDays, expiredDate);
-
-    inline_keyboard.push([
-      {
-        text:
-          user.language === UserLanguageEnum.EN
-            ? 'Continue the subscription at the old price'
-            : user.language === UserLanguageEnum.UA
-              ? 'Продовжити підписку за старою ціною'
-              : 'Продолжить подписку по старой цене',
-        callback_data: 'ContinueSubscription',
-      },
-    ]);
-  } else {
-    text =
-      user.language === UserLanguageEnum.EN
-        ? 'You do not have an active subscription'
-        : user.language === UserLanguageEnum.UA
-          ? 'У вас немає активної підписки'
-          : 'У вас нет активной подписки';
-  }
-
-  inline_keyboard.push(
-    [
-      {
-        text: `💵 ${
-          user.language === UserLanguageEnum.EN
-            ? 'List of transactions'
-            : user.language === UserLanguageEnum.UA
-              ? 'Список транзакцій'
-              : 'Список транзакций'
-        }`,
-        callback_data: 'ListOfTransactions',
-      },
-    ],
-    [
-      {
-        text:
-          user.language === UserLanguageEnum.EN
-            ? '🗒️ Subscription plans'
-            : user.language === UserLanguageEnum.UA
-              ? '🗒️ Плани підписок'
-              : '🗒️ Планы подписок',
-        callback_data: 'SendSubscriptionPlanKeyboard',
-      },
-    ],
-  );
-
-  await bot.sendMessage(id, text, {
-    parse_mode: 'HTML',
-    reply_markup: {
-      remove_keyboard: true,
-      inline_keyboard,
-    },
-  });
-};
-
-export const editMySubscriptionKeyboard = async (
   chat_id: number,
   message_id: number,
   bot: TelegramBot,
   user: User,
   paymentService: PaymentService,
+  edit = false,
 ) => {
   const lastPayment = await paymentService.findOne({
     user_id: user.id,
@@ -159,21 +79,30 @@ export const editMySubscriptionKeyboard = async (
     ],
   );
 
-  await bot.editMessageText(text, {
-    chat_id,
-    message_id,
-    parse_mode: 'HTML',
-  });
-
-  await bot.editMessageReplyMarkup(
-    {
-      inline_keyboard,
-    },
-    {
+  if (!edit) {
+    await bot.sendMessage(chat_id, text, {
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard,
+      },
+    });
+  } else {
+    await bot.editMessageText(text, {
       chat_id,
       message_id,
-    },
-  );
+      parse_mode: 'HTML',
+    });
+
+    await bot.editMessageReplyMarkup(
+      {
+        inline_keyboard,
+      },
+      {
+        chat_id,
+        message_id,
+      },
+    );
+  }
 };
 
 const getPlanInfo = (

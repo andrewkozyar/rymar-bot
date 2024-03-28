@@ -1,109 +1,76 @@
 import TelegramBot from 'node-telegram-bot-api';
 
-export const editLanguageKeyboard = async (
+export const sendLanguageKeyboard = async (
   chat_id: number,
-  bot: TelegramBot,
   message_id: number,
+  bot: TelegramBot,
+  edit = false,
 ) => {
   const callback_data = 'ChangeLanguage;';
 
-  await bot.editMessageText('Choose your language:', {
-    chat_id,
-    message_id,
-  });
+  const title = 'Выберите язык:';
 
-  await bot.editMessageReplyMarkup(
-    {
-      inline_keyboard: [
-        [
-          {
-            text: '🇷🇺 Русский',
-            callback_data: callback_data + 'RU',
-          },
-          // {
-          //   text: '🇺🇸 English',
-          //   callback_data: callback_data + 'EN',
-          // },
-        ],
-        [
-          // {
-          //   text: 'Polski',
-          //   callback_data: callback_data + 'PL',
-          // },
-          {
-            text: '🇺🇦 Українська',
-            callback_data: callback_data + 'UA',
-          },
-        ],
-        // [
-        //   {
-        //     text: 'Deutsch',
-        //     callback_data: callback_data + 'GE',
-        //   },
-        //   {
-        //     text: 'Română',
-        //     callback_data: callback_data + 'RO',
-        //   },
-        // ],
-        // [
-        //   {
-        //     text: 'Italiano',
-        //     callback_data: callback_data + 'IT',
-        //   },
-        // ],
-      ],
-    },
-    {
+  const inline_keyboard = [
+    [
+      {
+        text: '🇷🇺 Русский',
+        callback_data: callback_data + 'RU',
+      },
+      // {
+      //   text: '🇺🇸 English',
+      //   callback_data: callback_data + 'EN',
+      // },
+      {
+        text: '🇺🇦 Українська',
+        callback_data: callback_data + 'UA',
+      },
+    ],
+    [
+      // {
+      //   text: 'Polski',
+      //   callback_data: callback_data + 'PL',
+      // },
+    ],
+    // [
+    //   {
+    //     text: 'Deutsch',
+    //     callback_data: callback_data + 'GE',
+    //   },
+    //   {
+    //     text: 'Română',
+    //     callback_data: callback_data + 'RO',
+    //   },
+    // ],
+    // [
+    //   {
+    //     text: 'Italiano',
+    //     callback_data: callback_data + 'IT',
+    //   },
+    // ],
+  ];
+
+  if (!edit) {
+    await bot.sendMessage(chat_id, title, {
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard,
+      },
+    });
+  } else {
+    await bot.editMessageText(title, {
       chat_id,
       message_id,
-    },
-  );
-};
+      parse_mode: 'HTML',
+    });
 
-export const sendLanguageKeyboard = async (id: number, bot: TelegramBot) => {
-  const callback_data = 'ChangeLanguage;';
-
-  await bot.sendMessage(id, 'Выберите язык:', {
-    reply_markup: {
-      remove_keyboard: true,
-      inline_keyboard: [
-        [
-          {
-            text: '🇷🇺 Русский',
-            callback_data: callback_data + 'RU',
-          },
-          // {
-          //   text: '🇺🇸 English',
-          //   callback_data: callback_data + 'EN',
-          // },
-          {
-            text: '🇺🇦 Українська',
-            callback_data: callback_data + 'UA',
-          },
-        ],
-        [
-          // {
-          //   text: 'Polski',
-          //   callback_data: callback_data + 'PL',
-          // },
-        ],
-        // [
-        //   {
-        //     text: 'Deutsch',
-        //     callback_data: callback_data + 'GE',
-        //   },
-        //   {
-        //     text: 'Română',
-        //     callback_data: callback_data + 'RO',
-        //   },
-        // ],
-        // [
-        //   {
-        //     text: 'Italiano',
-        //     callback_data: callback_data + 'IT',
-        //   },
-        // ],
-      ],
-    },
-  });
+    await bot.editMessageReplyMarkup(
+      {
+        inline_keyboard,
+      },
+      {
+        chat_id,
+        message_id,
+      },
+    );
+  }
 };

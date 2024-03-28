@@ -1,9 +1,9 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { ChannelService } from 'src/bot-vice-city/chanel/channel.service';
-import { PaymentService } from 'src/bot-vice-city/payment/payment.service';
-import { PromocodeService } from 'src/bot-vice-city/promocode/promocode.service';
-import { SubscriptionPlanService } from 'src/bot-vice-city/subscriptionPlan/subscriptionPlan.service';
-import { UserService } from 'src/bot-vice-city/user/user.service';
+import { ChannelService } from '../../chanel/channel.service';
+import { PaymentService } from '../../payment/payment.service';
+import { PromocodeService } from '../../promocode/promocode.service';
+import { SubscriptionPlanService } from '../../subscriptionPlan/subscriptionPlan.service';
+import { UserService } from '../../user/user.service';
 import { admins, sendAccountKeyboard } from '../keyboards/account.keyboards';
 import { sendLanguageKeyboard } from '../keyboards/language.keyboards';
 import { sendMenuKeyboard } from '../keyboards/menu.keyboards';
@@ -12,10 +12,10 @@ import { sendSubscriptionPlanDetailsKeyboard } from '../keyboards/subscription-p
 import { sendSubscriptionPlanKeyboard } from '../keyboards/subscription-plans.keyboards';
 import { RedisService } from 'src/redis/redis.service';
 import { sendTransactionsKeyboard } from '../keyboards/transactions.keyboards';
-import { UpdateDto as UpdatePlanDto } from 'src/bot-vice-city/subscriptionPlan/dto';
+import { UpdateDto as UpdatePlanDto } from '../../subscriptionPlan/dto';
 import { sendSubscriptionPlanAdminDetailsKeyboard } from '../keyboards/subscription-plan-admin-details.keyboards';
 import { sendPromocodeAdminDetailsKeyboard } from '../keyboards/promocode-admin-details.keyboards';
-import { UpdateDto as UpdatePromocodeDto } from 'src/bot-vice-city/promocode/dto';
+import { UpdateDto as UpdatePromocodeDto } from '../../promocode/dto';
 import {
   BotEnum,
   LogTypeEnum,
@@ -28,15 +28,15 @@ import {
 } from 'src/helper';
 import { sendAdminPanelKeyboard } from '../keyboards/adminPanel.keyboards';
 import { sendPaymentMethodAdminDetailsKeyboard } from '../keyboards/payment-method-admin-details.keyboards';
-import { PaymentMethodService } from 'src/bot-vice-city/paymentMethod/paymentMethod.service';
-import { UpdateDto as UpdatePaymentMethodDto } from 'src/bot-vice-city/paymentMethod/dto';
+import { PaymentMethodService } from '../../paymentMethod/paymentMethod.service';
+import { UpdateDto as UpdatePaymentMethodDto } from '../../paymentMethod/dto';
 import { sendTextWithCancelKeyboard } from '../keyboards/cancel.keyboards';
 import { sendGiveUserAccessKeyboard } from '../keyboards/give-user-access.keyboards';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
 import { LogService } from 'src/log/log.service';
 import { notifyAdminAboutNewUser } from '../helpers/notifyAdminAboutNewUser';
 import { getDateWithoutHours } from 'src/helper/date';
-import { Promocode } from 'src/bot-vice-city/promocode/promocode.entity';
+import { Promocode } from '../../promocode/promocode.entity';
 
 export const actionMessage = async (
   bot: TelegramBot,
@@ -84,7 +84,7 @@ export const actionMessage = async (
           bot: BotEnum.VIBE_CITY,
         });
 
-        return await sendLanguageKeyboard(msg.chat.id, bot);
+        return await sendLanguageKeyboard(msg.chat.id, null, bot);
       }
 
       // check email
@@ -92,6 +92,7 @@ export const actionMessage = async (
         if (!validateEmail(trimEmail(msg.text))) {
           return await sendTextWithCancelKeyboard(
             msg.chat.id,
+            null,
             bot,
             user.language === UserLanguageEnum.EN
               ? 'Wrong value. Submit a valid email!'
@@ -126,7 +127,7 @@ export const actionMessage = async (
         );
 
         await redisService.delete(`ChangeEmail-${user.id}`);
-        return await sendAccountKeyboard(msg.chat.id, bot, updatedUser);
+        return await sendAccountKeyboard(msg.chat.id, null, bot, updatedUser);
       }
 
       // menu buttons
@@ -148,6 +149,7 @@ export const actionMessage = async (
 
         return await sendSubscriptionPlanKeyboard(
           msg.chat.id,
+          null,
           bot,
           planService,
           false,
@@ -171,6 +173,7 @@ export const actionMessage = async (
 
         return await sendMySubscriptionKeyboard(
           msg.chat.id,
+          null,
           bot,
           user,
           paymentService,
@@ -189,7 +192,7 @@ export const actionMessage = async (
           bot: BotEnum.VIBE_CITY,
         });
 
-        return await sendAccountKeyboard(msg.chat.id, bot, user);
+        return await sendAccountKeyboard(msg.chat.id, null, bot, user);
       }
 
       if (['🤝 Support', '🤝 Допомога', '🤝 Помощь'].includes(msg.text)) {
@@ -219,6 +222,7 @@ export const actionMessage = async (
         if (!validateEmail(trimEmail(msg.text))) {
           return await sendTextWithCancelKeyboard(
             msg.chat.id,
+            null,
             bot,
             user.language === UserLanguageEnum.EN
               ? 'Wrong value. Submit a valid email!'
@@ -251,7 +255,7 @@ export const actionMessage = async (
           user.language,
         );
         await redisService.delete(`ChangeEmail-${user.id}`);
-        return await sendAccountKeyboard(msg.chat.id, bot, updatedUser);
+        return await sendAccountKeyboard(msg.chat.id, null, bot, updatedUser);
       }
 
       // use promocode
@@ -298,6 +302,7 @@ export const actionMessage = async (
           );
           return await sendSubscriptionPlanDetailsKeyboard(
             msg.chat.id,
+            null,
             bot,
             plan,
             redisService,
@@ -318,6 +323,7 @@ export const actionMessage = async (
 
           return await sendSubscriptionPlanDetailsKeyboard(
             msg.chat.id,
+            null,
             bot,
             plan,
             redisService,
@@ -337,6 +343,7 @@ export const actionMessage = async (
         );
         return await sendSubscriptionPlanDetailsKeyboard(
           msg.chat.id,
+          null,
           bot,
           plan,
           redisService,
@@ -363,11 +370,12 @@ export const actionMessage = async (
             `😢 User ${msg.text} is not fined!`,
           );
 
-          return await sendAdminPanelKeyboard(msg.chat.id, bot, user);
+          return await sendAdminPanelKeyboard(msg.chat.id, null, bot, user);
         }
 
         return await sendTransactionsKeyboard(
           msg.chat.id,
+          null,
           bot,
           finedUser,
           paymentService,
@@ -392,7 +400,7 @@ export const actionMessage = async (
             `😢 User ${msg.text} is not fined!`,
           );
 
-          return await sendAdminPanelKeyboard(msg.chat.id, bot, user);
+          return await sendAdminPanelKeyboard(msg.chat.id, null, bot, user);
         }
 
         const userInfo = `ID: ${finedUser.id}\nemail: ${finedUser.email}\nnickname: @${finedUser.name}\n\n`;
@@ -400,6 +408,7 @@ export const actionMessage = async (
 
         return await sendTextWithCancelKeyboard(
           msg.chat.id,
+          null,
           bot,
           userInfo +
             logs
@@ -430,6 +439,7 @@ export const actionMessage = async (
         ) {
           return await sendTextWithCancelKeyboard(
             msg.chat.id,
+            null,
             bot,
             user.language === UserLanguageEnum.EN
               ? 'Wrong value. Please send integer!'
@@ -449,6 +459,7 @@ export const actionMessage = async (
 
         return await sendSubscriptionPlanAdminDetailsKeyboard(
           msg.chat.id,
+          null,
           bot,
           plan,
           redisService,
@@ -473,6 +484,7 @@ export const actionMessage = async (
         ) {
           return await sendTextWithCancelKeyboard(
             msg.chat.id,
+            null,
             bot,
             user.language === UserLanguageEnum.EN
               ? 'Wrong value. Please send integer!'
@@ -492,6 +504,7 @@ export const actionMessage = async (
 
         return await sendPromocodeAdminDetailsKeyboard(
           msg.chat.id,
+          null,
           bot,
           promocode,
           redisService,
@@ -518,6 +531,7 @@ export const actionMessage = async (
 
         return await sendPaymentMethodAdminDetailsKeyboard(
           msg.chat.id,
+          null,
           bot,
           paymentMethod,
           redisService,
@@ -537,6 +551,7 @@ export const actionMessage = async (
           if (!msg.photo?.length) {
             return await sendTextWithCancelKeyboard(
               msg.chat.id,
+              null,
               bot,
               user.language === UserLanguageEnum.EN
                 ? 'Wrong value. Please send a screenshot of the payment! 📱'

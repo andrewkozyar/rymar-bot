@@ -1,6 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { UserLanguageEnum } from 'src/helper';
-import { User } from 'src/bot-vice-city/user/user.entity';
+import { User } from '../../user/user.entity';
 
 export const editIsPublishedKeyboard = async (
   chat_id: number,
@@ -14,23 +14,23 @@ export const editIsPublishedKeyboard = async (
   const inline_keyboard = [
     [
       {
-        text: `${
+        text: `✅ ${
           is_multiple
             ? 'Многоразовый'
             : user.language === UserLanguageEnum.UA
               ? 'Опубліковано'
               : 'Опубликовано'
-        } ✅`,
+        }`,
         callback_data: callback_data + 'true',
       },
       {
-        text: `${
+        text: `❌ ${
           is_multiple
             ? 'Одноразовый'
             : user.language === UserLanguageEnum.UA
               ? 'Не опубліковано'
               : 'Не опубликовано'
-        } ❌`,
+        }`,
         callback_data: callback_data + 'false',
       },
     ],
