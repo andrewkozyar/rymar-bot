@@ -49,6 +49,7 @@ import { LogService } from 'src/log/log.service';
 import { getDaysDifference } from 'src/helper/date';
 import { notifyUserAboutPlan } from '../helpers/notifyUserAboutPlan';
 import { sendEmail } from 'src/helper/mailer';
+import { editSubscriptionPlanChannelsKeyboard } from '../keyboards/subscriptionPlanChannels.keyboards';
 
 export const actionCallbackQuery = async (
   bot: TelegramBot,
@@ -762,6 +763,19 @@ export const actionCallbackQuery = async (
           JSON.stringify(planData),
         );
 
+        if (data === 'channels') {
+          const plan = await planService.findOne({ id: planData.id });
+
+          return await editSubscriptionPlanChannelsKeyboard(
+            query.message.chat.id,
+            query.message.message_id,
+            bot,
+            plan,
+            channelService,
+            user,
+          );
+        }
+
         if (data === 'is_published') {
           return await editIsPublishedKeyboard(
             query.message.chat.id,
@@ -1194,6 +1208,39 @@ export const actionCallbackQuery = async (
           user,
           true,
           false,
+        );
+      }
+
+      if (key === 'PlanChannel') {
+        const redisData = await redisService.get(
+          `EditSubscriptionPlanAdmin-${user.id}`,
+        );
+
+        const planData: UpdatePlanDto = JSON.parse(redisData);
+
+        const plan = await planService.findOne({ id: planData.id });
+
+        if (plan.channels.find((c) => c.id === data)) {
+          await planService.updateChannel({
+            id: plan.id,
+            channelId: data,
+            add: false,
+          });
+        } else {
+          await planService.updateChannel({
+            id: plan.id,
+            channelId: data,
+            add: true,
+          });
+        }
+
+        return await editSubscriptionPlanChannelsKeyboard(
+          query.message.chat.id,
+          query.message.message_id,
+          bot,
+          await planService.findOne({ id: plan.id }),
+          channelService,
+          user,
         );
       }
 

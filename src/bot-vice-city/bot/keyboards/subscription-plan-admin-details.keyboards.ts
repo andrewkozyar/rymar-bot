@@ -53,6 +53,11 @@ export const sendSubscriptionPlanAdminDetailsKeyboard = async (
 
 --------------
 
+- <b>Каналы</b>: 
+${plan.channels.map((c) => c.name).join('\n') || '<b>Нет каналов</b>'}
+
+--------------
+
 ${
   user.language === UserLanguageEnum.EN
     ? 'Choose field to update'
@@ -122,6 +127,12 @@ ${
           {
             text: `ру описание`,
             callback_data: callback_data + 'descriptionRU',
+          },
+        ],
+        [
+          {
+            text: user.language === UserLanguageEnum.UA ? 'Канали' : 'Каналы',
+            callback_data: `AdminSubscriptionPlanChannels;${plan.id}`,
           },
         ],
         [
@@ -203,6 +214,11 @@ export const editSubscriptionPlanAdminDetailsKeyboard = async (
 
 --------------
 
+- <b>Каналы</b>: 
+${plan.channels.map((c) => c.name).join('\n') || '<b>Нет каналов</b>'}
+
+--------------
+
 ${
   user.language === UserLanguageEnum.EN
     ? 'Choose field to update'
@@ -268,6 +284,12 @@ ${
       {
         text: `ру описание`,
         callback_data: callback_data + 'descriptionRU',
+      },
+    ],
+    [
+      {
+        text: user.language === UserLanguageEnum.UA ? 'Канали' : 'Каналы',
+        callback_data: callback_data + 'channels',
       },
     ],
     [

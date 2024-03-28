@@ -45,7 +45,7 @@ export const editPromocodesKeyboard = async (
   ]);
 
   await bot.editMessageText(
-    `🗑️ ${
+    `${
       user.language === UserLanguageEnum.EN
         ? 'Choose promocode:'
         : user.language === UserLanguageEnum.UA

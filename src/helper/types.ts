@@ -2,6 +2,8 @@ import { Promocode } from 'src/bot-vice-city/promocode/promocode.entity';
 import { SubscriptionPlan } from '../bot-vice-city/subscriptionPlan/subscriptionPlan.entity';
 import { User } from '../bot-vice-city/user/user.entity';
 import { Payment } from 'src/bot-vice-city/payment/payment.entity';
+import { PaymentHesoyam } from 'src/bot-hesoyam/payment/payment.entity';
+import { SubscriptionPlanHesoyam } from 'src/bot-hesoyam/subscriptionPlan/subscriptionPlan.entity';
 
 export class GetUsersType {
   readonly users: User[];
@@ -9,7 +11,7 @@ export class GetUsersType {
 }
 
 export class GetSubscriptionPlansType {
-  readonly subscriptionPlans: SubscriptionPlan[];
+  readonly subscriptionPlans: SubscriptionPlan[] | SubscriptionPlanHesoyam[];
   readonly total: number;
 }
 
@@ -19,7 +21,7 @@ export class GetPromocodesType {
 }
 
 export class GetPaymentsType {
-  readonly payments: Payment[];
+  readonly payments: Payment[] | PaymentHesoyam[];
   readonly total: number;
 }
 
