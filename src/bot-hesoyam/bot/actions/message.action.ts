@@ -259,7 +259,9 @@ export const actionMessage = async (
       }
 
       // use promocode
-      const promocodeData = await redisService.get(`PromocodeHesoyam-${user.id}`);
+      const promocodeData = await redisService.get(
+        `PromocodeHesoyam-${user.id}`,
+      );
 
       if (promocodeData) {
         const promocode = await promocodeService.findOne({

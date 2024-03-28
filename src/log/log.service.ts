@@ -20,11 +20,10 @@ export class LogService {
     bot: BotEnum;
     action?: string;
     user_id?: string;
-    user_hesoyam_id?: string;
   }): Promise<Log> {
     try {
       if (dto.type === LogTypeEnum.USER) {
-        const log = await this.getOne(dto.user_id || dto.user_hesoyam_id);
+        const log = await this.getOne(dto.user_id);
 
         if (log) {
           return await this.LogRepository.save({
@@ -33,7 +32,11 @@ export class LogService {
           });
         }
       }
-      return await this.LogRepository.save(dto);
+      return await this.LogRepository.save({
+        ...dto,
+        user_id: dto.bot === BotEnum.VIBE_CITY ? dto.user_id : null,
+        user_hesoyam_id: dto.bot === BotEnum.HESOYAM ? dto.user_id : null,
+      });
     } catch (e) {
       errorHandler(`Failed to create Log`, HttpStatus.INTERNAL_SERVER_ERROR, e);
     }
