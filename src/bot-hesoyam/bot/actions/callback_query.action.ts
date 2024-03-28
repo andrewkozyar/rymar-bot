@@ -1352,18 +1352,18 @@ export const actionCallbackQuery = async (
           id: payment.subscription_plan_id,
         });
 
-        await sendEmail(
-          customer.email,
-          LaterTypeEnum.BuyPlan,
-          customer.language,
-          logService,
-          BotEnum.HESOYAM,
-          {
-            plan: plan[`name${customer.language}`],
-          },
-        );
-
         if (plan.channels.length) {
+          await sendEmail(
+            customer.email,
+            LaterTypeEnum.BuyPlan,
+            customer.language,
+            logService,
+            BotEnum.HESOYAM,
+            {
+              plan: plan[`name${customer.language}`],
+            },
+          );
+
           await bot.sendMessage(
             customer.chat_id,
             customer.language === UserLanguageEnum.UA
@@ -1381,6 +1381,17 @@ export const actionCallbackQuery = async (
             plan.channels,
           );
         } else {
+          await sendEmail(
+            customer.email,
+            LaterTypeEnum.BuyPlanWithoutChannels,
+            customer.language,
+            logService,
+            BotEnum.HESOYAM,
+            {
+              plan: plan[`name${customer.language}`],
+            },
+          );
+
           await bot.sendMessage(
             customer.chat_id,
             customer.language === UserLanguageEnum.UA

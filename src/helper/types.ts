@@ -102,4 +102,5 @@ export enum LaterTypeEnum {
   DeclineBuyPlan = 'DeclineBuyPlan',
   EndPlanIn = 'EndPlanIn',
   EndPlan = 'EndPlan',
+  BuyPlanWithoutChannels = 'BuyPlanWithoutChannels',
 }

@@ -27,7 +27,13 @@ export const sendEmail = async (
 
   const template = handlebars.compile(html);
 
-  const htmlToSend = template(htmlData);
+  const htmlToSend = template({
+    ...htmlData,
+    botUrl:
+      bot === BotEnum.VIBE_CITY
+        ? 'https://t.me/rymars_bot'
+        : 'https://t.me/hesoyam_bot',
+  });
 
   const emailOption = {
     from: 'RYMAR',
@@ -52,6 +58,7 @@ const getEmailSubject = (laterType: LaterTypeEnum, lang: UserLanguageEnum) => {
     case LaterTypeEnum.BuyPlan:
     case LaterTypeEnum.ContinueBuyingPlan:
     case LaterTypeEnum.DeclineBuyPlan:
+    case LaterTypeEnum.BuyPlanWithoutChannels:
       return lang === UserLanguageEnum.UA
         ? 'Покупка плану підписки'
         : 'Покупка плана подписки';
@@ -85,5 +92,11 @@ const getEmailPath = (laterType: LaterTypeEnum, lang: UserLanguageEnum) => {
       return lang === UserLanguageEnum.UA
         ? process.cwd() + '/src/helper/emailTemplate/EndPlanUA.html'
         : process.cwd() + '/src/helper/emailTemplate/EndPlanRU.html';
+    case LaterTypeEnum.BuyPlanWithoutChannels:
+      return lang === UserLanguageEnum.UA
+        ? process.cwd() +
+            '/src/helper/emailTemplate/BuyPlanWithoutChannels.html'
+        : process.cwd() +
+            '/src/helper/emailTemplate/BuyPlanWithoutChannels.html';
   }
 };
