@@ -1363,22 +1363,31 @@ export const actionCallbackQuery = async (
           },
         );
 
-        await bot.sendMessage(
-          customer.chat_id,
-          customer.language === UserLanguageEnum.EN
-            ? `✅ The manager has confirmed your payment! Thank you for trusting us. Links will come in subsequent messages.
-
-Attention, you must join all channels and chats within 24 hours after receiving the links!`
-            : customer.language === UserLanguageEnum.UA
+        if (plan.channels.length) {
+          await bot.sendMessage(
+            customer.chat_id,
+            customer.language === UserLanguageEnum.UA
               ? `✅ Менеджер підтвердив вашу оплату! Дякуємо що довірилися нам. Посилання прийдуть наступними повідомленнями.
-
-Увага необхідно приєднатися до всіх каналів та чатів протягом 24 годин після отримання посилань!`
+  
+  Увага необхідно приєднатися до всіх каналів та чатів протягом 24 годин після отримання посилань!`
               : `✅ Менеджер подтвердил вашу оплату! Спасибо что доверились нам. Ссылки придут следующими сообщениями.
+  
+  Внимание необходимо присоединиться ко всем каналам и чатам в течение 24 часов после получения ссылок!`,
+          );
 
-Внимание необходимо присоединиться ко всем каналам и чатам в течение 24 часов после получения ссылок!`,
-        );
-
-        return await channelService.sendChannelsLinks(bot, customer);
+          return await channelService.sendChannelsLinks(
+            bot,
+            customer,
+            plan.channels,
+          );
+        } else {
+          await bot.sendMessage(
+            customer.chat_id,
+            customer.language === UserLanguageEnum.UA
+              ? `✅ Менеджер підтвердив вашу оплату! Дякуємо що довірилися нам. Скоро з вами зв'яжеться менеджер. Якщо є питання звертайтеся до @rymar_m`
+              : `✅ Менеджер подтвердил вашу оплату! Спасибо что доверились нам. Скоро с вами свяжется менеджер. Если есть вопросы, обратитесь к @rymar_m`,
+          );
+        }
       }
 
       if (key === 'GiveUserAccessDecline') {

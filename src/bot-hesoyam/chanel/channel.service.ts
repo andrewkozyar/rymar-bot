@@ -30,6 +30,7 @@ export class ChannelService {
       if (!channel || channel.name !== dto.name) {
         return await this.channelRepository.save({
           ...dto,
+          is_for_subscription: !channel || channel.is_for_subscription,
           id: channel?.id,
           chat_id: chat_id.toString(),
         });
@@ -145,10 +146,12 @@ export class ChannelService {
     }
   }
 
-  async sendChannelsLinks(bot: TelegramBot, user: User) {
+  async sendChannelsLinks(
+    bot: TelegramBot,
+    user: User,
+    channels: ChannelHesoyam[],
+  ) {
     try {
-      const channels = await this.find(true);
-
       if (channels.length) {
         await Promise.all(
           channels.map(async (channel) => {
