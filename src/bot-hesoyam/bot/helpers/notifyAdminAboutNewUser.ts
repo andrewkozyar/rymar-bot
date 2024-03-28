@@ -8,7 +8,7 @@ export const notifyAdminAboutNewUser = async (
   userService: UserService,
 ) => {
   const admin = await userService.findOne({
-    name: 'rymar_m',
+    name: 'tomera_study',
   });
 
   if (admin) {

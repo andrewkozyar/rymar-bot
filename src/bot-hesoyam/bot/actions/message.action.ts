@@ -208,10 +208,10 @@ export const actionMessage = async (
         return await bot.sendMessage(
           msg.chat.id,
           user.language === UserLanguageEnum.EN
-            ? 'For support, please contact @rymar_m'
+            ? 'For support, please contact @tomera_study'
             : user.language === UserLanguageEnum.UA
-              ? 'Щоб отримати підтримку, зв’яжіться з @rymar_m'
-              : 'Для поддержки обращайтесь к @rymar_m',
+              ? 'Щоб отримати підтримку, зв’яжіться з @tomera_study'
+              : 'Для поддержки обращайтесь к @tomera_study',
         );
       }
 

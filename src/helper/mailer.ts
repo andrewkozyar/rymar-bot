@@ -33,6 +33,7 @@ export const sendEmail = async (
       bot === BotEnum.VIBE_CITY
         ? 'https://t.me/rymars_bot'
         : 'https://t.me/hesoyamstudy_bot',
+    telegramNickname: bot === BotEnum.VIBE_CITY ? '@rymar_m' : '@tomera_study',
   });
 
   const emailOption = {
