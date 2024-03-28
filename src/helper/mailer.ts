@@ -32,7 +32,7 @@ export const sendEmail = async (
     botUrl:
       bot === BotEnum.VIBE_CITY
         ? 'https://t.me/rymars_bot'
-        : 'https://t.me/hesoyam_bot',
+        : 'https://t.me/hesoyamstudy_bot',
   });
 
   const emailOption = {
