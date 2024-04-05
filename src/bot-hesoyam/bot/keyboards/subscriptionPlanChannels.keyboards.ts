@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { UserLanguageEnum } from 'src/helper';
+import { BotEnum, UserLanguageEnum } from 'src/helper';
 import { UserHesoyam } from '../../user/user.entity';
 import { ChannelService } from '../../chanel/channel.service';
 import { SubscriptionPlanHesoyam } from '../../subscriptionPlan/subscriptionPlan.entity';
@@ -11,10 +11,11 @@ export const editSubscriptionPlanChannelsKeyboard = async (
   subscriptionPlan: SubscriptionPlanHesoyam,
   channelService: ChannelService,
   user: UserHesoyam,
+  botType: BotEnum,
 ) => {
   const callback_data = 'PlanChannel;';
 
-  const channels = await channelService.find(true);
+  const channels = await channelService.find(true, botType);
 
   const inline_keyboard = channels.map((channel) => [
     {

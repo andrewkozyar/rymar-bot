@@ -1,4 +1,7 @@
+import { BotEnum } from 'src/helper';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+
+const bots = Object.values(BotEnum);
 
 @Entity()
 export class ChannelHesoyam {
@@ -19,4 +22,11 @@ export class ChannelHesoyam {
 
   @Column({ nullable: true })
   resend_to: string;
+
+  @Column({
+    type: 'enum',
+    enum: bots,
+    nullable: true,
+  })
+  bot: BotEnum;
 }

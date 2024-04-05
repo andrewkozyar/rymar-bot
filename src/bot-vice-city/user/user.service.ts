@@ -161,15 +161,4 @@ export class UserService {
       errorHandler(`Failed to get users`, HttpStatus.INTERNAL_SERVER_ERROR, e);
     }
   }
-
-  async getOneByEmail(email: string, exc_token?: string): Promise<User> {
-    return this.userRepository
-      .createQueryBuilder('active_user')
-      .addSelect('active_user.password')
-      .where(
-        'active_user.email = :email OR active_user.exc_token = :exc_token',
-        { email: trimEmail(email), exc_token },
-      )
-      .getOne();
-  }
 }

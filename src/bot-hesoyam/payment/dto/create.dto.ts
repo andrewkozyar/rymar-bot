@@ -1,5 +1,5 @@
 import { IsString, IsNumber } from 'class-validator';
-import { CurrencyEnum, PaymentStatusEnum } from 'src/helper';
+import { BotEnum, CurrencyEnum, PaymentStatusEnum } from 'src/helper';
 
 export class CreateDto {
   @IsString({ message: 'Must be a string' })
@@ -41,8 +41,7 @@ export class CreateDto {
   @IsNumber()
   readonly price_usd?: number;
 
-  @IsNumber()
-  continueDays?: number;
-
   readonly full_price_usd?: number;
+
+  bot: BotEnum;
 }

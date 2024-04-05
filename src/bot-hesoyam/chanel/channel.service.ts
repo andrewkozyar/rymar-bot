@@ -4,13 +4,7 @@ import { Repository } from 'typeorm';
 import TelegramBot from 'node-telegram-bot-api';
 
 import { CreateDto, GetDto } from './dto';
-import {
-  BotEnum,
-  LogTypeEnum,
-  MessageType,
-  UserLanguageEnum,
-  errorHandler,
-} from '../../helper';
+import { BotEnum, UserLanguageEnum, errorHandler } from '../../helper';
 
 import { ChannelHesoyam } from './channel.entity';
 import { User } from 'src/bot-vice-city/user/user.entity';
@@ -25,7 +19,7 @@ export class ChannelService {
   ) {}
   async create({ chat_id, ...dto }: CreateDto): Promise<ChannelHesoyam> {
     try {
-      const channel = await this.findOne({ chat_id });
+      const channel = await this.findOne({ chat_id, bot: dto.bot });
 
       if (!channel || channel.name !== dto.name) {
         return await this.channelRepository.save({
@@ -46,27 +40,15 @@ export class ChannelService {
     }
   }
 
-  async remove(id: string): Promise<MessageType> {
-    try {
-      await this.channelRepository.delete({ id });
-      return { message: true };
-    } catch (e) {
-      errorHandler(
-        `Failed to remove channel`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        e,
-      );
-    }
-  }
-
-  async findOne({ id, name, chat_id }: GetDto): Promise<ChannelHesoyam> {
+  async findOne({ id, name, chat_id, bot }: GetDto): Promise<ChannelHesoyam> {
     const channel = await this.channelRepository
       .createQueryBuilder('channel')
-      .where('channel.id = :id OR name = :name OR chat_id = :chat_id', {
+      .where('(channel.id = :id OR name = :name OR chat_id = :chat_id)', {
         id,
         name,
         chat_id: chat_id.toString(),
       })
+      .andWhere('channel.bot = :bot', { bot })
       .getOne();
 
     return channel;
@@ -74,10 +56,13 @@ export class ChannelService {
 
   async find(
     is_for_subscription: boolean,
+    bot: BotEnum,
     searchKey?: string,
   ): Promise<ChannelHesoyam[]> {
     try {
-      const channelQuery = this.channelRepository.createQueryBuilder('channel');
+      const channelQuery = this.channelRepository
+        .createQueryBuilder('channel')
+        .where('channel.bot = :bot', { bot });
 
       if (searchKey) {
         channelQuery.andWhere(`(LOWER(channel.name) LIKE LOWER(:searchKey))`, {
@@ -100,46 +85,6 @@ export class ChannelService {
     } catch (e) {
       errorHandler(
         `Failed to get channels`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        e,
-      );
-    }
-  }
-
-  async deleteUserFromChannels(bot: TelegramBot, user: User) {
-    try {
-      const channels = await this.find(true);
-
-      if (channels.length) {
-        await Promise.all(
-          channels.map(async (c) => {
-            await bot
-              .banChatMember(Number(c.chat_id), Number(user.chat_id))
-              .catch((e) =>
-                this.logService.create({
-                  action: `banChatMember userId: ${user.id}, chatId: ${c.chat_id}`,
-                  info: JSON.stringify(e),
-                  type: LogTypeEnum.ERROR,
-                  bot: BotEnum.HESOYAM,
-                }),
-              );
-
-            await bot
-              .unbanChatMember(Number(c.chat_id), Number(user.chat_id))
-              .catch((e) =>
-                this.logService.create({
-                  action: `unbanChatMember userId: ${user.id}, chatId: ${c.chat_id}`,
-                  info: JSON.stringify(e),
-                  type: LogTypeEnum.ERROR,
-                  bot: BotEnum.HESOYAM,
-                }),
-              );
-          }),
-        );
-      }
-    } catch (e) {
-      errorHandler(
-        `Failed to delete user from channels`,
         HttpStatus.INTERNAL_SERVER_ERROR,
         e,
       );
@@ -179,7 +124,11 @@ export class ChannelService {
   ${link.invite_link}`,
               );
             } catch (e) {
-              await this.remove(channel.id);
+              errorHandler(
+                `Failed to sendChannelsLinks`,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                e,
+              );
             }
           }),
         );

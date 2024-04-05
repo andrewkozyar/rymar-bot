@@ -49,6 +49,7 @@ export const actionMessage = async (
   paymentMethodService: PaymentMethodService,
   rateService: ConversionRateService,
   logService: LogService,
+  botType: BotEnum,
 ) => {
   return bot.on('message', async (msg) => {
     try {
@@ -57,10 +58,14 @@ export const actionMessage = async (
           chat_id: msg.chat.id,
           name: msg.chat.title,
           type: msg.chat.type,
+          bot: botType,
         });
       }
 
-      let user = await userService.findOne({ chat_id: msg.chat.id });
+      let user = await userService.findOne({
+        chat_id: msg.chat.id,
+        bot: botType,
+      });
 
       if (msg.text === '/start' || !user) {
         if (user) {
@@ -68,12 +73,18 @@ export const actionMessage = async (
         }
 
         if (!user) {
-          await notifyAdminAboutNewUser(bot, msg.chat.username, userService);
+          await notifyAdminAboutNewUser(
+            bot,
+            msg.chat.username,
+            userService,
+            botType,
+          );
 
           user = await userService.create({
             chat_id: msg.chat.id,
             language: UserLanguageEnum.RU,
             name: msg.chat.username,
+            bot: botType,
           });
         }
 
@@ -134,8 +145,8 @@ export const actionMessage = async (
       if (
         [
           '🗒️ Subscription plans',
-          '🗒️ Плани підписок',
-          '🗒️ Планы подписок',
+          '🗒️ Плани навчання',
+          '🗒️ Планы обучения',
         ].includes(msg.text)
       ) {
         await redisService.clearData(user.id);
@@ -177,6 +188,7 @@ export const actionMessage = async (
           bot,
           user,
           paymentService,
+          botType,
         );
       }
 
@@ -276,6 +288,7 @@ export const actionMessage = async (
             PaymentStatusEnum.Success,
             PaymentStatusEnum.Pending,
           ],
+          bot: botType,
         });
         const plan = await planService.findOne({
           id: promocodeData,
@@ -364,6 +377,7 @@ export const actionMessage = async (
 
         const finedUser = await userService.findOne({
           name: msg.text.replace('@', '').trim(),
+          bot: botType,
         });
 
         if (!finedUser) {
@@ -383,6 +397,7 @@ export const actionMessage = async (
           paymentService,
           true,
           user.language,
+          botType,
         );
       }
 
@@ -394,6 +409,7 @@ export const actionMessage = async (
 
         const finedUser = await userService.findOne({
           name: msg.text.replace('@', '').trim(),
+          bot: botType,
         });
 
         if (!finedUser) {
@@ -586,10 +602,12 @@ export const actionMessage = async (
             address: paymentMethod.address,
             currency: paymentMethod.currency,
             full_price_usd: payData.amount,
+            bot: botType,
           });
 
           const managers = await userService.getUsers({
             names: admins,
+            bot: botType,
           });
 
           const plan = await planService.findOne({
@@ -610,6 +628,7 @@ export const actionMessage = async (
                 PaymentStatusEnum.Success,
                 PaymentStatusEnum.Pending,
               ],
+              bot: botType,
             });
 
             if (

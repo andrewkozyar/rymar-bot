@@ -1,4 +1,4 @@
-import { UserLanguageEnum } from 'src/helper';
+import { BotEnum, UserLanguageEnum } from 'src/helper';
 import {
   Entity,
   Column,
@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 
 export const userLanguages = Object.values(UserLanguageEnum);
+const bots = Object.values(BotEnum);
 
 @Entity()
 export class UserHesoyam {
@@ -20,7 +21,7 @@ export class UserHesoyam {
   @Column({ nullable: true })
   email: string;
 
-  @Column({ unique: true })
+  @Column()
   chat_id: string;
 
   @Column({ nullable: true })
@@ -32,6 +33,13 @@ export class UserHesoyam {
     default: UserLanguageEnum.EN,
   })
   language: UserLanguageEnum;
+
+  @Column({
+    type: 'enum',
+    enum: bots,
+    nullable: true,
+  })
+  bot: BotEnum;
 
   @CreateDateColumn()
   created_date: Date;

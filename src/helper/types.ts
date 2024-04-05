@@ -4,9 +4,15 @@ import { User } from '../bot-vice-city/user/user.entity';
 import { Payment } from 'src/bot-vice-city/payment/payment.entity';
 import { PaymentHesoyam } from 'src/bot-hesoyam/payment/payment.entity';
 import { SubscriptionPlanHesoyam } from 'src/bot-hesoyam/subscriptionPlan/subscriptionPlan.entity';
+import { UserHesoyam } from 'src/bot-hesoyam/user/user.entity';
 
 export class GetUsersType {
   readonly users: User[];
+  readonly total: number;
+}
+
+export class GetUsersHesoyamType {
+  readonly users: UserHesoyam[];
   readonly total: number;
 }
 
@@ -21,7 +27,12 @@ export class GetPromocodesType {
 }
 
 export class GetPaymentsType {
-  readonly payments: Payment[] | PaymentHesoyam[];
+  readonly payments: Payment[];
+  readonly total: number;
+}
+
+export class GetPaymentsHesoyamType {
+  readonly payments: PaymentHesoyam[];
   readonly total: number;
 }
 
@@ -94,6 +105,7 @@ export enum LogTypeEnum {
 export enum BotEnum {
   VIBE_CITY = 'VIBE_CITY',
   HESOYAM = 'HESOYAM',
+  HESOYAM_MANAGER = 'HESOYAM_MANAGER',
 }
 
 export enum LaterTypeEnum {

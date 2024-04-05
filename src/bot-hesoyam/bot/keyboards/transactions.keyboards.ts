@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
+import { BotEnum, PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
 import { PaymentHesoyam } from '../../payment/payment.entity';
 import { PaymentService } from '../../payment/payment.service';
 import { UserHesoyam } from '../../user/user.entity';
@@ -12,12 +12,14 @@ export const sendTransactionsKeyboard = async (
   paymentService: PaymentService,
   isAdminPanel: boolean,
   language: UserLanguageEnum,
+  botType: BotEnum,
   edit = false,
   isConfirmedPayment: boolean = null,
   admin?: UserHesoyam,
 ) => {
   const { payments, total } = await paymentService.getPayments({
     user_id: user.id,
+    bot: botType,
   });
 
   let text = '';
@@ -154,8 +156,7 @@ ${
   <b>Paid amount:</b> ${p.amount} ${p.currency}
   <b>PaymentHesoyam method:</b> ${p.payment_method.name}
   <b>Subscription plan:</b> ${p.subscription_plan[`name${language}`]}
-  <b>Date:</b> ${p.created_date}
-  <b>Expired date:</b> ${p.expired_date}${
+  <b>Date:</b> ${p.created_date}${
     isAdminPanel
       ? `
 <b>The manager checking the payment:</b> ${
@@ -179,9 +180,8 @@ ${
   <b>Сума в USD:</b> ${p.price_usd}$
   <b>Оплачена сума:</b> ${p.amount} ${p.currency}
   <b>Метод оплати:</b> ${p.payment_method.name}
-  <b>План підписки:</b> ${p.subscription_plan[`name${language}`]}
-  <b>Дата:</b> ${p.created_date}
-  <b>Дата закінчення:</b> ${p.expired_date}${
+  <b>План навчання:</b> ${p.subscription_plan[`name${language}`]}
+  <b>Дата:</b> ${p.created_date}${
     isAdminPanel
       ? `
 <b>Менеджер перевірявший оплату:</b> ${
@@ -205,9 +205,8 @@ ${
   <b>Сумма в USD:</b> ${p.price_usd}$
   <b>Оплаченная сумма:</b> ${p.amount} ${p.currency}
   <b>Метод оплаты:</b> ${p.payment_method.name}
-  <b>План подписки:</b> ${p.subscription_plan[`name${language}`]}
-  <b>Дата:</b> ${p.created_date}
-  <b>Дата истечения срока:</b> ${p.expired_date}${
+  <b>План обучения:</b> ${p.subscription_plan[`name${language}`]}
+  <b>Дата:</b> ${p.created_date}${
     isAdminPanel
       ? `
 <b>Менеджер проверявший оплату:</b> ${

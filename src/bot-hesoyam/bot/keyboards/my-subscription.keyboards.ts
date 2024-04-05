@@ -1,6 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
-import { getDateWithoutHours, getDaysDifference } from 'src/helper/date';
+import { BotEnum, PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
 import { PaymentHesoyam } from '../../payment/payment.entity';
 import { PaymentService } from '../../payment/payment.service';
 import { UserHesoyam } from '../../user/user.entity';
@@ -11,11 +10,13 @@ export const sendMySubscriptionKeyboard = async (
   bot: TelegramBot,
   user: UserHesoyam,
   paymentService: PaymentService,
+  botType: BotEnum,
   edit = false,
 ) => {
   const lastPayment = await paymentService.findOne({
     user_id: user.id,
     statuses: [PaymentStatusEnum.Success],
+    bot: botType,
   });
 
   let text;
@@ -23,27 +24,19 @@ export const sendMySubscriptionKeyboard = async (
   const inline_keyboard = [];
 
   if (lastPayment) {
-    const continueDays = getDaysDifference(
-      new Date(),
-      lastPayment.expired_date,
-    );
-    const expiredDate = getDateWithoutHours(
-      lastPayment.expired_date,
-    ).toDateString();
+    text = getPlanInfo(user.language, lastPayment);
 
-    text = getPlanInfo(user.language, lastPayment, continueDays, expiredDate);
-
-    inline_keyboard.push([
-      {
-        text:
-          user.language === UserLanguageEnum.EN
-            ? 'Continue the subscription at the old price'
-            : user.language === UserLanguageEnum.UA
-              ? 'Продовжити підписку за старою ціною'
-              : 'Продолжить подписку по старой цене',
-        callback_data: 'ContinueSubscription',
-      },
-    ]);
+    // inline_keyboard.push([
+    //   {
+    //     text:
+    //       user.language === UserLanguageEnum.EN
+    //         ? 'Continue the subscription at the old price'
+    //         : user.language === UserLanguageEnum.UA
+    //           ? 'Продовжити підписку за старою ціною'
+    //           : 'Продолжить подписку по старой цене',
+    //     callback_data: 'ContinueSubscription',
+    //   },
+    // ]);
   } else {
     text =
       user.language === UserLanguageEnum.EN
@@ -72,8 +65,8 @@ export const sendMySubscriptionKeyboard = async (
           user.language === UserLanguageEnum.EN
             ? '🗒️ Subscription plans'
             : user.language === UserLanguageEnum.UA
-              ? '🗒️ Плани підписок'
-              : '🗒️ Планы подписок',
+              ? '🗒️ Плани навчання'
+              : '🗒️ Планы обучения',
         callback_data: 'SendSubscriptionPlanKeyboard',
       },
     ],
@@ -108,41 +101,21 @@ export const sendMySubscriptionKeyboard = async (
 const getPlanInfo = (
   language: UserLanguageEnum,
   lastPayment: PaymentHesoyam,
-  continueDays: number,
-  expiredDate: string,
 ) => {
   switch (language) {
     case UserLanguageEnum.EN:
       return `📃 Your subscription plan is ${
         lastPayment.subscription_plan[`name${language}`]
-      }
-
-- <b>Start date</b>: ${lastPayment.created_date.toDateString()}
-- <b>Expired date</b>: ${expiredDate}
-- <b>Days left</b>: ${continueDays}
-      
-🎁 You have the option to renew your subscription at the old price`;
+      }`;
 
     case UserLanguageEnum.UA:
       return `📃 Ваша підписка: ${
         lastPayment.subscription_plan[`name${language}`]
-      }
-
-- <b>Дата початку</b>: ${lastPayment.created_date.toDateString()}
-- <b>Дата закінчення</b>: ${expiredDate}
-- <b>Залишилось днів</b>: ${continueDays}
-      
-🎁 У вас є можливість продовжити підписку за старою ціною`;
+      }`;
 
     case UserLanguageEnum.RU:
       return `📃 Ваша подписка: ${
         lastPayment.subscription_plan[`name${language}`]
-      }
-
-- <b>Дата начала</b>: ${lastPayment.created_date.toDateString()}
-- <b>Дата окончания</b>: ${expiredDate}
-- <b>Осталось дней</b>: ${continueDays}
-      
-🎁 У вас есть возможность продлить подписку по старой цене`;
+      }`;
   }
 };

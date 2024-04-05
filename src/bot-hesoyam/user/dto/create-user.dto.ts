@@ -1,5 +1,5 @@
 import { IsString, IsNumber } from 'class-validator';
-import { UserLanguageEnum } from '../../../helper';
+import { BotEnum, UserLanguageEnum } from '../../../helper';
 
 export class CreateUserDto {
   @IsString({ message: 'Must be a string' })
@@ -10,4 +10,6 @@ export class CreateUserDto {
 
   @IsNumber()
   readonly language: UserLanguageEnum;
+
+  bot: BotEnum;
 }

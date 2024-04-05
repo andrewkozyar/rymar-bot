@@ -58,13 +58,16 @@ export class LogService {
   async getOne(user_id: string): Promise<Log> {
     try {
       return await this.LogRepository.createQueryBuilder('log')
-        .where('log.created_date BETWEEN :startDare AND :endDate', {
+        .where('(log.created_date BETWEEN :startDare AND :endDate)', {
           startDare: getDateWithoutHours(new Date()),
           endDate: addDays(getDateWithoutHours(new Date()), 1),
         })
-        .andWhere('log.user_id = :user_id OR log.user_hesoyam_id = :user_id', {
-          user_id,
-        })
+        .andWhere(
+          '(log.user_id = :user_id OR log.user_hesoyam_id = :user_id)',
+          {
+            user_id,
+          },
+        )
         .getOne();
     } catch (e) {
       errorHandler(`Failed to get Log`, HttpStatus.INTERNAL_SERVER_ERROR, e);

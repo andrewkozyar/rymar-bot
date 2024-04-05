@@ -3,38 +3,26 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CreateDto, GetDto } from './dto';
-import { GetPaymentsType, PaymentStatusEnum, errorHandler } from '../../helper';
+import {
+  BotEnum,
+  GetPaymentsHesoyamType,
+  PaymentStatusEnum,
+  errorHandler,
+} from '../../helper';
 
 import { PaymentHesoyam } from './payment.entity';
-import { SubscriptionPlanService } from 'src/bot-hesoyam/subscriptionPlan/subscriptionPlan.service';
-import { addDays, addMonths, getDateWithoutHours } from 'src/helper/date';
 
 @Injectable()
 export class PaymentService {
   constructor(
     @InjectRepository(PaymentHesoyam)
     private paymentRepository: Repository<PaymentHesoyam>,
-    private planService: SubscriptionPlanService,
   ) {}
 
-  async create({ continueDays, ...dto }: CreateDto): Promise<PaymentHesoyam> {
+  async create(dto: CreateDto): Promise<PaymentHesoyam> {
     try {
-      const plan = await this.planService.findOne({
-        id: dto.subscription_plan_id,
-      });
-
-      let expired_date = addMonths(
-        getDateWithoutHours(new Date()),
-        plan.months_count,
-      );
-
-      if (continueDays) {
-        expired_date = addDays(expired_date, continueDays);
-      }
-
       return await this.paymentRepository.save({
         ...dto,
-        expired_date,
       });
     } catch (e) {
       errorHandler(
@@ -46,10 +34,11 @@ export class PaymentService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async update({ continueDays, ...dto }: CreateDto): Promise<PaymentHesoyam> {
+  async update(dto: CreateDto): Promise<PaymentHesoyam> {
     try {
       const plan = await this.findOne({
         id: dto.id,
+        bot: dto.bot,
       });
 
       return await this.paymentRepository.save({
@@ -65,13 +54,19 @@ export class PaymentService {
     }
   }
 
-  async findOne({ id, user_id, statuses }: GetDto): Promise<PaymentHesoyam> {
+  async findOne({
+    id,
+    user_id,
+    statuses,
+    bot,
+  }: GetDto): Promise<PaymentHesoyam> {
     const paymentQuery = await this.paymentRepository
       .createQueryBuilder('payment')
-      .where('payment.id = :id OR user_id = :user_id', {
+      .where('(payment.id = :id OR user_id = :user_id)', {
         id,
         user_id,
       })
+      .andWhere('payment.bot = :bot', { bot })
       .withDeleted()
       .leftJoinAndSelect('payment.subscription_plan', 'subscription_plan')
       .leftJoinAndSelect('payment.promocode', 'promocode')
@@ -90,15 +85,18 @@ export class PaymentService {
     expired_date,
     statuses,
     expiredDateBefore,
+    bot,
   }: {
     user_id?: string;
     expired_date?: Date;
     statuses?: PaymentStatusEnum[];
     expiredDateBefore?: boolean;
-  }): Promise<GetPaymentsType> {
+    bot: BotEnum;
+  }): Promise<GetPaymentsHesoyamType> {
     try {
-      const paymentQuery =
-        await this.paymentRepository.createQueryBuilder('payment');
+      const paymentQuery = await this.paymentRepository
+        .createQueryBuilder('payment')
+        .where('payment.bot = :bot', { bot });
 
       if (user_id) {
         paymentQuery.andWhere(`payment.user_id = :user_id`, {
@@ -141,20 +139,5 @@ export class PaymentService {
         e,
       );
     }
-  }
-
-  async changeExpiredStatuses() {
-    const { payments } = await this.getPayments({
-      expired_date: new Date(),
-      statuses: [PaymentStatusEnum.Success],
-      expiredDateBefore: true,
-    });
-
-    await this.paymentRepository.save(
-      payments.map((p) => ({
-        ...p,
-        status: PaymentStatusEnum.End,
-      })),
-    );
   }
 }

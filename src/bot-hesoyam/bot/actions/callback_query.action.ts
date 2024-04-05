@@ -39,7 +39,6 @@ import { sendGiveUserAccessKeyboard } from '../keyboards/give-user-access.keyboa
 import { editCurrencyKeyboard } from '../keyboards/currency.keyboards';
 import { ConversionRateService } from 'src/conversionRate/conversionRate.service';
 import { LogService } from 'src/log/log.service';
-import { getDaysDifference } from 'src/helper/date';
 import { notifyUserAboutPlan } from '../helpers/notifyUserAboutPlan';
 import { sendEmail } from 'src/helper/mailer';
 import { editSubscriptionPlanChannelsKeyboard } from '../keyboards/subscriptionPlanChannels.keyboards';
@@ -55,12 +54,14 @@ export const actionCallbackQuery = async (
   paymentMethodService: PaymentMethodService,
   rateService: ConversionRateService,
   logService: LogService,
+  botType: BotEnum,
 ) => {
   return bot.on('callback_query', async (query) => {
     try {
       const [key, data] = query.data.split(';');
       const user = await userService.findOne({
         chat_id: query.message.chat.id,
+        bot: botType,
       });
 
       if (user) {
@@ -262,12 +263,8 @@ export const actionCallbackQuery = async (
         const lastPayment = await paymentService.findOne({
           user_id: user.id,
           statuses: [PaymentStatusEnum.Success],
+          bot: botType,
         });
-
-        const continueDays = getDaysDifference(
-          new Date(),
-          lastPayment.expired_date,
-        );
 
         const payData: PayDataInterface = {
           amount: lastPayment.full_price_usd,
@@ -275,7 +272,6 @@ export const actionCallbackQuery = async (
           newPrice: lastPayment.price_usd,
           isContinue: true,
           promocode_id: null,
-          continueDays,
           isFromNotification: data === 'notification',
         };
 
@@ -291,6 +287,7 @@ export const actionCallbackQuery = async (
               PaymentStatusEnum.Success,
               PaymentStatusEnum.Pending,
             ],
+            bot: botType,
           });
 
           if (
@@ -447,11 +444,25 @@ export const actionCallbackQuery = async (
 
         if (!todaysLogs.info.includes('нажал на заплатить')) {
           setTimeout(
-            () => notifyUserAboutPlan(user, bot, paymentService, logService),
+            () =>
+              notifyUserAboutPlan(
+                user,
+                bot,
+                paymentService,
+                logService,
+                botType,
+              ),
             1000 * 60 * 60 * 5,
           );
           setTimeout(
-            () => notifyUserAboutPlan(user, bot, paymentService, logService),
+            () =>
+              notifyUserAboutPlan(
+                user,
+                bot,
+                paymentService,
+                logService,
+                botType,
+              ),
             1000 * 60 * 60 * 24,
           );
         }
@@ -630,6 +641,7 @@ export const actionCallbackQuery = async (
           paymentService,
           false,
           user.language,
+          botType,
           true,
         );
       }
@@ -650,6 +662,7 @@ export const actionCallbackQuery = async (
           bot,
           user,
           paymentService,
+          botType,
           true,
         );
       }
@@ -724,6 +737,7 @@ export const actionCallbackQuery = async (
         const users = await userService.getUsers({
           all: true,
           orderBy: 'name',
+          bot: botType,
         });
 
         return await sendTextWithCancelKeyboard(
@@ -764,6 +778,7 @@ export const actionCallbackQuery = async (
             plan,
             channelService,
             user,
+            botType,
           );
         }
 
@@ -1248,6 +1263,7 @@ export const actionCallbackQuery = async (
           await planService.findOne({ id: plan.id }),
           channelService,
           user,
+          botType,
         );
       }
 
@@ -1256,6 +1272,7 @@ export const actionCallbackQuery = async (
 
         const { payments } = await paymentService.getPayments({
           statuses: [PaymentStatusEnum.Pending],
+          bot: botType,
         });
 
         if (!payments.length) {
@@ -1288,6 +1305,7 @@ export const actionCallbackQuery = async (
 
           const customer = await userService.findOne({
             id: payment.user_id,
+            bot: botType,
           });
 
           return await sendGiveUserAccessKeyboard(
@@ -1309,6 +1327,7 @@ export const actionCallbackQuery = async (
         const payment = await paymentService.findOne({
           id: data,
           statuses: [PaymentStatusEnum.Pending],
+          bot: botType,
         });
 
         if (!payment) {
@@ -1322,12 +1341,14 @@ export const actionCallbackQuery = async (
 
         const customer = await userService.findOne({
           id: payment.user_id,
+          bot: botType,
         });
 
         await paymentService.update({
           id: payment.id,
           status: PaymentStatusEnum.Success,
           updated_by_id: user.id,
+          bot: botType,
         });
 
         const adminsPaymentMessages: { message_id: number; chat_id: number }[] =
@@ -1342,6 +1363,7 @@ export const actionCallbackQuery = async (
             paymentService,
             true,
             user.language,
+            botType,
             true,
             true,
             user,
@@ -1407,6 +1429,7 @@ export const actionCallbackQuery = async (
         const payment = await paymentService.findOne({
           id: data,
           statuses: [PaymentStatusEnum.Pending],
+          bot: botType,
         });
 
         if (!payment) {
@@ -1420,12 +1443,14 @@ export const actionCallbackQuery = async (
 
         const customer = await userService.findOne({
           id: payment.user_id,
+          bot: botType,
         });
 
         await paymentService.update({
           id: data,
           status: PaymentStatusEnum.Cancel,
           updated_by_id: user.id,
+          bot: botType,
         });
 
         const adminsPaymentMessages: { message_id: number; chat_id: number }[] =
@@ -1440,6 +1465,7 @@ export const actionCallbackQuery = async (
             paymentService,
             true,
             user.language,
+            botType,
             true,
             false,
             user,

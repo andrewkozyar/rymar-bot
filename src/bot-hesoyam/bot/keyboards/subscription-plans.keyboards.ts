@@ -34,8 +34,8 @@ export const sendSubscriptionPlanKeyboard = async (
           user.language === UserLanguageEnum.EN
             ? 'New subscription plan'
             : user.language === UserLanguageEnum.UA
-              ? 'Новий план підписки'
-              : 'Новый план подписки'
+              ? 'Новий план навчання'
+              : 'Новый план обучения'
         }`,
         callback_data: 'NewSubscriptionPlan',
       },
@@ -54,8 +54,8 @@ export const sendSubscriptionPlanKeyboard = async (
 
   const text =
     user.language === UserLanguageEnum.UA
-      ? '📋 Виберіть план підписки:'
-      : '📋 Выберите план подписки:';
+      ? '📋 Виберіть план навчання:'
+      : '📋 Выберите план обучения:';
 
   if (!edit) {
     await bot.sendMessage(chat_id, text, {

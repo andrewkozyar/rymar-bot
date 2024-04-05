@@ -23,8 +23,8 @@ export const sendAdminPanelKeyboard = async (
           user.language === UserLanguageEnum.EN
             ? '📋 Subscription plans'
             : user.language === UserLanguageEnum.UA
-              ? '📋 Плани підписок'
-              : '📋 Планы подписки',
+              ? '📋 Плани навчання'
+              : '📋 Планы обучения',
         callback_data: 'SendSubscriptionPlanAdminKeyboard',
       },
       {

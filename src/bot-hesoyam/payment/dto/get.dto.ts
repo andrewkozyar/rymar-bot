@@ -1,5 +1,5 @@
 import { IsString, IsUUID } from 'class-validator';
-import { PaymentStatusEnum } from 'src/helper';
+import { BotEnum, PaymentStatusEnum } from 'src/helper';
 
 export class GetDto {
   @IsString({ message: 'Must be a string' })
@@ -11,4 +11,6 @@ export class GetDto {
 
   @IsString({ message: 'Must be a string' })
   readonly statuses?: PaymentStatusEnum[];
+
+  bot: BotEnum;
 }

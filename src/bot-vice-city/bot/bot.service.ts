@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import TelegramBot from 'node-telegram-bot-api';
-import { telegramBotViceCity } from '../../configs/telegram-bot.config';
+import { telegramBot } from '../../configs/telegram-bot.config';
 import { RedisService } from '../../redis/redis.service';
 import { UserService } from '../user/user.service';
 import {
@@ -40,9 +40,11 @@ export class BotService {
     private rateService: ConversionRateService,
     private logService: LogService,
   ) {
-    this.bot = telegramBotViceCity(configService);
+    this.bot = telegramBot(configService, 'TELEGRAM_BOT_VICE_CITY_TOKEN');
 
-    this.startBot();
+    if (this.bot) {
+      this.startBot();
+    }
   }
 
   async startBot() {

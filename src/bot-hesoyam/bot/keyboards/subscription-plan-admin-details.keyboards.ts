@@ -17,8 +17,8 @@ export const sendSubscriptionPlanAdminDetailsKeyboard = async (
     user.language === UserLanguageEnum.EN
       ? 'Subscription plan data'
       : user.language === UserLanguageEnum.UA
-        ? 'Дані плану підписки'
-        : 'Данные плана подписки'
+        ? 'Дані плану навчання'
+        : 'Данные плана обучения'
   }:
 
 - <b>цена</b>: ${plan.price}
@@ -28,10 +28,6 @@ export const sendSubscriptionPlanAdminDetailsKeyboard = async (
 - <b>опубликовано ли</b>: ${plan.is_published} ${
     plan.is_published ? '✅' : '❌'
   }
-
---------------
-
-- <b>количество месяцев</b>: ${plan.months_count}
 
 --------------
 
@@ -90,16 +86,6 @@ ${
       },
     ],
     [
-      {
-        text: `количество месяцев`,
-        callback_data: callback_data + 'months_count',
-      },
-      {
-        text: `порядковый номер`,
-        callback_data: callback_data + 'position',
-      },
-    ],
-    [
       // {
       //   text: `nameEN`,
       //   callback_data: callback_data + 'nameEN',
@@ -128,6 +114,10 @@ ${
       },
     ],
     [
+      {
+        text: `порядковый номер`,
+        callback_data: callback_data + 'position',
+      },
       {
         text: user.language === UserLanguageEnum.UA ? 'Канали' : 'Каналы',
         callback_data: callback_data + 'channels',

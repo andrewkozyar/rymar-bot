@@ -1,8 +1,12 @@
-import { CurrencyEnum, PaymentStatusEnum, currencies } from 'src/helper';
+import {
+  BotEnum,
+  CurrencyEnum,
+  PaymentStatusEnum,
+  currencies,
+} from 'src/helper';
 import { PaymentMethodHesoyam } from 'src/bot-hesoyam/paymentMethod/paymentMethod.entity';
-import { Promocode } from 'src/bot-vice-city/promocode/promocode.entity';
 import { SubscriptionPlanHesoyam } from 'src/bot-hesoyam/subscriptionPlan/subscriptionPlan.entity';
-import { User } from 'src/bot-vice-city/user/user.entity';
+import { UserHesoyam } from 'src/bot-hesoyam/user/user.entity';
 import {
   Entity,
   Column,
@@ -12,8 +16,10 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import { PromocodeHesoyam } from '../promocode/promocode.entity';
 
 const statuses = Object.values(PaymentStatusEnum);
+const bots = Object.values(BotEnum);
 
 @Entity()
 export class PaymentHesoyam {
@@ -46,6 +52,13 @@ export class PaymentHesoyam {
   })
   status: PaymentStatusEnum;
 
+  @Column({
+    type: 'enum',
+    enum: bots,
+    nullable: true,
+  })
+  bot: BotEnum;
+
   @Column({ nullable: true })
   screenshot_message_id: string;
 
@@ -59,16 +72,16 @@ export class PaymentHesoyam {
   @Column({ nullable: true })
   promocode_id: string;
 
-  @ManyToOne(() => Promocode, { nullable: true })
+  @ManyToOne(() => PromocodeHesoyam, { nullable: true })
   @JoinColumn({ referencedColumnName: 'id', name: 'promocode_id' })
-  promocode: Promocode;
+  promocode: PromocodeHesoyam;
 
   @Column({ nullable: true })
   user_id: string;
 
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => UserHesoyam, { nullable: true })
   @JoinColumn({ referencedColumnName: 'id', name: 'user_id' })
-  user: User;
+  user: UserHesoyam;
 
   @Column({ nullable: true })
   payment_method_id: string;
@@ -76,9 +89,6 @@ export class PaymentHesoyam {
   @ManyToOne(() => PaymentMethodHesoyam, { nullable: true })
   @JoinColumn({ referencedColumnName: 'id', name: 'payment_method_id' })
   payment_method: PaymentMethodHesoyam;
-
-  @Column()
-  expired_date: Date;
 
   @Column({ nullable: true })
   admins_payment_messages: string;
@@ -92,7 +102,7 @@ export class PaymentHesoyam {
   @Column({ nullable: true })
   updated_by_id: string;
 
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => UserHesoyam, { nullable: true })
   @JoinColumn({ referencedColumnName: 'id', name: 'updated_by_id' })
-  updated_by: User;
+  updated_by: UserHesoyam;
 }

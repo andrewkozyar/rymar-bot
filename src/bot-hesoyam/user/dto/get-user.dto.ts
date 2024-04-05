@@ -1,4 +1,5 @@
 import { IsString, IsEmail, IsUUID, IsNumber } from 'class-validator';
+import { BotEnum } from 'src/helper';
 
 export class GetUserDto {
   @IsString({ message: 'Must be a string' })
@@ -14,4 +15,6 @@ export class GetUserDto {
 
   @IsNumber()
   chat_id?: number;
+
+  bot!: BotEnum;
 }

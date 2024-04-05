@@ -1,14 +1,16 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { UserLanguageEnum } from 'src/helper';
+import { BotEnum, UserLanguageEnum } from 'src/helper';
 import { UserService } from 'src/bot-hesoyam/user/user.service';
 
 export const notifyAdminAboutNewUser = async (
   bot: TelegramBot,
   nickname: string,
   userService: UserService,
+  botType: BotEnum,
 ) => {
   const admin = await userService.findOne({
     name: 'tomera_study',
+    bot: botType,
   });
 
   if (admin) {

@@ -7,6 +7,7 @@ export const actionChannelPost = async (
   bot: TelegramBot,
   channelService: ChannelService,
   logService: LogService,
+  botType: BotEnum,
 ) => {
   return bot.on('channel_post', async (post) => {
     try {
@@ -14,6 +15,7 @@ export const actionChannelPost = async (
         chat_id: post.chat.id,
         name: post.chat.title,
         type: post.chat.type,
+        bot: botType,
       });
 
       if (chanel.resend_to) {

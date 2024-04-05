@@ -18,8 +18,8 @@ export const sendMenuKeyboard = async (
               lang === UserLanguageEnum.EN
                 ? '🗒️ Subscription plans'
                 : lang === UserLanguageEnum.UA
-                  ? '🗒️ Плани підписок'
-                  : '🗒️ Планы подписок',
+                  ? '🗒️ Плани навчання'
+                  : '🗒️ Планы обучения',
           },
           {
             text:

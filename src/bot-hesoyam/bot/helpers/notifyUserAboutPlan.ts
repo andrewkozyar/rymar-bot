@@ -1,5 +1,10 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { BotEnum, LaterTypeEnum, PaymentStatusEnum, UserLanguageEnum } from 'src/helper';
+import {
+  BotEnum,
+  LaterTypeEnum,
+  PaymentStatusEnum,
+  UserLanguageEnum,
+} from 'src/helper';
 import { sendEmail } from 'src/helper/mailer';
 import { LogService } from 'src/log/log.service';
 import { PaymentService } from 'src/bot-hesoyam/payment/payment.service';
@@ -10,10 +15,12 @@ export const notifyUserAboutPlan = async (
   bot: TelegramBot,
   paymentService: PaymentService,
   logService: LogService,
+  botType: BotEnum,
 ) => {
   const payment = await paymentService.findOne({
     user_id: user.id,
     statuses: [PaymentStatusEnum.Pending, PaymentStatusEnum.Success],
+    bot: botType,
   });
 
   if (!payment) {

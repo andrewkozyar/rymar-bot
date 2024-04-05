@@ -4,7 +4,8 @@ import { Repository } from 'typeorm';
 
 import { CreateUserDto, UpdateUserDto, GetUserDto } from './dto';
 import {
-  GetUsersType,
+  BotEnum,
+  GetUsersHesoyamType,
   PaymentStatusEnum,
   errorHandler,
   trimEmail,
@@ -62,13 +63,14 @@ export class UserService {
     email,
     chat_id,
     name,
+    bot,
   }: GetUserDto): Promise<UserHesoyam> {
     email = trimEmail(email);
 
     const user = await this.userRepository
       .createQueryBuilder('user')
       .where(
-        'user.id = :id OR email = :email OR chat_id = :chat_id OR name = :name',
+        '(user.id = :id OR email = :email OR chat_id = :chat_id OR name = :name)',
         {
           id,
           email,
@@ -76,6 +78,7 @@ export class UserService {
           chat_id: chat_id?.toString(),
         },
       )
+      .andWhere('user.bot = :bot', { bot })
       .getOne();
 
     return user;
@@ -91,6 +94,7 @@ export class UserService {
     expiredDateBefore,
     names,
     notIn,
+    bot,
   }: {
     orderBy?: 'name' | 'created_date';
     all?: boolean;
@@ -101,9 +105,12 @@ export class UserService {
     expiredDateBefore?: boolean;
     names?: string[];
     notIn?: string[];
-  }): Promise<GetUsersType> {
+    bot: BotEnum;
+  }): Promise<GetUsersHesoyamType> {
     try {
-      const userQuery = await this.userRepository.createQueryBuilder('user');
+      const userQuery = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.bot = :bot', { bot });
 
       if (searchKey) {
         userQuery.andWhere(
@@ -126,6 +133,7 @@ export class UserService {
           expired_date,
           statuses: [PaymentStatusEnum.Success],
           expiredDateBefore,
+          bot,
         });
 
         if (!payments.length) {
@@ -165,16 +173,5 @@ export class UserService {
     } catch (e) {
       errorHandler(`Failed to get users`, HttpStatus.INTERNAL_SERVER_ERROR, e);
     }
-  }
-
-  async getOneByEmail(email: string, exc_token?: string): Promise<UserHesoyam> {
-    return this.userRepository
-      .createQueryBuilder('active_user')
-      .addSelect('active_user.password')
-      .where(
-        'active_user.email = :email OR active_user.exc_token = :exc_token',
-        { email: trimEmail(email), exc_token },
-      )
-      .getOne();
   }
 }
