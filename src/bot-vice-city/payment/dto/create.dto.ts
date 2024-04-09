@@ -45,4 +45,6 @@ export class CreateDto {
   continueDays?: number;
 
   readonly full_price_usd?: number;
+
+  file_id?: string;
 }

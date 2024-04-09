@@ -1344,12 +1344,16 @@ export const actionCallbackQuery = async (
           bot: botType,
         });
 
-        await paymentService.update({
-          id: payment.id,
-          status: PaymentStatusEnum.Success,
-          updated_by_id: user.id,
-          bot: botType,
-        });
+        await paymentService.update(
+          {
+            id: payment.id,
+            status: PaymentStatusEnum.Success,
+            updated_by_id: user.id,
+            bot: botType,
+          },
+          bot,
+          user,
+        );
 
         const adminsPaymentMessages: { message_id: number; chat_id: number }[] =
           JSON.parse(payment.admins_payment_messages);

@@ -11,6 +11,9 @@ import {
 } from '../../helper';
 
 import { PaymentHesoyam } from './payment.entity';
+import { exportPaymentInfoToGoogleSheet } from 'src/helper/google-sheet';
+import TelegramBot from 'node-telegram-bot-api';
+import { UserHesoyam } from '../user/user.entity';
 
 @Injectable()
 export class PaymentService {
@@ -34,15 +37,40 @@ export class PaymentService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async update(dto: CreateDto): Promise<PaymentHesoyam> {
+  async update(
+    dto: CreateDto,
+    bot?: TelegramBot,
+    updatedBy?: UserHesoyam,
+  ): Promise<PaymentHesoyam> {
     try {
-      const plan = await this.findOne({
+      const payment = await this.findOne({
         id: dto.id,
         bot: dto.bot,
       });
 
+      if (
+        payment.status !== PaymentStatusEnum.Success &&
+        dto.status === PaymentStatusEnum.Success
+      ) {
+        const image = await bot.getFileLink(payment.file_id);
+        await exportPaymentInfoToGoogleSheet(dto.bot, [
+          [
+            payment.amount,
+            payment.currency,
+            payment.price_usd,
+            payment.promocode?.name,
+            payment.user.name,
+            payment.user.email,
+            payment.payment_method.name,
+            payment.subscription_plan.nameRU,
+            updatedBy.name,
+            `=IMAGE("${image}")`,
+          ],
+        ]);
+      }
+
       return await this.paymentRepository.save({
-        ...plan,
+        ...payment,
         ...dto,
       });
     } catch (e) {
@@ -70,6 +98,8 @@ export class PaymentService {
       .withDeleted()
       .leftJoinAndSelect('payment.subscription_plan', 'subscription_plan')
       .leftJoinAndSelect('payment.promocode', 'promocode')
+      .leftJoinAndSelect('payment.user', 'user')
+      .leftJoinAndSelect('payment.payment_method', 'payment_method')
       .orderBy('payment.created_date', 'DESC')
       .withDeleted();
 

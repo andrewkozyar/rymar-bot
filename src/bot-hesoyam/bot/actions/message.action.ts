@@ -603,6 +603,7 @@ export const actionMessage = async (
             currency: paymentMethod.currency,
             full_price_usd: payData.amount,
             bot: botType,
+            file_id: msg.photo[3].file_id,
           });
 
           const managers = await userService.getUsers({

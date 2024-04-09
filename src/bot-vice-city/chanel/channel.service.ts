@@ -120,7 +120,7 @@ export class ChannelService {
                   action: `banChatMember userId: ${user.id}, chatId: ${c.chat_id}`,
                   info: JSON.stringify(e),
                   type: LogTypeEnum.ERROR,
-                  bot: BotEnum.VIBE_CITY,
+                  bot: BotEnum.VICE_CITY,
                 }),
               );
 
@@ -131,7 +131,7 @@ export class ChannelService {
                   action: `unbanChatMember userId: ${user.id}, chatId: ${c.chat_id}`,
                   info: JSON.stringify(e),
                   type: LogTypeEnum.ERROR,
-                  bot: BotEnum.VIBE_CITY,
+                  bot: BotEnum.VICE_CITY,
                 }),
               );
           }),

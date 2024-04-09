@@ -50,6 +50,9 @@ export class Payment {
   screenshot_message_id: string;
 
   @Column({ nullable: true })
+  file_id: string;
+
+  @Column({ nullable: true })
   subscription_plan_id: string;
 
   @ManyToOne(() => SubscriptionPlan, { nullable: true })

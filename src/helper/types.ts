@@ -103,7 +103,7 @@ export enum LogTypeEnum {
 }
 
 export enum BotEnum {
-  VIBE_CITY = 'VIBE_CITY',
+  VICE_CITY = 'VICE_CITY',
   HESOYAM = 'HESOYAM',
   HESOYAM_MANAGER = 'HESOYAM_MANAGER',
 }

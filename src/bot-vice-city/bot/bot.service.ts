@@ -85,7 +85,7 @@ export class BotService {
           LaterTypeEnum.EndPlanIn,
           user.language,
           this.logService,
-          BotEnum.VIBE_CITY,
+          BotEnum.VICE_CITY,
           {
             days: expiredDays,
           },
@@ -152,7 +152,7 @@ You still have the option to renew your subscription at the old price.`
             LaterTypeEnum.EndPlan,
             user.language,
             this.logService,
-            BotEnum.VIBE_CITY,
+            BotEnum.VICE_CITY,
           );
 
           return await this.bot.sendMessage(
@@ -174,7 +174,7 @@ If you think that an error has occurred, contact support via the "🤝 Support" 
             action: 'deleteExpiredUsers',
             info: JSON.stringify(e),
             type: LogTypeEnum.ERROR,
-            bot: BotEnum.VIBE_CITY,
+            bot: BotEnum.VICE_CITY,
           });
         }
       }),

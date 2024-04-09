@@ -44,4 +44,6 @@ export class CreateDto {
   readonly full_price_usd?: number;
 
   bot: BotEnum;
+
+  file_id?: string;
 }

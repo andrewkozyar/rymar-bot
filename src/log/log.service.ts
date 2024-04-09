@@ -34,7 +34,7 @@ export class LogService {
       }
       return await this.LogRepository.save({
         ...dto,
-        user_id: dto.bot === BotEnum.VIBE_CITY ? dto.user_id : null,
+        user_id: dto.bot === BotEnum.VICE_CITY ? dto.user_id : null,
         user_hesoyam_id: dto.bot === BotEnum.HESOYAM ? dto.user_id : null,
       });
     } catch (e) {

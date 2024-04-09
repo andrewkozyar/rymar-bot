@@ -30,10 +30,10 @@ export const sendEmail = async (
   const htmlToSend = template({
     ...htmlData,
     botUrl:
-      bot === BotEnum.VIBE_CITY
+      bot === BotEnum.VICE_CITY
         ? 'https://t.me/rymars_bot'
         : 'https://t.me/hesoyamstudy_bot',
-    telegramNickname: bot === BotEnum.VIBE_CITY ? '@rymar_m' : '@tomera_study',
+    telegramNickname: bot === BotEnum.VICE_CITY ? '@rymar_m' : '@tomera_study',
   });
 
   const emailOption = {

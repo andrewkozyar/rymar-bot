@@ -28,7 +28,7 @@ export const actionChannelPost = async (
         action: 'channel_post',
         info: JSON.stringify(e.stack),
         type: LogTypeEnum.ERROR,
-        bot: BotEnum.VIBE_CITY,
+        bot: BotEnum.VICE_CITY,
       });
     }
   });

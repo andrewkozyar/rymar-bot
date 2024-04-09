@@ -81,7 +81,7 @@ export const actionMessage = async (
           user_id: user.id,
           info: 'нажал кнопку start',
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         return await sendLanguageKeyboard(msg.chat.id, null, bot);
@@ -108,7 +108,7 @@ export const actionMessage = async (
           user_id: user.id,
           info: `ввел емейл на "${trimEmail(msg.text)}"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         const updatedUser = await userService.update(user.id, {
@@ -144,7 +144,7 @@ export const actionMessage = async (
           user_id: user.id,
           info: `нажал кнопку "${msg.text}"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         return await sendSubscriptionPlanKeyboard(
@@ -168,7 +168,7 @@ export const actionMessage = async (
           user_id: user.id,
           info: `нажал кнопку "${msg.text}"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         return await sendMySubscriptionKeyboard(
@@ -189,7 +189,7 @@ export const actionMessage = async (
           user_id: user.id,
           info: `нажал кнопку "${msg.text}"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         return await sendAccountKeyboard(msg.chat.id, null, bot, user);
@@ -202,7 +202,7 @@ export const actionMessage = async (
           user_id: user.id,
           info: `нажал кнопку "${msg.text}"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         return await bot.sendMessage(
@@ -238,7 +238,7 @@ export const actionMessage = async (
           user_id: user.id,
           info: `поменял емейл на "${trimEmail(msg.text)}"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         const updatedUser = await userService.update(user.id, {
@@ -316,7 +316,7 @@ export const actionMessage = async (
             user_id: user.id,
             info: `‼️ ввел промокод "${msg.text}"`,
             type: LogTypeEnum.USER,
-            bot: BotEnum.VIBE_CITY,
+            bot: BotEnum.VICE_CITY,
           });
 
           payData.promocode_id = promocode.id;
@@ -584,6 +584,7 @@ export const actionMessage = async (
             address: paymentMethod.address,
             currency: paymentMethod.currency,
             full_price_usd: payData.amount,
+            file_id: msg.photo[3].file_id,
           });
 
           const managers = await userService.getUsers({
@@ -647,7 +648,7 @@ export const actionMessage = async (
             user_id: user.id,
             info: `‼️ отправил скриншот с оплатой`,
             type: LogTypeEnum.USER,
-            bot: BotEnum.VIBE_CITY,
+            bot: BotEnum.VICE_CITY,
           });
 
           return await bot.sendMessage(
@@ -677,7 +678,7 @@ export const actionMessage = async (
         action: 'message',
         info: JSON.stringify(e.stack),
         type: LogTypeEnum.ERROR,
-        bot: BotEnum.VIBE_CITY,
+        bot: BotEnum.VICE_CITY,
       });
     }
   });

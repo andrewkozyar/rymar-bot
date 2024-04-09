@@ -36,7 +36,7 @@ export class CronService {
         action: 'checkExpiredDate',
         info: 'start cron job',
         type: LogTypeEnum.INFO,
-        bot: BotEnum.VIBE_CITY,
+        bot: BotEnum.VICE_CITY,
       });
 
       const { users: expiredUsers } = await this.userService.getUsers({
@@ -97,7 +97,7 @@ export class CronService {
         action: 'checkExpiredDate',
         info: JSON.stringify(e),
         type: LogTypeEnum.ERROR,
-        bot: BotEnum.VIBE_CITY,
+        bot: BotEnum.VICE_CITY,
       });
     }
   }

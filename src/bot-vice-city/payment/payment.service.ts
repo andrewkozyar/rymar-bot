@@ -3,11 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CreateDto, GetDto } from './dto';
-import { GetPaymentsType, PaymentStatusEnum, errorHandler } from '../../helper';
+import {
+  BotEnum,
+  GetPaymentsType,
+  PaymentStatusEnum,
+  errorHandler,
+} from '../../helper';
 
 import { Payment } from './payment.entity';
 import { SubscriptionPlanService } from 'src/bot-vice-city/subscriptionPlan/subscriptionPlan.service';
 import { addDays, addMonths, getDateWithoutHours } from 'src/helper/date';
+import TelegramBot from 'node-telegram-bot-api';
+import { User } from '../user/user.entity';
+import { exportPaymentInfoToGoogleSheet } from 'src/helper/google-sheet';
 
 @Injectable()
 export class PaymentService {
@@ -45,15 +53,40 @@ export class PaymentService {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async update({ continueDays, ...dto }: CreateDto): Promise<Payment> {
+  async update(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    { continueDays, ...dto }: CreateDto,
+    bot?: TelegramBot,
+    updatedBy?: User,
+  ): Promise<Payment> {
     try {
-      const plan = await this.findOne({
+      const payment = await this.findOne({
         id: dto.id,
       });
 
+      if (
+        payment.status !== PaymentStatusEnum.Success &&
+        dto.status === PaymentStatusEnum.Success
+      ) {
+        const image = await bot.getFileLink(payment.file_id);
+        await exportPaymentInfoToGoogleSheet(BotEnum.VICE_CITY, [
+          [
+            payment.amount,
+            payment.currency,
+            payment.price_usd,
+            payment.promocode?.name,
+            payment.user.name,
+            payment.user.email,
+            payment.payment_method.name,
+            payment.subscription_plan.nameRU,
+            updatedBy.name,
+            `=IMAGE("${image}")`,
+          ],
+        ]);
+      }
+
       return await this.paymentRepository.save({
-        ...plan,
+        ...payment,
         ...dto,
       });
     } catch (e) {
@@ -75,6 +108,8 @@ export class PaymentService {
       .withDeleted()
       .leftJoinAndSelect('payment.subscription_plan', 'subscription_plan')
       .leftJoinAndSelect('payment.promocode', 'promocode')
+      .leftJoinAndSelect('payment.user', 'user')
+      .leftJoinAndSelect('payment.payment_method', 'payment_method')
       .orderBy('payment.created_date', 'DESC')
       .withDeleted();
 

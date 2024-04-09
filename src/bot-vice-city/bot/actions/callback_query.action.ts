@@ -98,7 +98,7 @@ export const actionCallbackQuery = async (
           user_id: user.id,
           info: `нажал "изменить язык"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         return await sendLanguageKeyboard(
@@ -116,7 +116,7 @@ export const actionCallbackQuery = async (
           user_id: user.id,
           info: `изменил язык на ${data}`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         const updatedUser = await userService.update(user.id, {
@@ -148,7 +148,7 @@ export const actionCallbackQuery = async (
           user_id: user.id,
           info: `зашел на "мой акаунт"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         return await sendAccountKeyboard(
@@ -169,7 +169,7 @@ export const actionCallbackQuery = async (
           user_id: user.id,
           info: `нажал на "изменить емейл"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         return await sendTextWithCancelKeyboard(
@@ -214,7 +214,7 @@ export const actionCallbackQuery = async (
           user_id: user.id,
           info: `зашел детали плана подписки "${plan.nameRU}"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         if (payData?.promocode_id && payData?.subscription_plan_id === data) {
@@ -310,7 +310,7 @@ export const actionCallbackQuery = async (
           user_id: user.id,
           info: `‼️ нажал на продление плана подписки "${plan.nameRU}"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         if (payData.isFromNotification) {
@@ -381,7 +381,7 @@ export const actionCallbackQuery = async (
           user_id: user.id,
           info: `нажал на "Планы подписок"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         return await sendSubscriptionPlanKeyboard(
@@ -418,7 +418,7 @@ export const actionCallbackQuery = async (
           user_id: user.id,
           info: `‼️ нажал на введение промокода`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         return await sendTextWithCancelKeyboard(
@@ -460,7 +460,7 @@ export const actionCallbackQuery = async (
           user_id: user.id,
           info: `‼️ нажал на заплатить`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         if (payData?.addressMessageId) {
@@ -500,7 +500,7 @@ export const actionCallbackQuery = async (
           user_id: user.id,
           info: `‼️ выбрал метод оплаты "${paymentMethod.name}"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         const payData: PayDataInterface = JSON.parse(redisData);
@@ -569,7 +569,7 @@ export const actionCallbackQuery = async (
           user_id: user.id,
           info: `‼️ нажал на "я оплатил"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         const payData: PayDataInterface = JSON.parse(redisData);
@@ -619,7 +619,7 @@ export const actionCallbackQuery = async (
           user_id: user.id,
           info: `нажал на "список транзакций"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         return await sendTransactionsKeyboard(
@@ -641,7 +641,7 @@ export const actionCallbackQuery = async (
           user_id: user.id,
           info: `нажал на "моя подписка"`,
           type: LogTypeEnum.USER,
-          bot: BotEnum.VIBE_CITY,
+          bot: BotEnum.VICE_CITY,
         });
 
         return await sendMySubscriptionKeyboard(
@@ -1316,7 +1316,7 @@ export const actionCallbackQuery = async (
             action: 'callback_query',
             info: `GiveUserAccessConfirm no payment bug. data: ${data}`,
             type: LogTypeEnum.ERROR,
-            bot: BotEnum.VIBE_CITY,
+            bot: BotEnum.VICE_CITY,
           });
         }
 
@@ -1324,11 +1324,15 @@ export const actionCallbackQuery = async (
           id: payment.user_id,
         });
 
-        await paymentService.update({
-          id: payment.id,
-          status: PaymentStatusEnum.Success,
-          updated_by_id: user.id,
-        });
+        await paymentService.update(
+          {
+            id: payment.id,
+            status: PaymentStatusEnum.Success,
+            updated_by_id: user.id,
+          },
+          bot,
+          user,
+        );
 
         const adminsPaymentMessages: { message_id: number; chat_id: number }[] =
           JSON.parse(payment.admins_payment_messages);
@@ -1358,7 +1362,7 @@ export const actionCallbackQuery = async (
             LaterTypeEnum.BuyPlan,
             customer.language,
             logService,
-            BotEnum.VIBE_CITY,
+            BotEnum.VICE_CITY,
             {
               plan: plan[`name${customer.language}`],
             },
@@ -1386,7 +1390,7 @@ export const actionCallbackQuery = async (
             LaterTypeEnum.BuyPlanWithoutChannels,
             customer.language,
             logService,
-            BotEnum.VIBE_CITY,
+            BotEnum.VICE_CITY,
             {
               plan: plan[`name${customer.language}`],
             },
@@ -1414,7 +1418,7 @@ export const actionCallbackQuery = async (
             action: 'callback_query',
             info: `GiveUserAccessDecline no payment bug. data: ${data}`,
             type: LogTypeEnum.ERROR,
-            bot: BotEnum.VIBE_CITY,
+            bot: BotEnum.VICE_CITY,
           });
         }
 
@@ -1464,7 +1468,7 @@ export const actionCallbackQuery = async (
           LaterTypeEnum.DeclineBuyPlan,
           customer.language,
           logService,
-          BotEnum.VIBE_CITY,
+          BotEnum.VICE_CITY,
           {
             plan: plan[`name${customer.language}`],
           },
@@ -1490,7 +1494,7 @@ If you could not solve the problem, or you think that an error has occurred, con
         action: 'callback_query',
         info: JSON.stringify(e.stack),
         type: LogTypeEnum.ERROR,
-        bot: BotEnum.VIBE_CITY,
+        bot: BotEnum.VICE_CITY,
       });
     }
   });

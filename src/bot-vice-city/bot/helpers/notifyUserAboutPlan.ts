@@ -27,7 +27,7 @@ export const notifyUserAboutPlan = async (
       LaterTypeEnum.ContinueBuyingPlan,
       user.language,
       logService,
-      BotEnum.VIBE_CITY,
+      BotEnum.VICE_CITY,
     );
 
     await bot.sendMessage(
