@@ -1,4 +1,4 @@
-import { google } from 'googleapis';
+import * as google from '@googleapis/sheets';
 import { BotEnum } from './types';
 
 export const exportPaymentInfoToGoogleSheet = async (
